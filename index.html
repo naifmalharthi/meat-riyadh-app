@@ -566,7 +566,8 @@
         notes: document.getElementById('notes').value,
         payMethod: document.getElementById('payMethod').value,
         total,
-        status: "معلق"
+        status: "معلق",
+        statusUpdatedAt: new Date().toLocaleString('ar-SA')
       };
 
       let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
@@ -612,6 +613,7 @@
             <span class="status-badge ${statusInfo.class}">${statusInfo.icon} ${o.status}</span>
           </div>
           <div><strong>التاريخ:</strong> ${o.date}</div>
+          <div><strong>آخر تحديث للحالة:</strong> ${o.statusUpdatedAt || 'غير متوفر'}</div>
           <div><strong>الماشية:</strong> ${o.animal} (الكمية: ${o.quantity})</div>
           <div><strong>الخدمة:</strong> ${o.service}</div>
           <div><strong>التوصيل:</strong> ${o.delivery}</div>
@@ -656,6 +658,7 @@
       if (!order) return;
       
       order.status = newStatus;
+      order.statusUpdatedAt = new Date().toLocaleString('ar-SA');
       localStorage.setItem('meatOrders', JSON.stringify(orders));
       loadOrders();
       showToast(`تم تحديث حالة الطلب إلى: ${newStatus}`);
