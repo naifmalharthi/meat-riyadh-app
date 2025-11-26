@@ -424,6 +424,22 @@
             <div class="stat-value" id="totalSpent">0</div>
             <div class="stat-label">إجمالي المبلغ</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-value" id="pendingCount">0</div>
+            <div class="stat-label">⏳ معلّق</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="processingCount">0</div>
+            <div class="stat-label">⚙️ قيد التحضير</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="deliveredCount">0</div>
+            <div class="stat-label">🚚 تم التوصيل</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="cancelledCount">0</div>
+            <div class="stat-label">❌ ملغى</div>
+          </div>
         </div>
         <div id="ordersList"></div>
       </div>
@@ -587,8 +603,21 @@
       const totalOrders = document.getElementById('totalOrders');
       const totalSpent = document.getElementById('totalSpent');
 
-      totalOrders.textContent = orders.length;
-      totalSpent.textContent = orders.reduce((sum, o) => sum + o.total, 0) + ' ر.س';
+      const total = orders.length;
+      const totalAmount = orders.reduce((sum, o) => sum + o.total, 0);
+
+      const pending = orders.filter(o => o.status === 'معلق').length;
+      const processing = orders.filter(o => o.status === 'قيد التحضير').length;
+      const delivered = orders.filter(o => o.status === 'تم التوصيل').length;
+      const cancelled = orders.filter(o => o.status === 'ملغى').length;
+
+      totalOrders.textContent = total.toLocaleString('ar-SA');
+      totalSpent.textContent = totalAmount.toLocaleString('ar-SA') + ' ر.س';
+
+      document.getElementById('pendingCount').textContent = pending.toLocaleString('ar-SA');
+      document.getElementById('processingCount').textContent = processing.toLocaleString('ar-SA');
+      document.getElementById('deliveredCount').textContent = delivered.toLocaleString('ar-SA');
+      document.getElementById('cancelledCount').textContent = cancelled.toLocaleString('ar-SA');
 
       if (orders.length === 0) {
         ordersList.innerHTML = '<p style="text-align: center; color: #7d888c;">لا توجد طلبات بعد</p>';
