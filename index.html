@@ -295,6 +295,26 @@
       .card { padding: 16px 12px; }
       .navbar { flex-direction: column; text-align: center; }
     }
+        .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #16a34a;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
@@ -508,6 +528,14 @@
       sucDiv.textContent = msg;
       sucDiv.classList.remove('hidden');
     }
+        function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
 
     document.getElementById('orderForm').onsubmit = function(e) {
       e.preventDefault();
@@ -630,7 +658,7 @@
       order.status = newStatus;
       localStorage.setItem('meatOrders', JSON.stringify(orders));
       loadOrders();
-      alert(`✓ تم تحديث حالة الطلب إلى: ${newStatus}`);
+      showToast(`تم تحديث حالة الطلب إلى: ${newStatus}`);
     }
 
     function clearAllOrders() {
@@ -642,5 +670,6 @@
 
     document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-SA');
   </script>
+  <div id="toast" class="toast"></div>
 </body>
 </html>
