@@ -242,6 +242,55 @@
       color: #7d888c;
       margin-top: 4px;
     }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    .status-pending {
+      background: #FFE8CC;
+      color: #D97706;
+    }
+    .status-processing {
+      background: #D1E7F5;
+      color: #0369A1;
+    }
+    .status-delivered {
+      background: #D1F4E7;
+      color: #047857;
+    }
+    .status-cancelled {
+      background: #FED7D7;
+      color: #C0152F;
+    }
+    .status-buttons {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .status-btn {
+      background: #E8F5F7;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    .status-btn:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+    .status-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary-hover);
+    }
     @media(max-width:600px){
       .card { padding: 16px 12px; }
       .navbar { flex-direction: column; text-align: center; }
@@ -488,7 +537,8 @@
         cutting: document.getElementById('cutting').value,
         notes: document.getElementById('notes').value,
         payMethod: document.getElementById('payMethod').value,
-        total
+        total,
+        status: "معلق"
       };
 
       let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
@@ -516,9 +566,23 @@
         return;
       }
 
-      ordersList.innerHTML = orders.reverse().map(o => `
+      const getStatusInfo = (status) => {
+        const statusMap = {
+          "معلق": { class: "status-pending", icon: "⏳" },
+          "قيد التحضير": { class: "status-processing", icon: "⚙️" },
+          "تم التوصيل": { class: "status-delivered", icon: "🚚" },
+          "ملغى": { class: "status-cancelled", icon: "❌" }
+        };
+        return statusMap[status] || statusMap["معلق"];
+      };
+
+      ordersList.innerHTML = orders.reverse().map(o => {
+        const statusInfo = getStatusInfo(o.status);
+        return `
         <div class="order-item">
-          <div class="order-item-header">📦 الطلب رقم: ${o.id}</div>
+          <div class="order-item-header">📦 الطلب رقم: ${o.id}
+            <span class="status-badge ${statusInfo.class}">${statusInfo.icon} ${o.status}</span>
+          </div>
           <div><strong>التاريخ:</strong> ${o.date}</div>
           <div><strong>الماشية:</strong> ${o.animal} (الكمية: ${o.quantity})</div>
           <div><strong>الخدمة:</strong> ${o.service}</div>
@@ -526,12 +590,19 @@
           <div><strong>الموقع:</strong> ${o.location}</div>
           <div><strong>الرقم:</strong> ${o.phone}</div>
           <div style="color: var(--color-primary); font-weight: 600;">💰 الإجمالي: ${o.total} ريال</div>
+          <div class="status-buttons">
+            <button class="status-btn ${o.status === 'معلق' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'معلق')">معلق</button>
+            <button class="status-btn ${o.status === 'قيد التحضير' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'قيد التحضير')">قيد التحضير</button>
+            <button class="status-btn ${o.status === 'تم التوصيل' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'تم التوصيل')">تم التوصيل</button>
+            <button class="status-btn" style="border-color: var(--color-error); color: var(--color-error);" onclick="updateOrderStatus(${o.id}, 'ملغى')">ملغى</button>
+          </div>
           <div class="action-buttons">
             <button class="btn-small" onclick="copyOrderDetails(${o.id})">نسخ التفاصيل</button>
             <button class="btn-small" onclick="deleteOrder(${o.id})" style="border-color: var(--color-error); color: var(--color-error);">حذف</button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function copyOrderDetails(orderId) {
@@ -549,6 +620,17 @@
       orders = orders.filter(o => o.id !== orderId);
       localStorage.setItem('meatOrders', JSON.stringify(orders));
       loadOrders();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      
+      order.status = newStatus;
+      localStorage.setItem('meatOrders', JSON.stringify(orders));
+      loadOrders();
+      alert(`✓ تم تحديث حالة الطلب إلى: ${newStatus}`);
     }
 
     function clearAllOrders() {
