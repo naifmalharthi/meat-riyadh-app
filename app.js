@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js النسخة النهائية المدمجة */
+/* 🍖 لحوم الرياض - app.js - النسخة الكاملة المتقدمة */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
@@ -6,12 +6,13 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_8
 // 🌐 المتغيرات العامة
 let allOrders = [];
 let filteredOrders = [];
-let currentSort = { field: 'id', direction: 'desc' };
 
 // 🚀 تحميل البيانات عند بدء التطبيق
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
   loadOrders();
-  updateLastUpdate();
+  updateStats();
+  updateReports();
+  updateSystemInfo();
 });
 
 // 💾 تحميل الطلبات من localStorage
@@ -19,171 +20,233 @@ function loadOrders() {
   allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
   filteredOrders = [...allOrders];
   renderOrders();
-  updateStats();
 }
 
-// 📝 عرض الطلبات في الجدول
+// 📝 عرض الطلبات
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
   
-  if (!tbody) return;
-  
-  if (allOrders.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align: center; color: #999;">لا توجد طلبات حالياً</td></tr>';
+  if (filteredOrders.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات</td></tr>';
     return;
   }
 
-  tbody.innerHTML = allOrders.map(order => `
-    <tr style="border-bottom: 1px solid #e0e0e0;">
-      <td style="padding: 10px; text-align: right;">${order.id}</td>
-      <td style="padding: 10px; text-align: right;">${order.customer || order.name || '-'}</td>
-      <td style="padding: 10px; text-align: right;">${order.phone || '-'}</td>
-      <td style="padding: 10px; text-align: right;">${order.animal}</td>
-      <td style="padding: 10px; text-align: right;">${order.quantity}</td>
-      <td style="padding: 10px; text-align: right;">${order.total} ر.س</td>
-      <td style="padding: 10px; text-align: right;">
-        <span style="background: ${getStatusColor(order.status)}; padding: 4px 8px; border-radius: 4px; color: white; font-size: 12px;">
+  tbody.innerHTML = filteredOrders.map(order => `
+    <tr>
+      <td>${order.id}</td>
+      <td>${order.customer || '-'}</td>
+      <td>${order.phone || '-'}</td>
+      <td>${order.animal}</td>
+      <td>${order.quantity}</td>
+      <td>${order.total} ر.س</td>
+      <td>
+        <span class="badge badge-${getBadgeClass(order.status)}">
           ${order.status}
         </span>
       </td>
-      <td style="padding: 10px; text-align: right;">${order.date || new Date().toLocaleDateString('ar-SA')}</td>
+      <td>${order.date}</td>
     </tr>
   `).join('');
+}
+
+// 🔍 تصنيف Badge
+function getBadgeClass(status) {
+  const map = {
+    'معلق': 'pending',
+    'قيد التحضير': 'processing',
+    'تم التوصيل': 'completed',
+    'ملغى': 'cancelled'
+  };
+  return map[status] || 'pending';
+}
+
+// 🔎 البحث والفلترة
+function filterOrders() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value;
+
+  filteredOrders = allOrders.filter(order => {
+    const matchesSearch = !search || 
+      order.id.toLowerCase().includes(search) ||
+      order.phone.includes(search) ||
+      order.customer.toLowerCase().includes(search);
+    
+    const matchesStatus = !status || order.status === status;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  renderOrders();
 }
 
 // 📊 تحديث الإحصائيات
 function updateStats() {
   const totalOrders = allOrders.length;
-  const totalRevenue = allOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+  const totalRevenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
   const averageAmount = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-  const pendingOrders = allOrders.filter(order => order.status === 'معلق').length;
+  const pendingOrders = allOrders.filter(o => o.status === 'معلق').length;
 
-  const statTotal = document.getElementById('statTotal');
-  const statRevenue = document.getElementById('statRevenue');
-  const statAverage = document.getElementById('statAverage');
-  const statPending = document.getElementById('statPending');
-
-  if (statTotal) statTotal.textContent = totalOrders;
-  if (statRevenue) statRevenue.textContent = totalRevenue.toFixed(0) + ' ر.س';
-  if (statAverage) statAverage.textContent = averageAmount.toFixed(0) + ' ر.س';
-  if (statPending) statPending.textContent = pendingOrders;
+  document.getElementById('statTotal').textContent = totalOrders;
+  document.getElementById('statRevenue').textContent = totalRevenue.toFixed(0) + ' ر.س';
+  document.getElementById('statAverage').textContent = averageAmount.toFixed(0) + ' ر.س';
+  document.getElementById('statPending').textContent = pendingOrders;
 }
 
-// 💾 حفظ الطلب (الدالة الرئيسية)
-function saveOrder(order) {
-  try {
-    // 1️⃣ إضافة معرّف فريد للطلب
-    order.id = order.id || 'ORD-' + Date.now();
-    order.date = order.date || new Date().toLocaleDateString('ar-SA');
-    
-    // 2️⃣ حفظ محلي في localStorage
-    allOrders.push(order);
-    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    
-    // 3️⃣ إرسال لـ Google Sheets + Telegram
-    sendOrderToGoogle(order);
-    
-    // 4️⃣ تحديث الواجهة
-    renderOrders();
-    updateStats();
-    
-    return true;
-  } catch (error) {
-    console.error('❌ خطأ في حفظ الطلب:', error);
-    return false;
-  }
+// 📈 تحديث التقارير
+function updateReports() {
+  if (!document.getElementById('reports-tab').classList.contains('active')) return;
+
+  // أعلى مبيعة
+  const topOrder = allOrders.reduce((max, o) => (o.total > max.total ? o : max), allOrders[0] || {});
+  document.getElementById('topSale').textContent = topOrder.total ? topOrder.total + ' ر.س' : '-';
+
+  // عدد العملاء الفريدين
+  const uniqueCustomers = new Set(allOrders.map(o => o.phone)).size;
+  document.getElementById('totalCustomers').textContent = uniqueCustomers;
+
+  // أكثر ماشية
+  const animalCounts = {};
+  allOrders.forEach(o => {
+    animalCounts[o.animal] = (animalCounts[o.animal] || 0) + 1;
+  });
+  const topAnimal = Object.entries(animalCounts).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById('topAnimal').textContent = topAnimal ? topAnimal[0] : '-';
+
+  // نسبة الإنجاز
+  const completed = allOrders.filter(o => o.status === 'تم التوصيل').length;
+  const rate = allOrders.length > 0 ? Math.round((completed / allOrders.length) * 100) : 0;
+  document.getElementById('completionRate').textContent = rate + '%';
+
+  // توزيع الحالات
+  document.getElementById('dist-pending').textContent = allOrders.filter(o => o.status === 'معلق').length;
+  document.getElementById('dist-processing').textContent = allOrders.filter(o => o.status === 'قيد التحضير').length;
+  document.getElementById('dist-completed').textContent = allOrders.filter(o => o.status === 'تم التوصيل').length;
+  document.getElementById('dist-cancelled').textContent = allOrders.filter(o => o.status === 'ملغى').length;
+
+  // توزيع الماشيات
+  let animalHTML = '<table style="width: 100%;">';
+  Object.entries(animalCounts)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([animal, count]) => {
+      const percentage = Math.round((count / allOrders.length) * 100) || 0;
+      animalHTML += `
+        <tr>
+          <td style="text-align: left;">${animal}</td>
+          <td style="text-align: right;">${count} (${percentage}%)</td>
+        </tr>
+      `;
+    });
+  animalHTML += '</table>';
+  document.getElementById('animalDistribution').innerHTML = animalHTML || '<p>لا توجد بيانات</p>';
 }
 
-// 🌐 إرسال الطلب للـ Google Sheets + Telegram
-async function sendOrderToGoogle(order) {
-  try {
-    const orderData = {
-      customerName: order.customer || order.name || 'غير محدد',
-      customerPhone: order.phone || 'غير محدد',
-      animalType: order.animal,
-      quantity: order.quantity,
-      pricePerUnit: order.price,
-      totalAmount: order.total,
-      serviceType: order.service || 'توصيل',
-      status: order.status || 'معلق',
-      notes: order.notes || '',
-      orderDate: order.date
-    };
+// 💾 إضافة طلب جديد
+async function handleAddOrder(event) {
+  event.preventDefault();
 
-    // إرسال البيانات للـ Google Apps Script
-    const response = await fetch(APPS_SCRIPT_URL, {
+  const orderData = {
+    customer: document.getElementById('customerName').value,
+    phone: document.getElementById('customerPhone').value,
+    animal: document.getElementById('animalType').value,
+    quantity: parseInt(document.getElementById('quantity').value),
+    price: parseFloat(document.getElementById('pricePerUnit').value),
+    total: parseFloat(document.getElementById('totalAmount').value),
+    service: document.getElementById('serviceType').value,
+    status: document.getElementById('status').value,
+    notes: document.getElementById('notes').value,
+    date: document.getElementById('orderDate').value,
+    id: 'ORD-' + Date.now()
+  };
+
+  try {
+    // إرسال للـ Google Sheets + Telegram
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData)
     });
 
-    console.log('✅ تم إرسال الطلب لـ Google Sheets + Telegram');
-  } catch (error) {
-    console.error('⚠️ خطأ في الإرسال:', error);
-  }
-}
+    // حفظ محلي
+    allOrders.push(orderData);
+    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
 
-// 🎨 لون الحالة
-function getStatusColor(status) {
-  const colors = {
-    'معلق': '#FFA500',
-    'قيد التحضير': '#2a8f9f',
-    'تم التوصيل': '#047857',
-    'ملغى': '#c0152f'
-  };
-  return colors[status] || '#999';
-}
-
-// 🕐 تحديث وقت آخر تحديث
-function updateLastUpdate() {
-  const lastUpdateEl = document.getElementById('lastUpdate');
-  if (lastUpdateEl) {
-    lastUpdateEl.textContent = new Date().toLocaleString('ar-SA');
-  }
-}
-
-// 🔄 حذف جميع البيانات (مع تأكيد)
-function deleteAllOrders() {
-  if (confirm('هل أنت متأكد من حذف جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه!')) {
-    allOrders = [];
-    localStorage.removeItem('meatOrders');
-    renderOrders();
+    showAlert('✅ تم حفظ الطلب بنجاح! تم إشعار البائع.', 'success', 'modalAlertBox');
+    
+    loadOrders();
     updateStats();
-    console.log('✅ تم حذف جميع البيانات');
+    updateSystemInfo();
+
+    setTimeout(() => closeOrderModal(), 1500);
+
+  } catch (error) {
+    console.error(error);
+    showAlert('❌ حدث خطأ، حاول مرة أخرى', 'error', 'modalAlertBox');
   }
 }
 
-// 📥 تنزيل البيانات كملف JSON
+// 📢 عرض التنبيهات
+function showAlert(message, type, elementId = 'alertBox') {
+  const box = document.getElementById(elementId);
+  if (!box) return;
+  
+  box.textContent = message;
+  box.className = `alert show alert-${type}`;
+  
+  setTimeout(() => box.classList.remove('show'), 4000);
+}
+
+// 📥 تنزيل البيانات
 function downloadData() {
   const dataStr = JSON.stringify(allOrders, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(dataBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `meat-riyadh-orders-${new Date().toISOString().split('T')[0]}.json`;
-  link.click();
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `meat-riyadh-orders-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
   URL.revokeObjectURL(url);
 }
 
-// 📤 استيراد البيانات من ملف JSON
-function importData(file) {
+// 📤 استيراد البيانات
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      const importedData = JSON.parse(e.target.result);
-      if (Array.isArray(importedData)) {
-        allOrders = importedData;
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        allOrders = data;
         localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-        renderOrders();
+        loadOrders();
         updateStats();
         alert('✅ تم استيراد البيانات بنجاح!');
-      } else {
-        alert('❌ صيغة الملف غير صحيحة!');
       }
-    } catch (error) {
-      alert('❌ خطأ في قراءة الملف: ' + error.message);
+    } catch (err) {
+      alert('❌ خطأ في الملف');
     }
   };
   reader.readAsText(file);
+}
+
+// 🗑️ حذف جميع البيانات
+function deleteAllData() {
+  if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
+    allOrders = [];
+    localStorage.removeItem('meatOrders');
+    loadOrders();
+    updateStats();
+    alert('✅ تم حذف البيانات');
+  }
+}
+
+// ℹ️ معلومات النظام
+function updateSystemInfo() {
+  document.getElementById('totalOrdersInfo').textContent = allOrders.length;
+  document.getElementById('lastUpdateInfo').textContent = new Date().toLocaleString('ar-SA');
+  
+  const dataSize = (JSON.stringify(allOrders).length / 1024).toFixed(2);
+  document.getElementById('dataSize').textContent = dataSize + ' KB';
 }

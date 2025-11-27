@@ -3,16 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="تطبيق ويب لإدارة طلبات الماشية مع ربط Google Sheets والتنبيهات الفورية">
+  <meta name="description" content="🍖 لحوم الرياض - نظام إدارة الطلبات المتقدم">
   <meta name="theme-color" content="#2a8f9f">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍖</text></svg>">
-  <title>🍖 لحوم الرياض - إدارة الطلبات</title>
+  <title>🍖 لحوم الرياض v4.0 - نظام إدارة الطلبات</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #2a8f9f;
+      --secondary: #1d7480;
+      --light: #f0f8f9;
+      --bg: #e8f5f7;
+      --text: #134252;
+      --border: #e0e0e0;
+      --success: #047857;
+      --warning: #FFA500;
+      --danger: #c0152f;
+      --info: #2a8f9f;
     }
 
     html, body {
@@ -21,19 +34,26 @@
     }
 
     body {
-      background: linear-gradient(135deg, #f0f8f9 0%, #e8f5f7 100%);
+      background: linear-gradient(135deg, var(--light) 0%, var(--bg) 100%);
       padding: 20px;
-      color: #134252;
+      color: var(--text);
       min-height: 100vh;
+      transition: background 0.3s;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: #e0e0e0;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
+    /* ==================== Navbar ==================== */
     .navbar {
-      background: linear-gradient(90deg, #2a8f9f 0%, #1d7480 100%);
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
       color: white;
       padding: 20px;
       border-radius: 12px;
@@ -49,62 +69,354 @@
     .navbar h1 {
       font-size: 24px;
       margin: 0;
+      flex: 1;
+      min-width: 200px;
     }
 
-    .btn-group {
+    .navbar-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
+    /* ==================== Tabs ==================== */
+    .tabs-container {
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .tabs-header {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .tab-btn:hover {
+      background: var(--light);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    body.dark-mode .tab-btn {
+      color: #ccc;
+    }
+
+    body.dark-mode .tab-btn:hover {
+      background: #333;
+    }
+
+    body.dark-mode .tab-btn.active {
+      color: #4db8d6;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 30px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ==================== Stats ==================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-right: 4px solid var(--primary);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    body.dark-mode .stat-card {
+      background: #2d2d2d;
+      border-right-color: #4db8d6;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--success);
+    }
+
+    body.dark-mode .stat-label {
+      color: #999;
+    }
+
+    body.dark-mode .stat-value {
+      color: #4db8d6;
+    }
+
+    /* ==================== Card ==================== */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    body.dark-mode .card {
+      background: #2d2d2d;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ==================== Search & Filter ==================== */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-input, .filter-select {
+      padding: 10px 15px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      min-width: 200px;
+      flex: 1;
+    }
+
+    body.dark-mode .search-input,
+    body.dark-mode .filter-select {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+
+    .search-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(42, 143, 159, 0.2);
+    }
+
+    /* ==================== Table ==================== */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      padding: 15px;
+      text-align: right;
+      background: var(--light);
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+    }
+
+    tr:hover {
+      background: var(--light);
+    }
+
+    body.dark-mode tr:hover {
+      background: #333;
+    }
+
+    body.dark-mode th {
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode td {
+      color: #e0e0e0;
+    }
+
+    /* ==================== Status Badge ==================== */
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .badge-pending {
+      background: var(--warning);
+    }
+
+    .badge-processing {
+      background: var(--info);
+    }
+
+    .badge-completed {
+      background: var(--success);
+    }
+
+    .badge-cancelled {
+      background: var(--danger);
+    }
+
+    /* ==================== Buttons ==================== */
     .btn {
       padding: 10px 20px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: all 0.3s ease;
       font-size: 14px;
+      transition: all 0.3s;
     }
 
     .btn-primary {
-      background: white;
-      color: #2a8f9f;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(42, 143, 159, 0.3);
-    }
-
-    .btn-success {
-      background: #047857;
+      background: var(--primary);
       color: white;
     }
 
-    .btn-success:hover {
-      background: #059669;
+    .btn-primary:hover {
+      background: var(--secondary);
       transform: translateY(-2px);
     }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
+    .btn-secondary {
+      background: var(--light);
+      color: var(--text);
     }
 
-    .form-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #134252;
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* ==================== Modal ==================== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
     }
 
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .modal-content {
+      background: #2d2d2d;
+      color: #e0e0e0;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: var(--text);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.3s;
+    }
+
+    .close-btn:hover {
+      color: var(--danger);
+    }
+
+    /* ==================== Form ==================== */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -121,69 +433,52 @@
       flex-direction: column;
     }
 
-    label {
+    .form-group label {
       font-weight: 600;
       margin-bottom: 8px;
       font-size: 14px;
-      color: #134252;
     }
 
-    input, select, textarea {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       padding: 12px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid var(--border);
       border-radius: 8px;
       font-family: inherit;
       font-size: 14px;
-      transition: all 0.3s ease;
-      color: #134252;
+      transition: all 0.3s;
     }
 
-    input:focus, select:focus, textarea:focus {
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group select,
+    body.dark-mode .form-group textarea {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       outline: none;
-      border-color: #2a8f9f;
+      border-color: var(--primary);
       box-shadow: 0 0 8px rgba(42, 143, 159, 0.2);
     }
 
-    textarea {
+    .form-group textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 100px;
     }
 
-    .btn-container {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-
-    .btn-save {
-      background: #2a8f9f;
-      color: white;
-      padding: 12px 30px;
-    }
-
-    .btn-save:hover {
-      background: #1d7480;
-      transform: translateY(-2px);
-    }
-
-    .btn-cancel {
-      background: #f0f0f0;
-      color: #134252;
-      padding: 12px 30px;
-    }
-
-    .btn-cancel:hover {
-      background: #e0e0e0;
-    }
-
+    /* ==================== Alert ==================== */
     .alert {
-      padding: 12px 16px;
+      padding: 15px;
       border-radius: 8px;
       margin-bottom: 20px;
       display: none;
       font-size: 14px;
+      border-left: 4px solid;
     }
 
     .alert.show {
@@ -193,155 +488,81 @@
     .alert-success {
       background: #d1f4e7;
       color: #047857;
-      border-left: 4px solid #047857;
+      border-left-color: #047857;
     }
 
     .alert-error {
       background: #fed7d7;
       color: #c0152f;
-      border-left: 4px solid #c0152f;
+      border-left-color: #c0152f;
     }
 
-    .stats-preview {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
+    body.dark-mode .alert-success {
+      background: rgba(4, 120, 87, 0.2);
     }
 
-    .stat-card {
-      background: linear-gradient(135deg, #f0f8f9, #e8f5f7);
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid #e0e0e0;
-      text-align: center;
+    body.dark-mode .alert-error {
+      background: rgba(192, 21, 47, 0.2);
     }
 
-    .stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: #2a8f9f;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #666;
-      margin-top: 8px;
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(5px);
-    }
-
-    .modal.show {
+    /* ==================== Dark Mode Toggle ==================== */
+    .theme-toggle {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
     }
 
-    .modal-content {
-      background-color: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      max-width: 600px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
+    .theme-toggle:hover {
+      background: var(--light);
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #e0e0e0;
+    body.dark-mode .theme-toggle {
+      background: #1a1a1a;
+      border-color: #444;
+      color: #ffb800;
     }
 
-    .modal-header h2 {
-      margin: 0;
-      color: #134252;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-    }
-
-    .close-btn:hover {
-      color: #c0152f;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      overflow-x: auto;
-    }
-
-    th {
-      padding: 10px;
-      text-align: right;
-      border-bottom: 2px solid #e0e0e0;
-      background-color: #f5f5f5;
-      font-weight: 600;
-    }
-
-    td {
-      padding: 10px;
-      text-align: right;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
+    /* ==================== Responsive ==================== */
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
       }
 
-      .stats-preview {
-        grid-template-columns: repeat(2, 1fr);
+      .stats-grid {
+        grid-template-columns: 1fr;
       }
 
       .navbar {
         flex-direction: column;
-        gap: 15px;
       }
 
-      .navbar h1 {
-        width: 100%;
+      .tabs-header {
+        flex-wrap: wrap;
       }
 
-      .btn-container {
-        flex-direction: column;
-      }
-
-      .btn-save, .btn-cancel {
-        width: 100%;
-      }
-
-      .modal-content {
-        width: 95%;
-        max-height: 95vh;
+      .tab-btn {
+        flex: 1;
+        min-width: 100px;
       }
 
       table {
         font-size: 12px;
       }
 
+      th, td {
+        padding: 10px;
+      }
+
       .stat-value {
-        font-size: 18px;
+        font-size: 24px;
       }
     }
   </style>
@@ -351,56 +572,178 @@
     <!-- Navbar -->
     <div class="navbar">
       <h1>🍖 لحوم الرياض - v4.0</h1>
-      <div class="btn-group">
+      <div class="navbar-actions">
         <button class="btn btn-primary" onclick="openOrderModal()">➕ طلب جديد</button>
+        <button class="theme-toggle" onclick="toggleDarkMode()" title="تبديل المظهر">🌙</button>
       </div>
     </div>
 
-    <!-- Alert -->
-    <div id="alertBox" class="alert"></div>
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="switchTab('orders')">📦 الطلبات</button>
+        <button class="tab-btn" onclick="switchTab('reports')">📊 التقارير</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙️ الإعدادات</button>
+      </div>
 
-    <!-- Stats Preview -->
-    <div class="stats-preview">
-      <div class="stat-card">
-        <div class="stat-value" id="statTotal">0</div>
-        <div class="stat-label">إجمالي الطلبات</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="statRevenue">0 ر.س</div>
-        <div class="stat-label">الإيرادات</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="statAverage">0 ر.س</div>
-        <div class="stat-label">المتوسط</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="statPending">0</div>
-        <div class="stat-label">معلق</div>
-      </div>
-    </div>
+      <!-- Tab 1: Orders -->
+      <div class="tab-content active" id="orders-tab">
+        <div id="alertBox" class="alert"></div>
 
-    <!-- Orders Table -->
-    <div class="card">
-      <h2 class="form-title">📦 جميع الطلبات</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>رقم الطلب</th>
-            <th>الزبون</th>
-            <th>الهاتف</th>
-            <th>الماشية</th>
-            <th>الكمية</th>
-            <th>المبلغ</th>
-            <th>الحالة</th>
-            <th>التاريخ</th>
-          </tr>
-        </thead>
-        <tbody id="ordersTableBody">
-          <tr>
-            <td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات حالياً</td>
-          </tr>
-        </tbody>
-      </table>
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">إجمالي الطلبات</div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-change">↑ آخر 30 يوم</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">الإيرادات الكلية</div>
+            <div class="stat-value" id="statRevenue">0 ر.س</div>
+            <div class="stat-change">من جميع الطلبات</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">متوسط قيمة الطلب</div>
+            <div class="stat-value" id="statAverage">0 ر.س</div>
+            <div class="stat-change">المتوسط الحالي</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">الطلبات المعلقة</div>
+            <div class="stat-value" id="statPending">0</div>
+            <div class="stat-change">بانتظار المعالجة</div>
+          </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="card">
+          <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 ابحث برقم الطلب أو رقم الهاتف..." onkeyup="filterOrders()">
+            <select class="filter-select" id="statusFilter" onchange="filterOrders()">
+              <option value="">جميع الحالات</option>
+              <option value="معلق">⏳ معلق</option>
+              <option value="قيد التحضير">🔄 قيد التحضير</option>
+              <option value="تم التوصيل">✅ تم التوصيل</option>
+              <option value="ملغى">❌ ملغى</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card">
+          <h3 class="card-title">📋 جميع الطلبات</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>اسم الزبون</th>
+                  <th>الهاتف</th>
+                  <th>الماشية</th>
+                  <th>الكمية</th>
+                  <th>المبلغ</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Reports -->
+      <div class="tab-content" id="reports-tab">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">أعلى مبيعات</div>
+            <div class="stat-value" id="topSale">-</div>
+            <div class="stat-change">أفضل طلب</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">عدد العملاء</div>
+            <div class="stat-value" id="totalCustomers">0</div>
+            <div class="stat-change">عملاء مختلفون</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">أكثر ماشية طلباً</div>
+            <div class="stat-value" id="topAnimal">-</div>
+            <div class="stat-change">الأنواع الشهيرة</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">نسبة الإنجاز</div>
+            <div class="stat-value" id="completionRate">0%</div>
+            <div class="stat-change">الطلبات المنجزة</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">📈 توزيع الطلبات حسب الحالة</h3>
+          <div id="statusDistribution" style="padding: 20px;">
+            <table style="width: 100%;">
+              <tr>
+                <td style="text-align: left;">معلق</td>
+                <td style="text-align: right;"><span id="dist-pending">0</span> طلب</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">قيد التحضير</td>
+                <td style="text-align: right;"><span id="dist-processing">0</span> طلب</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">تم التوصيل</td>
+                <td style="text-align: right;"><span id="dist-completed">0</span> طلب</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">ملغى</td>
+                <td style="text-align: right;"><span id="dist-cancelled">0</span> طلب</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">🐄 توزيع الماشيات</h3>
+          <div id="animalDistribution" style="padding: 20px;"></div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Settings -->
+      <div class="tab-content" id="settings-tab">
+        <div class="card">
+          <h3 class="card-title">💾 إدارة البيانات</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+            <button class="btn btn-primary" onclick="downloadData()" style="width: 100%; padding: 15px;">⬇️ تنزيل البيانات (JSON)</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" style="width: 100%; padding: 15px;">📤 استيراد بيانات</button>
+            <button class="btn btn-danger" onclick="deleteAllData()" style="width: 100%; padding: 15px;">🗑️ حذف جميع البيانات</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">ℹ️ معلومات النظام</h3>
+          <table style="width: 100%;">
+            <tr>
+              <td>الإصدار:</td>
+              <td style="text-align: left; color: var(--primary);">v4.0</td>
+            </tr>
+            <tr>
+              <td>عدد الطلبات المحفوظة:</td>
+              <td style="text-align: left; color: var(--primary);"><span id="totalOrdersInfo">0</span></td>
+            </tr>
+            <tr>
+              <td>آخر تحديث:</td>
+              <td style="text-align: left;" id="lastUpdateInfo">-</td>
+            </tr>
+            <tr>
+              <td>حجم البيانات:</td>
+              <td style="text-align: left;" id="dataSize">-</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -415,24 +758,22 @@
       <div id="modalAlertBox" class="alert"></div>
 
       <form id="orderForm" onsubmit="handleAddOrder(event)">
-        <!-- Row 1: Customer Info -->
         <div class="form-grid">
           <div class="form-group">
-            <label for="customerName">اسم الزبون *</label>
-            <input type="text" id="customerName" placeholder="مثال: محمد أحمد" required>
+            <label>اسم الزبون *</label>
+            <input type="text" id="customerName" required>
           </div>
           <div class="form-group">
-            <label for="customerPhone">رقم الهاتف *</label>
-            <input type="tel" id="customerPhone" placeholder="مثال: 0501234567" required>
+            <label>رقم الهاتف *</label>
+            <input type="tel" id="customerPhone" required>
           </div>
         </div>
 
-        <!-- Row 2: Livestock & Quantity -->
         <div class="form-grid">
           <div class="form-group">
-            <label for="animalType">نوع الماشية *</label>
+            <label>نوع الماشية *</label>
             <select id="animalType" required>
-              <option value="">-- اختر نوع الماشية --</option>
+              <option value="">-- اختر --</option>
               <option value="بقر">🐄 بقر</option>
               <option value="غنم">🐑 غنم</option>
               <option value="ماعز">🐐 ماعز</option>
@@ -440,29 +781,27 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="quantity">الكمية (عدد الرؤوس) *</label>
-            <input type="number" id="quantity" min="1" placeholder="مثال: 5" required onchange="calculateTotal()">
+            <label>الكمية (عدد الرؤوس) *</label>
+            <input type="number" id="quantity" min="1" required onchange="calculateTotal()">
           </div>
         </div>
 
-        <!-- Row 3: Pricing -->
         <div class="form-grid">
           <div class="form-group">
-            <label for="pricePerUnit">السعر للوحدة (ر.س) *</label>
-            <input type="number" id="pricePerUnit" min="0" step="100" placeholder="مثال: 1500" required onchange="calculateTotal()">
+            <label>السعر للوحدة (ر.س) *</label>
+            <input type="number" id="pricePerUnit" min="0" step="100" required onchange="calculateTotal()">
           </div>
           <div class="form-group">
-            <label for="totalAmount">المبلغ الإجمالي (ر.س) *</label>
-            <input type="number" id="totalAmount" min="0" placeholder="سيتم الحساب تلقائياً" readonly style="background-color: #f5f5f5;">
+            <label>المبلغ الإجمالي (ر.س) *</label>
+            <input type="number" id="totalAmount" readonly>
           </div>
         </div>
 
-        <!-- Row 4: Service & Status -->
         <div class="form-grid">
           <div class="form-group">
-            <label for="serviceType">نوع الخدمة *</label>
+            <label>نوع الخدمة *</label>
             <select id="serviceType" required>
-              <option value="">-- اختر الخدمة --</option>
+              <option value="">-- اختر --</option>
               <option value="توصيل">🚚 توصيل</option>
               <option value="استلام">📦 استلام</option>
               <option value="تفتيش">🔍 تفتيش</option>
@@ -470,7 +809,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="status">حالة الطلب *</label>
+            <label>حالة الطلب *</label>
             <select id="status" required>
               <option value="معلق">⏳ معلق</option>
               <option value="قيد التحضير">🔄 قيد التحضير</option>
@@ -480,208 +819,79 @@
           </div>
         </div>
 
-        <!-- Row 5: Notes -->
         <div class="form-grid full">
           <div class="form-group">
-            <label for="notes">ملاحظات إضافية</label>
-            <textarea id="notes" placeholder="أضف أي ملاحظات مهمة حول الطلب..."></textarea>
+            <label>ملاحظات إضافية</label>
+            <textarea id="notes"></textarea>
           </div>
         </div>
 
-        <!-- Order Date -->
         <div class="form-grid">
           <div class="form-group">
-            <label for="orderDate">تاريخ الطلب *</label>
+            <label>تاريخ الطلب *</label>
             <input type="date" id="orderDate" required>
           </div>
         </div>
 
-        <!-- Buttons -->
-        <div class="btn-container">
-          <button type="button" class="btn btn-cancel" onclick="closeOrderModal()">إغلاق</button>
-          <button type="submit" class="btn btn-save">💾 حفظ الطلب</button>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">💾 حفظ الطلب</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- Scripts -->
+  <script src="app.js"></script>
   <script>
-    // ⚙️ تسجيل Service Worker
+    // تسجيل Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(err => {
-        console.log('⚠️ خطأ في تسجيل Service Worker:', err);
-      });
+      navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
     }
 
-    // ⚙️ إعدادات Google Apps Script
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
+    // تبديل المظهر الداكن
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
 
-    // 🌐 المتغيرات العامة
-    let allOrders = [];
+    // تحميل إعداد المظهر
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
 
-    // 🚀 تحميل البيانات عند بدء التطبيق
-    window.addEventListener('load', () => {
-      loadOrders();
-      setTodayDate();
-    });
+    // تبديل التبويبات
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabName + '-tab').classList.add('active');
+      event.target.classList.add('active');
+      updateReports();
+    }
 
-    // 🎯 فتح/إغلاق Modal
+    // فتح/إغلاق Modal
     function openOrderModal() {
-      document.getElementById("orderModal").classList.add("show");
-      setTodayDate();
-    }
-
-    function closeOrderModal() {
-      document.getElementById("orderModal").classList.remove("show");
-      resetForm();
-    }
-
-    // 📅 تعيين تاريخ اليوم
-    function setTodayDate() {
+      document.getElementById('orderModal').classList.add('show');
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('orderDate').value = today;
     }
 
-    // 🧮 حساب المبلغ الإجمالي
-    function calculateTotal() {
-      const quantity = parseFloat(document.getElementById('quantity').value) || 0;
-      const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value) || 0;
-      const total = quantity * pricePerUnit;
-      document.getElementById('totalAmount').value = total.toFixed(0);
-    }
-
-    // 💾 حفظ الطلب
-    async function handleAddOrder(event) {
-      event.preventDefault();
-
-      const orderData = {
-        customer: document.getElementById('customerName').value,
-        phone: document.getElementById('customerPhone').value,
-        animal: document.getElementById('animalType').value,
-        quantity: parseInt(document.getElementById('quantity').value),
-        price: parseFloat(document.getElementById('pricePerUnit').value),
-        total: parseFloat(document.getElementById('totalAmount').value),
-        service: document.getElementById('serviceType').value,
-        status: document.getElementById('status').value,
-        notes: document.getElementById('notes').value,
-        date: document.getElementById('orderDate').value,
-        id: 'ORD-' + Date.now()
-      };
-
-      try {
-        // إرسال البيانات للـ Google Apps Script
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderData)
-        });
-
-        showAlert('✅ تم حفظ الطلب بنجاح! سيتم إشعار البائع الآن.', 'success', 'modalAlertBox');
-        
-        // حفظ محلي أيضاً
-        allOrders.push(orderData);
-        localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-
-        // تحديث الجدول والإحصائيات
-        loadOrders();
-
-        // إغلاق النموذج بعد 1.5 ثانية
-        setTimeout(() => {
-          closeOrderModal();
-        }, 1500);
-
-      } catch (error) {
-        console.error('خطأ:', error);
-        showAlert('❌ حدث خطأ، حاول مرة أخرى', 'error', 'modalAlertBox');
-      }
-    }
-
-    // 💾 تحميل الطلبات من localStorage
-    function loadOrders() {
-      allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-      renderOrders();
-      updateStats();
-    }
-
-    // 📝 عرض الطلبات في الجدول
-    function renderOrders() {
-      const tbody = document.getElementById('ordersTableBody');
-      
-      if (allOrders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات حالياً</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = allOrders.map(order => `
-        <tr>
-          <td>${order.id}</td>
-          <td>${order.customer || '-'}</td>
-          <td>${order.phone || '-'}</td>
-          <td>${order.animal}</td>
-          <td>${order.quantity}</td>
-          <td>${order.total} ر.س</td>
-          <td>
-            <span style="background: ${getStatusColor(order.status)}; padding: 4px 8px; border-radius: 4px; color: white; font-size: 12px;">
-              ${order.status}
-            </span>
-          </td>
-          <td>${order.date}</td>
-        </tr>
-      `).join('');
-    }
-
-    // 📊 تحديث الإحصائيات
-    function updateStats() {
-      const totalOrders = allOrders.length;
-      const totalRevenue = allOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-      const averageAmount = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-      const pendingOrders = allOrders.filter(order => order.status === 'معلق').length;
-
-      document.getElementById('statTotal').textContent = totalOrders;
-      document.getElementById('statRevenue').textContent = totalRevenue.toFixed(0) + ' ر.س';
-      document.getElementById('statAverage').textContent = averageAmount.toFixed(0) + ' ر.س';
-      document.getElementById('statPending').textContent = pendingOrders;
-    }
-
-    // 🎨 لون الحالة
-    function getStatusColor(status) {
-      const colors = {
-        'معلق': '#FFA500',
-        'قيد التحضير': '#2a8f9f',
-        'تم التوصيل': '#047857',
-        'ملغى': '#c0152f'
-      };
-      return colors[status] || '#999';
-    }
-
-    // 📢 عرض تنبيهات
-    function showAlert(message, type, elementId = 'alertBox') {
-      const alertBox = document.getElementById(elementId);
-      if (!alertBox) return;
-      
-      alertBox.textContent = message;
-      alertBox.className = `alert show alert-${type}`;
-      
-      setTimeout(() => {
-        alertBox.classList.remove('show');
-      }, 4000);
-    }
-
-    // 🔄 إعادة تعيين النموذج
-    function resetForm() {
+    function closeOrderModal() {
+      document.getElementById('orderModal').classList.remove('show');
       document.getElementById('orderForm').reset();
-      setTodayDate();
-      document.getElementById('totalAmount').value = '';
+    }
+
+    // حساب المبلغ
+    function calculateTotal() {
+      const qty = parseFloat(document.getElementById('quantity').value) || 0;
+      const price = parseFloat(document.getElementById('pricePerUnit').value) || 0;
+      document.getElementById('totalAmount').value = (qty * price).toFixed(0);
     }
 
     // إغلاق Modal عند الضغط خارجه
-    window.addEventListener('click', (event) => {
+    window.addEventListener('click', (e) => {
       const modal = document.getElementById('orderModal');
-      if (event.target === modal) {
-        closeOrderModal();
-      }
+      if (e.target === modal) closeOrderModal();
     });
   </script>
 </body>
