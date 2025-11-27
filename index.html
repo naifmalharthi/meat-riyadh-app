@@ -3,1765 +3,784 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مشروع لحوم الرياض - نسخة متقدمة v3.0 (موسعة مع شرح مفصل)</title>
+  <title>مشروع لحوم الرياض - المستوى 4 متقدم v4.0</title>
+  
+  <!-- 🔗 PWA Links (جديد) -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2321808D' width='192' height='192'/><text x='50%' y='50%' font-size='100' dominant-baseline='middle' text-anchor='middle' fill='white'>🍖</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2321808D' width='192' height='192' rx='45'/><text x='50%' y='50%' font-size='100' dominant-baseline='middle' text-anchor='middle' fill='white'>🍖</text></svg>">
+  <meta name="theme-color" content="#21808D">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="🍖 لحوم الرياض">
+  
   <style>
     /* ============================================
-       CSS: تعريف الألوان والأنماط الأساسية
-       ============================================
-       :root هو متغير عام يحتوي على ألوان وأحجام يمكن استخدامها في كل الصفحة
-       
-       الألوان:
-       - --color-background: الخلفية الفاتحة (#FCFCF9 = أبيض مائل للرمادي الفاتح جداً)
-       - --color-surface: لون السطح للبطاقات (#FFFFFD = أبيض تقريباً)
-       - --color-text: لون النصوص الأساسي (#13343B = أزرق غامق)
-       - --color-primary: اللون الأساسي للموقع (#21808D = أزرق-أخضر أساسي)
-       - --color-primary-hover: اللون عند تمرير الفأرة فوق الزر
-       - --color-error: لون الأخطاء (#C0152F = أحمر)
-       - --color-success: لون النجاح (#2FB5A3 = أخضر)
-       
-       الخطوط:
-       - --font-family-base: قائمة الخطوط المستخدمة (تبدأ بـ FKGrotesk وتنتهي بخطوط النظام)
-    */
+       المتغيرات (CSS Variables) - الألوان والأحجام
+       ============================================ */
     :root {
-      --color-background: #FCFCF9;
-      --color-surface: #FFFFFD;
-      --color-text: #13343B;
+      /* الألوان - Light Mode */
+      --color-bg-light: #FCFCF9;
+      --color-surface-light: #FFFFFD;
+      --color-text-light: #13343B;
       --color-primary: #21808D;
       --color-primary-hover: #1D7480;
       --color-error: #C0152F;
       --color-success: #2FB5A3;
-      --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
+      --color-warning: #F59E0B;
+      --color-info: #3B82F6;
+
+      /* الألوان - Dark Mode */
+      --color-bg-dark: #1A1A2E;
+      --color-surface-dark: #16213E;
+      --color-text-dark: #E5E5E5;
+
+      /* الخطوط */
+      --font-family: "FKGroteskNeue", "Geist", "Inter", -apple-system,
         BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+      /* التأثيرات */
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+      --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+      --transition: all 0.3s ease;
     }
 
     /* ============================================
-       * { box-sizing: border-box; }
-       ============================================
-       هذا يحدد كيفية حساب حجم الصناديق
-       box-sizing: border-box = الحدود والحشوة تُحسب ضمن العرض والارتفاع
-       مثال: إذا قلت width: 100px والـ padding: 10px
-             - بدون border-box: الحد الفعلي يصبح 120px (100 + 10 + 10)
-             - مع border-box: يبقى 100px فقط (تُطرح الحشوة منها)
-    */
+       الأساسيات
+       ============================================ */
     * {
       box-sizing: border-box;
     }
 
-    /* ============================================
-       body - نمط الصفحة الرئيسية
-       ============================================
-       margin: 0 = إزالة الهامش الافتراضي حول الصفحة
-       background: linear-gradient(135deg, ...) = خلفية متدرجة من أعلى يسار إلى أسفل يمين بزاوية 135 درجة
-       color: var(--color-text) = اللون الافتراضي للنصوص = أزرق غامق
-       font-family: var(--font-family-base) = الخط الافتراضي من المتغيرات
-       direction: rtl = اتجاه النصوص من اليمين إلى اليسار (للعربية)
-       padding: 16px = 16 بكسل مسافة من جميع الجهات
-    */
     body {
       margin: 0;
-      background: linear-gradient(135deg, #F0F8F9 0%, #E8F5F7 100%);
-      color: var(--color-text);
-      font-family: var(--font-family-base);
+      font-family: var(--font-family);
       direction: rtl;
-      padding: 16px;
+      background: linear-gradient(135deg, #F0F8F9 0%, #E8F5F7 100%);
+      color: var(--color-text-light);
+      transition: var(--transition);
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+      color: var(--color-text-dark);
     }
 
     /* ============================================
-       .navbar - الشريط العلوي (شريط التنقل)
-       ============================================
-       background: var(--color-primary) = اللون الأساسي (أزرق-أخضر)
-       color: white = النصوص بيضاء
-       padding: 16px 24px = حشوة 16 بكسل عمودي و 24 أفقي
-       border-radius: 12px = زوايا مستديرة بمقدار 12 بكسل
-       display: flex = ترتيب الأطفال أفقياً
-       justify-content: space-between = توزيع الأطفال بتباعد متساوٍ
-       align-items: center = توسيط الأطفال عمودياً
-       flex-wrap: wrap = السماح بالالتفاف إلى سطر جديد على الشاشات الضيقة
-    */
+       الشريط العلوي المحسّن
+       ============================================ */
     .navbar {
       background: var(--color-primary);
       color: white;
       padding: 16px 24px;
       border-radius: 12px;
-      margin-bottom: 24px;
+      margin: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 8px rgba(33,128,141,0.2);
+      box-shadow: var(--shadow-md);
       flex-wrap: wrap;
       gap: 12px;
     }
 
-    /* ============================================
-       .navbar h1 - العنوان داخل الشريط
-       ============================================
-       margin: 0 = إزالة الهامش الافتراضي للعناوين
-       font-size: 24px = حجم الخط (كبير)
-    */
     .navbar h1 {
       margin: 0;
       font-size: 24px;
+      flex: 1;
     }
 
-    /* ============================================
-       .nav-buttons - حاوية الأزرار الملاحية
-       ============================================
-       display: flex = ترتيب الأزرار أفقياً
-       gap: 8px = مسافة 8 بكسل بين الأزرار
-    */
     .nav-buttons {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    /* ============================================
-       .nav-btn - زر الملاحة الفردي
-       ============================================
-       background: rgba(255,255,255,0.2) = أبيض شفاف قليلاً (20% من الشفافية)
-       border: 1px solid white = حد أبيض بسمك 1 بكسل
-       padding: 6px 12px = حشوة 6 عمودي و 12 أفقي
-       border-radius: 6px = زوايا مستديرة قليلاً
-       cursor: pointer = تغيير الفأرة إلى يد عند التمرير
-       transition: all 0.2s = تأثير سلس على كل الخصائص لمدة 0.2 ثانية
-    */
     .nav-btn {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       color: white;
       border: 1px solid white;
-      padding: 6px 12px;
+      padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
+      transition: var(--transition);
       font-size: 14px;
-      transition: all 0.2s;
     }
 
-    /* ============================================
-       .nav-btn:hover, .nav-btn.active
-       ============================================
-       :hover = عند تمرير الفأرة فوق الزر
-       .active = فئة تُضاف عند الضغط على الزر
-       
-       الفرق عند التفعيل:
-       - الخلفية تصبح بيضاء
-       - اللون يصبح أزرق (اللون الأساسي)
-       هذا ينقلب اللون (inverse) ليدل على التفعيل
-    */
     .nav-btn:hover, .nav-btn.active {
       background: white;
       color: var(--color-primary);
     }
 
-    /* ============================================
-       .container - حاوية المحتوى الرئيسية
-       ============================================
-       max-width: 640px = الحد الأقصى للعرض 640 بكسل (لعدم اتساع الصفحة على الشاشات الكبيرة)
-       margin: 0 auto = توسيط الحاوية (0 في الأعلى/الأسفل، auto في اليمين/اليسار)
-    */
-    .container {
-      max-width: 640px;
-      margin: 0 auto;
+    /* زر Dark Mode */
+    .dark-mode-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: var(--transition);
+    }
+
+    .dark-mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     /* ============================================
-       .card - بطاقة محتوى (حاوية البيانات الرئيسية)
-       ============================================
-       background: var(--color-surface) = اللون الأبيض تقريباً
-       border-radius: 12px = زوايا مستديرة
-       box-shadow: 0 2px 8px rgba(...) = ظل بسيط أسفل البطاقة
-       padding: 32px 24px = حشوة داخلية كبيرة
-       border: 1px solid #E0E0E0 = حد رمادي فاتح
-       margin-bottom: 24px = مسافة 24 بكسل تحت كل بطاقة
-    */
+       البطاقات والحاويات
+       ============================================ */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
     .card {
-      background: var(--color-surface);
+      background: var(--color-surface-light);
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(33,128,141,0.07);
-      padding: 32px 24px;
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      margin-bottom: 24px;
       border: 1px solid #E0E0E0;
+      transition: var(--transition);
+    }
+
+    body.dark-mode .card {
+      background: var(--color-surface-dark);
+      border-color: #333;
+    }
+
+    /* ============================================
+       البحث والتصفية المتقدمة
+       ============================================ */
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 8px rgba(33, 128, 141, 0.2);
+    }
+
+    body.dark-mode .search-input {
+      background: var(--color-bg-dark);
+      border-color: #444;
+      color: var(--color-text-dark);
+    }
+
+    /* ============================================
+       التبويبات
+       ============================================ */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #E0E0E0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--color-primary);
+    }
+
+    .tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    body.dark-mode .tab {
+      color: #999;
+    }
+
+    /* ============================================
+       الأزرار المحسّنة
+       ============================================ */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-success {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--color-error);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--color-warning);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* ============================================
+       الإحصائيات المتقدمة
+       ============================================ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
       margin-bottom: 24px;
     }
 
-    /* ============================================
-       h2 - عنوان القسم
-       ============================================
-       margin: 0 0 18px 0 = لا يوجد هامش على الجوانب، 18 بكسل تحته
-       color: var(--color-primary) = اللون الأساسي (أزرق-أخضر)
-       font-weight: 600 = خط شبه غامق (ليس بسيط وليس بسمك المتوسط)
-       font-size: 20px = حجم كبير للعناوين
-    */
-    h2 {
-      margin: 0 0 18px 0;
-      color: var(--color-primary);
-      font-weight: 600;
-      font-size: 20px;
-    }
-
-    /* ============================================
-       عناصر النموذج (Form Elements)
-       ============================================
-       .form-section - قسم واحد في النموذج (تجميع حقل مع لصيقه)
-       margin-bottom: 18px = مسافة بين الأقسام
-    */
-    .form-section {
-      margin-bottom: 18px;
-    }
-
-    /* ============================================
-       label - نص وصف الحقل (مثل "نوع الماشية")
-       ============================================
-       font-weight: 500 = خط متوسط الغموض
-       margin-bottom: 4px = مسافة صغيرة تحتها قبل الحقل
-       display: block = تحتل كل عرض السطر (بدلاً من أن تكون بجانب الحقل)
-    */
-    label {
-      font-weight: 500;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    /* ============================================
-       select, input, textarea
-       ============================================
-       هذه أنماط مشتركة لجميع عناصر الإدخال:
-       
-       font-family: inherit = استخدام نفس خط الصفحة (بدلاً من الخط الافتراضي للمتصفح)
-       font-size: 16px = حجم كبير بما فيه الكفاية لسهولة القراءة
-       width: 100% = احتلال كل عرض المُساحة المتاحة
-       padding: 8px 10px = حشوة داخلية لراحة الكتابة
-       border-radius: 8px = زوايا مستديرة قليلاً
-       border: 1px solid #CDD6DA = حد رمادي فاتح
-       margin-bottom: 8px = مسافة صغيرة بعد كل حقل
-       background: var(--color-background) = خلفية فاتحة جداً
-       transition: border 0.2s = تأثير سلس عند التركيز
-    */
-    select, input, textarea {
-      font-family: inherit;
-      font-size: 16px;
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #CDD6DA;
-      margin-bottom: 8px;
-      background: var(--color-background);
-      transition: border 0.2s;
-    }
-
-    /* ============================================
-       select:focus, input:focus, textarea:focus
-       ============================================
-       :focus = عندما ينقر المستخدم على الحقل (التركيز عليه)
-       
-       outline: none = إزالة التأثير الافتراضي للمتصفح (الخط الأزرق)
-       border-color: var(--color-primary) = تغيير لون الحد إلى الأزرق الأساسي
-       box-shadow: 0 0 4px rgba(...) = إضافة ظل أزرق حول الحقل للدلالة على التركيز
-    */
-    select:focus, input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 4px rgba(33,128,141,0.16);
-    }
-
-    /* ============================================
-       .row - صف أفقي يحتوي على أعمدة
-       ============================================
-       display: flex = ترتيب الأعمدة أفقياً
-       gap: 8px = مسافة بين الأعمدة
-       
-       مثال استخدام:
-       <div class="row">
-         <div class="half">الماشية</div>
-         <div class="half">الخدمة</div>
-       </div>
-       سيظهران بجانب بعضهما
-    */
-    .row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    /* ============================================
-       .half - نصف عرض الصف
-       ============================================
-       flex: 1 = تقسيم المساحة المتساوية بين الأعمدة
-       
-       إذا كان لديك عمودين بـ flex:1 كل واحد
-       ستأخذ كل منهما نصف العرض تقريباً
-    */
-    .half {
-      flex: 1;
-    }
-
-    /* ============================================
-       الأزرار والروابط
-       ============================================
-    */
-    .map-link, .whatsapp-link {
-      background: var(--color-primary);
-      color: white;
-      border-radius: 7px;
-      padding: 8px 12px;
-      font-size: 14px;
-      text-align: center;
-      display: inline-block;
-      text-decoration: none;
-      margin: 4px 4px 12px 0;
-      transition: background 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .map-link:hover, .whatsapp-link:hover {
-      background: var(--color-primary-hover);
-    }
-
-    /* ============================================
-       .button-main - الزر الرئيسي الكبير
-       ============================================
-       padding: 11px 28px = حشوة كبيرة (يجعل الزر أكبر)
-       font-size: 16px = خط كبير وواضح
-       font-weight: 600 = خط غامق قليلاً
-       width: 100% = الزر يأخذ كل العرض (يتوسط البطاقة)
-    */
-    .button-main {
-      background: var(--color-primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 28px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 6px;
-      transition: background 0.16s;
-      width: 100%;
-    }
-
-    .button-main:hover {
-      background: var(--color-primary-hover);
-    }
-
-    /* ============================================
-       .total-box - صندوق عرض التكلفة الإجمالية
-       ============================================
-       linear-gradient(...) = خلفية متدرجة لجذب الانتباه
-       border: 2px solid var(--color-primary) = حد سميك ملون
-       هذا يجعل الصندوق مهماً وملحوظاً
-    */
-    .total-box {
-      background: linear-gradient(135deg, #F7F9F9 0%, #E8F5F7 100%);
-      border-radius: 8px;
-      padding: 12px 16px;
-      color: var(--color-primary);
-      font-weight: 600;
-      margin-bottom: 12px;
-      font-size: 16px;
-      border: 2px solid var(--color-primary);
-    }
-
-    .breakdown {
-      font-size: 13px;
-      line-height: 1.8;
-      margin-bottom: 8px;
-    }
-
-    /* ============================================
-       رسائل التنبيهات والأخطاء والنجاح
-       ============================================
-    */
-    .error {
-      color: var(--color-error);
-      margin-bottom: 12px;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .success {
-      color: var(--color-success);
-      font-size: 15px;
-      background: #EAF9FB;
-      border-radius: 8px;
-      padding: 10px;
-      font-weight: 500;
-      margin: 10px 0;
-      border-left: 4px solid var(--color-success);
-    }
-
-    /* ============================================
-       .toast - إشعار صغير أسفل الشاشة
-       ============================================
-       position: fixed = يبقى في نفس المكان حتى عند التمرير
-       bottom: 20px = بعد 20 بكسل من أسفل الشاشة
-       left: 50% = منتصف الشاشة أفقياً
-       transform: translateX(-50%) = تحريك للخلف بنصف عرضه ليصبح في المنتصف تماماً
-       
-       opacity: 0 = مخفي في البداية (شفاف تماماً)
-       transition: opacity 0.3s = تأثير سلس عند الظهور والاختفاء
-       z-index: 9999 = يظهر فوق كل شيء (يجب أن يكون أعلى رقم)
-    */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #16a34a;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-size: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 9999;
-    }
-
-    .toast.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* ============================================
-       .order-item - بطاقة الطلب الفردي
-       ============================================
-    */
-    .order-item {
-      background: #F7F9F9;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--color-primary);
-      font-size: 13px;
-    }
-
-    .order-item-header {
-      font-weight: 600;
-      color: var(--color-primary);
-      margin-bottom: 6px;
-    }
-
-    /* ============================================
-       الشارات (Badges) - مربعات ملونة لعرض الحالة
-       ============================================
-    */
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-right: 8px;
-    }
-
-    .status-pending {
-      background: #FFE8CC;
-      color: #D97706;
-    }
-
-    .status-processing {
-      background: #D1E7F5;
-      color: #0369A1;
-    }
-
-    .status-delivered {
-      background: #D1F4E7;
-      color: #047857;
-    }
-
-    .status-cancelled {
-      background: #FED7D7;
-      color: #C0152F;
-    }
-
-    /* ============================================
-       أزرار تغيير الحالة
-       ============================================
-    */
-    .status-buttons {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .status-btn {
-      background: #E8F5F7;
-      color: var(--color-primary);
-      border: 1px solid var(--color-primary);
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 11px;
-      transition: all 0.2s;
-    }
-
-    .status-btn:hover {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    .status-btn.active {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary-hover);
-    }
-
-    /* ============================================
-       أزرار الإجراءات (نسخ، حذف)
-       ============================================
-    */
-    .action-buttons {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .btn-small {
-      background: #E8F5F7;
-      color: var(--color-primary);
-      border: 1px solid var(--color-primary);
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      flex: 1;
-      text-align: center;
-    }
-
-    .btn-small:hover {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    /* ============================================
-       بطاقات الإحصائيات
-       ============================================
-       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))
-       
-       هذا يعني:
-       - repeat(auto-fit, ...) = أعد البطاقات في صفوف متعددة تلقائياً
-       - minmax(150px, 1fr) = الحد الأدنى 150 بكسل، والحد الأقصى يتسع للمساحة الكاملة
-       
-       النتيجة: على الهاتف تظهر بطاقة واحدة، على الشاشة الكبيرة تظهر عدة بطاقات
-    */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
     .stat-card {
-      background: #F0F8F9;
-      padding: 12px;
-      border-radius: 8px;
+      background: linear-gradient(135deg, #F0F8F9, #E8F5F7);
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #E0E0E0;
       text-align: center;
-      border: 1px solid #E0E0E0;
+    }
+
+    body.dark-mode .stat-card {
+      background: linear-gradient(135deg, #2A2A3E, #1F2937);
+      border-color: #444;
     }
 
     .stat-value {
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
       color: var(--color-primary);
     }
 
     .stat-label {
       font-size: 12px;
-      color: #7d888c;
-      margin-top: 4px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    body.dark-mode .stat-label {
+      color: #999;
     }
 
     /* ============================================
-       .hidden - فئة للعناصر المخفية
-       ============================================
-       display: none = إخفاء العنصر تماماً (لا يأخذ مساحة)
-       
-       استخدام:
-       <div class="hidden">هذا مخفي</div>
-       
-       في JavaScript:
-       element.classList.add('hidden') = إخفاء
-       element.classList.remove('hidden') = إظهار
-    */
-    .hidden {
+       جداول البيانات المتقدمة
+       ============================================ */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    body.dark-mode table {
+      background: var(--color-surface-dark);
+    }
+
+    table thead {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    table th {
+      padding: 12px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #E0E0E0;
+    }
+
+    body.dark-mode table td {
+      border-bottom-color: #444;
+    }
+
+    table tbody tr:hover {
+      background: #F5F5F5;
+    }
+
+    body.dark-mode table tbody tr:hover {
+      background: #2A2A3E;
+    }
+
+    /* ============================================
+       الرسوم البيانية (Charts)
+       ============================================ */
+    .chart-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    body.dark-mode .chart-container {
+      background: var(--color-surface-dark);
+    }
+
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      margin: 12px 0;
+      gap: 12px;
+    }
+
+    .chart-label {
+      min-width: 100px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .chart-bar-fill {
+      flex: 1;
+      height: 24px;
+      background: linear-gradient(90deg, var(--color-primary), #32a89e);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ============================================
+       النماذج (Forms)
+       ============================================ */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #E0E0E0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 8px rgba(33, 128, 141, 0.2);
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+      background: var(--color-bg-dark);
+      border-color: #444;
+      color: var(--color-text-dark);
+    }
+
+    /* ============================================
+       النوافذ المنبثقة (Modal)
+       ============================================ */
+    .modal {
       display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    body.dark-mode .modal-content {
+      background: var(--color-surface-dark);
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    /* ============================================
+       التنبيهات والرسائل
+       ============================================ */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: #D1F4E7;
+      color: #047857;
+      border-left: 4px solid #047857;
+    }
+
+    .alert-error {
+      background: #FED7D7;
+      color: #C0152F;
+      border-left: 4px solid #C0152F;
+    }
+
+    .alert-info {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border-left: 4px solid #1E40AF;
+    }
+
+    /* ============================================
+       الحد الأدنى والأقصى للعرض (Responsive)
+       ============================================ */
+    @media (max-width: 768px) {
+      .container {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+
+      .search-bar {
+        flex-direction: column;
+      }
+
+      .search-input {
+        min-width: 100%;
+      }
     }
 
     /* ============================================
        الفوتر
-       ============================================
-    */
+       ============================================ */
     footer {
       text-align: center;
-      color: #7d888c;
-      font-size: 14px;
-      margin-top: 30px;
-      padding-bottom: 20px;
+      padding: 20px;
+      color: #666;
+      font-size: 12px;
+      margin-top: 40px;
     }
 
-    /* ============================================
-       استجابة الشاشات الصغيرة (Mobile)
-       ============================================
-       @media(max-width:600px) = عندما تكون الشاشة أقل من 600 بكسل
-       
-       على الهاتف:
-       - تقليل الحشوة في البطاقات
-       - جعل الشريط العلوي عمودياً بدلاً من أفقي
-    */
-    @media(max-width:600px){
-      .card { 
-        padding: 16px 12px; 
-      }
-      .navbar { 
-        flex-direction: column; 
-        text-align: center; 
-      }
+    body.dark-mode footer {
+      color: #999;
     }
   </style>
 </head>
 <body>
   <!-- ============================================
-       الشريط العلوي (Navigation Bar)
-       ============================================
-       هذا الشريط يحتوي على:
-       1. اسم وشعار المشروع: 🍖 لحوم الرياض
-       2. ثلاثة أزرار للتنقل بين الأقسام
-  -->
+       الشريط العلوي المحسّن
+       ============================================ -->
   <div class="navbar">
-    <h1>🍖 لحوم الرياض</h1>
+    <h1>🍖 لحوم الرياض - v4.0</h1>
     <div class="nav-buttons">
-      <!-- زر 1: طلب جديد -->
-      <!-- onclick="switchTab('order')" = عند الضغط، استدعِ الدالة switchTab مع معامل 'order' -->
-      <button class="nav-btn active" onclick="switchTab('order')">طلب جديد</button>
-      
-      <!-- زر 2: طلباتي (السجل) -->
-      <button class="nav-btn" onclick="switchTab('history')">طلباتي</button>
-      
-      <!-- زر 3: مسح جميع الطلبات -->
-      <button class="nav-btn" onclick="clearAllOrders()" style="background:#C0152F;">مسح الكل</button>
+      <button class="nav-btn active" onclick="switchView('orders')">الطلبات</button>
+      <button class="nav-btn" onclick="switchView('reports')">التقارير</button>
+      <button class="nav-btn" onclick="switchView('settings')">الإعدادات</button>
+      <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="تبديل الوضع المظلم">🌙</button>
     </div>
   </div>
 
-  <!-- حاوية المحتوى الرئيسية -->
+  <!-- ============================================
+       المحتوى الرئيسي
+       ============================================ -->
   <div class="container">
+    <!-- عرض الأخطاء والنجاح -->
+    <div id="alertBox"></div>
+
     <!-- ============================================
-         تبويب 1: نموذج طلب جديد (Order Tab)
-         ============================================
-         هذا التبويب يحتوي على نموذج لإدخال بيانات الطلب الجديد
-         id="orderTab" = معرّف فريد لهذا التبويب حتى نستطيع إظهاره/إخفاؤه من JavaScript
-    -->
-    <div id="orderTab">
+         قسم 1: إدارة الطلبات
+         ============================================ -->
+    <div id="ordersView">
       <div class="card">
-        <h2>🔸 اطلب ماشيتك الآن</h2>
-        
-        <!-- النموذج الرئيسي -->
-        <!-- id="orderForm" = معرّف النموذج لاستدعاء الدالة عند الإرسال -->
-        <form id="orderForm">
-          
-          <!-- ============================================
-               حقل 1: نوع الماشية
-               ============================================
-          -->
-          <div class="form-section">
-            <label for="animal">نوع الماشية</label>
-            <!-- id="animal" = معرّف فريد للحقل -->
-            <!-- required = هذا الحقل إجباري (لا يمكن إرسال النموذج بدونه) -->
-            <select id="animal" required>
-              <option value="" selected disabled>اختر نوع الماشية</option>
-              <option value="غنم">غنم (1050 ر.س)</option>
-              <option value="نعيمي">نعيمي (1250 ر.س)</option>
-              <option value="سواكني">سواكني (950 ر.س)</option>
-              <option value="ماغنو">ماغنو (980 ر.س)</option>
-              <option value="جدي">جدي (830 ر.س)</option>
-              <option value="عجل">عجل (6800 ر.س)</option>
-              <option value="حاشي">حاشي (3900 ر.س)</option>
-            </select>
+        <h2>📦 إدارة الطلبات</h2>
+
+        <!-- شريط البحث والتصفية المتقدم -->
+        <div class="search-bar">
+          <input type="text" id="searchInput" class="search-input" 
+                 placeholder="ابحث عن طلب برقم أو رقم هاتف أو موقع...">
+          <select id="filterStatus" class="search-input" style="flex: 0.5; min-width: 150px;">
+            <option value="">جميع الحالات</option>
+            <option value="معلق">معلق</option>
+            <option value="قيد التحضير">قيد التحضير</option>
+            <option value="تم التوصيل">تم التوصيل</option>
+            <option value="ملغى">ملغى</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="exportToCSV()">📥 تصدير CSV</button>
+          <button class="btn btn-success btn-sm" onclick="openImportModal()">📤 استيراد</button>
+        </div>
+
+        <!-- الإحصائيات السريعة -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">إجمالي الطلبات</div>
           </div>
-
-          <!-- ============================================
-               صف يحتوي على عمودين: الخدمة والتوصيل
-               ============================================
-          -->
-          <div class="form-section row">
-            <!-- العمود 1: خدمة الذبح -->
-            <div class="half">
-              <label for="service">خدمة الذبح</label>
-              <select id="service" required>
-                <option value="مذبوح ومقطع ومغلف">ذبح+تقطيع+تغليف (+120)</option>
-                <option value="مذبوح فقط">ذبح فقط (+60)</option>
-                <option value="مذبوح ومقطع">ذبح+تقطيع (+95)</option>
-                <option value="بدون خدمة">بدون خدمة</option>
-              </select>
-            </div>
-
-            <!-- العمود 2: خدمة التوصيل -->
-            <div class="half">
-              <label for="delivery">خدمة التوصيل</label>
-              <select id="delivery" required>
-                <option value="توصيل للمنزل">توصيل للمنزل (+50)</option>
-                <option value="استلام من الموقع">استلام من الموقع</option>
-              </select>
-            </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statRevenue">0</div>
+            <div class="stat-label">الإيرادات</div>
           </div>
-
-          <!-- ============================================
-               صف يحتوي على: الكمية وتوزيع التقطيع
-               ============================================
-          -->
-          <div class="form-section row">
-            <!-- العمود 1: الكمية -->
-            <div class="half">
-              <label for="quantity">الكمية</label>
-              <input type="number" id="quantity" value="1" min="1" max="10" required />
-            </div>
-
-            <!-- العمود 2: توزيع التقطيع -->
-            <div class="half">
-              <label for="cutting">توزيع التقطيع</label>
-              <select id="cutting">
-                <option value="أجزاء كبيرة">أجزاء كبيرة</option>
-                <option value="أجزاء صغيرة">أجزاء صغيرة</option>
-                <option value="تقطيع حسب الطلب">تقطيع حسب الطلب</option>
-              </select>
-            </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statAverage">0</div>
+            <div class="stat-label">المتوسط</div>
           </div>
-
-          <!-- ============================================
-               حقل الموقع مع رابط خرائط جوجل
-               ============================================
-          -->
-          <div class="form-section">
-            <label for="location">موقعك على الخريطة</label>
-            <input type="text" id="location" placeholder="مثال: Riyadh, Saudi Arabia" required>
-            <!-- رابط يفتح خرائط جوجل في نافذة جديدة -->
-            <!-- target="_blank" = فتح الرابط في نافذة جديدة -->
-            <!-- rel="noopener noreferrer" = أمان (لا تسمح للصفحة الأخرى بالوصول للصفحة الأصلية) -->
-            <a href="https://maps.google.com/" target="_blank" rel="noopener noreferrer" class="map-link">📍 فتح خرائط جوجل</a>
+          <div class="stat-card">
+            <div class="stat-value" id="statPending">0</div>
+            <div class="stat-label">معلق</div>
           </div>
+        </div>
 
-          <!-- ============================================
-               حقل رقم الهاتف
-               ============================================
-          -->
-          <div class="form-section">
-            <label for="phone">رقم الهاتف (للتواصل)</label>
-            <input type="tel" id="phone" placeholder="05xxxxxxxxx" required>
-          </div>
-
-          <!-- ============================================
-               حقل الملاحظات (اختياري)
-               ============================================
-          -->
-          <div class="form-section">
-            <label for="notes">ملاحظات أو طلبات خاصة</label>
-            <!-- textarea = حقل نصي متعدد الأسطر -->
-            <!-- rows="2" = يعرض سطرين افتراضياً -->
-            <textarea id="notes" rows="2" placeholder="مثال: تجنب الرأس أو كمية شحم أقل..."></textarea>
-          </div>
-
-          <!-- ============================================
-               زر حساب التكلفة الإجمالية
-               ============================================
-               type="button" = زر عادي (ليس إرسال النموذج)
-               onclick="calcTotal()" = عند الضغط، استدعِ الدالة calcTotal()
-          -->
-          <button type="button" class="button-main" onclick="calcTotal()">احسب التكلفة</button>
-
-          <!-- ============================================
-               صندوق عرض التكلفة الإجمالية
-               ============================================
-               id="outputCost" = معرّف لملء البيانات من JavaScript
-               class="hidden" = مخفي في البداية، يظهر بعد حساب التكلفة
-          -->
-          <div class="total-box hidden" id="outputCost"></div>
-
-          <!-- ============================================
-               عنصر عرض الأخطاء
-               ============================================
-               id="errMsg" = معرّف لعرض رسائل الخطأ
-               class="hidden" = مخفي إلا عند وجود خطأ
-          -->
-          <div class="error hidden" id="errMsg"></div>
-
-          <!-- ============================================
-               قسم الدفع والتأكيد
-               ============================================
-               id="paymentSection" = معرّف لهذا القسم
-               class="hidden" = مخفي في البداية، يظهر بعد حساب التكلفة
-          -->
-          <div id="paymentSection" class="hidden">
-            <!-- اختيار طريقة الدفع -->
-            <div class="form-section">
-              <label for="payMethod">طريقة السداد</label>
-              <select id="payMethod">
-                <option value="تحويل بنكي">تحويل بنكي</option>
-                <option value="Apple Pay">Apple Pay</option>
-                <option value="STCPay">STC Pay</option>
-              </select>
-            </div>
-
-            <!-- زر إرسال الطلب عبر واتساب -->
-            <!-- type="button" = زر عادي (لا يرسل النموذج) -->
-            <button type="button" class="whatsapp-link" id="whatsappBtn" onclick="openWhatsApp()">💬 إرسال عبر WhatsApp</button>
-
-            <!-- زر تأكيد وحفظ الطلب -->
-            <!-- type="submit" = هذا الزر يرسل النموذج (يستدعي event onsubmit) -->
-            <button type="submit" class="button-main">✓ تأكيد وحفظ الطلب</button>
-          </div>
-
-          <!-- ============================================
-               عنصر عرض رسالة النجاح
-               ============================================
-          -->
-          <div class="success hidden" id="successMsg"></div>
-        </form>
+        <!-- جدول الطلبات المتقدم -->
+        <div class="table-container">
+          <table id="ordersTable">
+            <thead>
+              <tr>
+                <th onclick="sortOrders('id')">رقم الطلب</th>
+                <th onclick="sortOrders('animal')">الماشية</th>
+                <th>الكمية</th>
+                <th onclick="sortOrders('total')">المبلغ</th>
+                <th onclick="sortOrders('status')">الحالة</th>
+                <th>التاريخ</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- يتم ملؤها من JavaScript -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- ============================================
-         تبويب 2: سجل الطلبات (History Tab)
-         ============================================
-         هذا التبويب يعرض جميع الطلبات السابقة مع الإحصائيات
-    -->
-    <div id="historyTab" class="hidden">
+         قسم 2: التقارير والإحصائيات
+         ============================================ -->
+    <div id="reportsView" style="display: none;">
       <div class="card">
-        <h2>📋 طلباتك السابقة</h2>
+        <h2>📊 التقارير والإحصائيات</h2>
 
-        <!-- ============================================
-             الإحصائيات: 6 بطاقات توضح الأرقام المهمة
-             ============================================
-        -->
-        <div class="stats">
-          <!-- بطاقة 1: إجمالي الطلبات -->
-          <div class="stat-card">
-            <div class="stat-value" id="totalOrders">0</div>
-            <div class="stat-label">عدد الطلبات</div>
-          </div>
-
-          <!-- بطاقة 2: إجمالي المبلغ المُنفق -->
-          <div class="stat-card">
-            <div class="stat-value" id="totalSpent">0</div>
-            <div class="stat-label">إجمالي المبلغ</div>
-          </div>
-
-          <!-- بطاقة 3: عدد الطلبات المعلقة -->
-          <div class="stat-card">
-            <div class="stat-value" id="pendingCount">0</div>
-            <div class="stat-label">⏳ معلّق</div>
-          </div>
-
-          <!-- بطاقة 4: عدد الطلبات قيد التحضير -->
-          <div class="stat-card">
-            <div class="stat-value" id="processingCount">0</div>
-            <div class="stat-label">⚙️ قيد التحضير</div>
-          </div>
-
-          <!-- بطاقة 5: عدد الطلبات المُسلَّمة -->
-          <div class="stat-card">
-            <div class="stat-value" id="deliveredCount">0</div>
-            <div class="stat-label">🚚 تم التوصيل</div>
-          </div>
-
-          <!-- بطاقة 6: عدد الطلبات الملغاة -->
-          <div class="stat-card">
-            <div class="stat-value" id="cancelledCount">0</div>
-            <div class="stat-label">❌ ملغى</div>
-          </div>
+        <!-- الرسوم البيانية -->
+        <div class="chart-container">
+          <h3>توزيع الطلبات حسب الحالة</h3>
+          <div id="statusChart"></div>
         </div>
 
-        <!-- ============================================
-             لوحة التحكم: الفلترة والترتيب
-             ============================================
-             هذا الجزء يسمح بتصفية الطلبات حسب الحالة وترتيبها
-        -->
-        <div class="form-section" style="margin-top:8px; margin-bottom:12px;">
-          <label style="font-size:13px; color:#555;">لوحة التحكم:</label>
-          
-          <!-- أزرار الفلترة -->
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <!-- زر 1: عرض جميع الطلبات -->
-            <button type="button" class="btn-small" onclick="setFilterStatus('الكل')">الكل</button>
-
-            <!-- زر 2: عرض الطلبات المعلقة فقط -->
-            <button type="button" class="btn-small" onclick="setFilterStatus('معلق')">معلق</button>
-
-            <!-- زر 3: عرض الطلبات قيد التحضير فقط -->
-            <button type="button" class="btn-small" onclick="setFilterStatus('قيد التحضير')">قيد التحضير</button>
-
-            <!-- زر 4: عرض الطلبات المُسلَّمة فقط -->
-            <button type="button" class="btn-small" onclick="setFilterStatus('تم التوصيل')">تم التوصيل</button>
-
-            <!-- زر 5: عرض الطلبات الملغاة فقط -->
-            <button type="button" class="btn-small" onclick="setFilterStatus('ملغى')">ملغى</button>
-
-            <!-- قائمة الترتيب -->
-            <!-- id="sortSelect" = معرّف القائمة -->
-            <!-- onchange="setSortBy(this.value)" = عند تغيير الاختيار، استدعِ الدالة setSortBy مع القيمة المختارة -->
-            <select id="sortSelect" onchange="setSortBy(this.value)" style="flex:1; min-width:150px;">
-              <option value="newest">الأحدث أولاً</option>
-              <option value="oldest">الأقدم أولاً</option>
-              <option value="amountHigh">المبلغ من الأعلى</option>
-              <option value="amountLow">المبلغ من الأقل</option>
-            </select>
-          </div>
+        <div class="chart-container">
+          <h3>أفضل الماشيات مبيعاً</h3>
+          <div id="animalChart"></div>
         </div>
 
-        <!-- ============================================
-             قائمة الطلبات (يتم ملؤها من جافاسكريبت)
-             ============================================
-             id="ordersList" = معرّف لإدراج الطلبات هنا من JavaScript
-        -->
-        <div id="ordersList"></div>
+        <div class="chart-container">
+          <h3>الإيرادات حسب الخدمة</h3>
+          <div id="serviceChart"></div>
+        </div>
+
+        <!-- ملخص التقرير -->
+        <div class="card">
+          <h3>ملخص شامل</h3>
+          <div id="reportSummary"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         قسم 3: الإعدادات والخيارات
+         ============================================ -->
+    <div id="settingsView" style="display: none;">
+      <div class="card">
+        <h2>⚙️ الإعدادات</h2>
+
+        <h3>إدارة البيانات</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="createBackup()">💾 إنشاء نسخة احتياطية</button>
+          <button class="btn btn-success" onclick="restoreBackup()">♻️ استعادة نسخة احتياطية</button>
+          <button class="btn btn-warning" onclick="downloadAllData()">📥 تنزيل كل البيانات</button>
+          <button class="btn btn-danger" onclick="confirmClearAll()">🗑️ حذف جميع البيانات</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">رقم WhatsApp للعرض</h3>
+        <div class="form-group">
+          <input type="tel" id="whatsappNumber" placeholder="966501234567">
+          <button class="btn btn-primary" style="margin-top: 10px;" onclick="saveSettings()">حفظ الإعدادات</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">معلومات النظام</h3>
+        <div id="systemInfo"></div>
       </div>
     </div>
   </div>
 
   <!-- ============================================
-       الفوتر (أسفل الصفحة)
-       ============================================
-  -->
+       النافذة المنبثقة للاستيراد
+       ============================================ -->
+  <div id="importModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>استيراد البيانات</span>
+        <button class="close-btn" onclick="closeModal('importModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>اختر ملف JSON:</label>
+        <input type="file" id="importFile" accept=".json">
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="importJSON()">استيراد</button>
+    </div>
+  </div>
+
+  <!-- الفوتر -->
   <footer>
-    ✨ خدمة تجربة - بدون دفع حقيقي | متاحة داخل الرياض فقط<br>
-    آخر تحديث: <span id="lastUpdate"></span>
+    🍖 لحوم الرياض - المستوى 4 متقدم | آخر تحديث: <span id="lastUpdate"></span>
   </footer>
 
   <!-- ============================================
-       عنصر الإشعار (Toast)
-       ============================================
-       id="toast" = معرّف الإشعار
-       يُستخدم لعرض رسائل سريعة عند تغيير حالة الطلب
-  -->
-  <div id="toast" class="toast"></div>
-
-  <!-- ============================================
-       كود جافاسكريبت: كل المنطق والدوال
-       ============================================
-  -->
+       JavaScript - كل الأكواد والدوال
+       ============================================ -->
+  <script src="app.js"></script>
+  
+  <!-- 🔗 Service Worker Registration (جديد) -->
   <script>
-    /* ============================================
-       SECTION 1: الثوابت والمتغيرات العامة
-       ============================================
-       هذه الثوابت تُستخدم في كل أنحاء الكود
-    */
-
-    /* رقم WhatsApp لصاحب المشروع
-       يُستخدم عند إرسال الطلبات عبر الواتساب
-       صيغة دولية: 966 = رمز السعودية
-    */
-    const WHATSAPP_NUMBER = "966501234567";
-
-    /* قائمة الأسعار: سعر كل نوع ماشية بالريال السعودي
-       
-       أمثلة:
-       prices["غنم"] = 1050
-       prices["عجل"] = 6800
-       
-       كلما اختار المستخدم ماشية، نبحث عن سعرها هنا
-    */
-    const prices = {
-      "غنم": 1050, 
-      "نعيمي": 1250, 
-      "سواكني": 950, 
-      "ماغنو": 980,
-      "جدي": 830, 
-      "عجل": 6800, 
-      "حاشي": 3900
-    };
-    
-    /* تكلفة خدمات الذبح والتقطيع
-       
-       أمثلة:
-       butcherCost["مذبوح فقط"] = 60
-       butcherCost["بدون خدمة"] = 0
-    */
-    const butcherCost = {
-      "مذبوح فقط": 60, 
-      "مذبوح ومقطع": 95,
-      "مذبوح ومقطع ومغلف": 120, 
-      "بدون خدمة": 0
-    };
-    
-    /* تكلفة التوصيل
-       
-       أمثلة:
-       deliveryCost["توصيل للمنزل"] = 50
-       deliveryCost["استلام من الموقع"] = 0
-    */
-    const deliveryCost = {
-      "توصيل للمنزل": 50, 
-      "استلام من الموقع": 0
-    };
-
-    /* ============================================
-       SECTION 2: متغيرات الفلترة والترتيب
-       ============================================
-       هذه المتغيرات تتحكم في كيفية عرض قائمة الطلبات
-    */
-
-    /* currentFilterStatus: الحالة المختارة حالياً للفلترة
-       
-       القيم الممكنة:
-       - "الكل" = عرض جميع الطلبات
-       - "معلق" = عرض الطلبات المعلقة فقط
-       - "قيد التحضير" = عرض الطلبات قيد التحضير فقط
-       - "تم التوصيل" = عرض الطلبات المُسلَّمة فقط
-       - "ملغى" = عرض الطلبات الملغاة فقط
-       
-       الافتراضي: "الكل" (عرض الجميع في البداية)
-    */
-    let currentFilterStatus = 'الكل';
-
-    /* currentSortBy: طريقة ترتيب الطلبات
-       
-       القيم الممكنة:
-       - "newest" = الأحدث أولاً (طلبات الأخيرة في الأعلى)
-       - "oldest" = الأقدم أولاً (طلبات الأولى في الأعلى)
-       - "amountHigh" = من الأعلى مبلغاً (طلبات مكلفة أولاً)
-       - "amountLow" = من الأقل مبلغاً (طلبات رخيصة أولاً)
-       
-       الافتراضي: "newest" (الأحدث أولاً)
-    */
-    let currentSortBy = 'newest';
-
-    /* ============================================
-       SECTION 3: دوال التحكم بالتبويبات
-       ============================================
-    */
-
-    /* دالة: switchTab(tab)
-       ============================================
-       الوظيفة:
-       تبديل التبويبات بين "طلب جديد" و "طلباتي"
-       
-       المعاملات:
-       - tab: اسم التبويب ('order' أو 'history')
-       
-       الخطوات:
-       1. إخفاء جميع التبويبات
-       2. إظهار التبويب المختار فقط
-       3. تحديث الزر النشط (تلوينه)
-       4. إذا كان التبويب "طلباتي"، تحديث قائمة الطلبات
-       
-       مثال استدعاء:
-       switchTab('order') = عرض نموذج الطلب الجديد
-       switchTab('history') = عرض سجل الطلبات
-    */
-    function switchTab(tab) {
-      // إخفاء/إظهار التبويب الأول (نموذج الطلب)
-      // toggle معناها: أضف الفئة إذا لم تكن موجودة، أزلها إذا كانت موجودة
-      // الشرط الثاني: tab !== 'order' = إذا التبويب المختار ليس "order"
-      document.getElementById('orderTab').classList.toggle('hidden', tab !== 'order');
-
-      // إخفاء/إظهار التبويب الثاني (سجل الطلبات)
-      document.getElementById('historyTab').classList.toggle('hidden', tab !== 'history');
-
-      // إزالة تلوين جميع الأزرار الملاحية
-      // querySelectorAll('.nav-btn') = اختر جميع الأزرار
-      // forEach = لكل زر
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-
-      // تلوين الزر المختار فقط
-      // event.target = الزر الذي تم الضغط عليه
-      event.target.classList.add('active');
-
-      // إذا كان التبويب "طلباتي"، تحديث قائمة الطلبات
-      if (tab === 'history') loadOrders();
-    }
-
-    /* ============================================
-       SECTION 4: دوال حساب التكاليف
-       ============================================
-    */
-
-    /* دالة: calcTotal()
-       ============================================
-       الوظيفة:
-       حساب السعر الإجمالي للطلب بناءً على الخيارات المختارة
-       
-       الخطوات:
-       1. جمع البيانات من الحقول
-       2. التحقق من أن جميع الحقول مملوءة
-       3. حساب: سعر الماشية × الكمية
-       4. حساب: تكلفة الخدمة × الكمية
-       5. إضافة تكلفة التوصيل
-       6. عرض تفصيل التكاليف
-       7. إظهار قسم الدفع
-    */
-    function calcTotal() {
-      // مسح أي رسائل خطأ/نجاح سابقة
-      clearMessages();
-
-      // جمع البيانات من الحقول
-      // getElementById('name').value = اقرأ قيمة الحقل المسمى
-      const animal = document.getElementById('animal').value;
-      const service = document.getElementById('service').value;
-      const delivery = document.getElementById('delivery').value;
-      const quantity = parseInt(document.getElementById('quantity').value, 10);
-      // parseInt(..., 10) = تحويل النص إلى رقم (الـ 10 يعني نظام عشري)
-
-      // التحقق من أن جميع الحقول مملوءة
-      // الشرط: إذا كان أي حقل فارغ أو الكمية أقل من 1
-      if (!animal || !service || !delivery || !quantity || quantity < 1) {
-        // عرض رسالة خطأ
-        showError('يرجى اختيار جميع الخيارات المطلوبة');
-        return; // توقف الدالة هنا (لا تستمر)
-      }
-
-      // حساب المبلغ الأساسي (سعر الماشية × الكمية)
-      // prices[animal] = ابحث عن سعر الماشية المختارة
-      const baseCost = prices[animal] * quantity;
-
-      // حساب تكلفة الخدمة (×الكمية)
-      const butcher = butcherCost[service] * quantity;
-
-      // تكلفة التوصيل (ليس ×الكمية، لأنها خدمة واحدة)
-      const delivFee = deliveryCost[delivery];
-
-      // الإجمالي النهائي
-      const total = baseCost + butcher + delivFee;
-
-      // بناء نص يظهر تفصيل التكاليف
-      // هذا سيكون HTML يُدرج داخل الصفحة
-      const breakdown = `<div class="breakdown">
-        سعر الماشية: ${prices[animal]} × ${quantity} = ${baseCost} ر.س<br>
-        خدمة الذبح/التقطيع: ${butcherCost[service]} × ${quantity} = ${butcher} ر.س<br>
-        خدمة التوصيل: ${delivFee} ر.س<br>
-        <strong style="color: var(--color-primary); font-size: 18px;">الإجمالي النهائي: ${total} ريال سعودي</strong>
-      </div>`;
-
-      // إدراج التفصيل في الصفحة
-      document.getElementById('outputCost').innerHTML = breakdown;
-      // إزالة فئة hidden = إظهار صندوق التكاليف
-      document.getElementById('outputCost').classList.remove('hidden');
-
-      // إظهار قسم الدفع والتأكيد
-      document.getElementById('paymentSection').classList.remove('hidden');
-    }
-
-    /* ============================================
-       SECTION 5: دوال التواصل والإشعارات
-       ============================================
-    */
-
-    /* دالة: openWhatsApp()
-       ============================================
-       الوظيفة:
-       إرسال تفاصيل الطلب عبر رسالة واتساب إلى صاحب المشروع
-       
-       الخطوات:
-       1. جمع بيانات الطلب
-       2. صياغة رسالة نصية بالبيانات
-       3. ترميز الرسالة (URL encoding)
-       4. فتح واتساب مع الرسالة المُجهزة
-    */
-    function openWhatsApp() {
-      // جمع بيانات الطلب
-      const animal = document.getElementById('animal').value;
-      const service = document.getElementById('service').value;
-      const quantity = document.getElementById('quantity').value;
-      const delivery = document.getElementById('delivery').value;
-      const phone = document.getElementById('phone').value;
-
-      // التحقق من أن جميع الحقول مملوءة
-      if (!animal || !service || !quantity || !delivery || !phone) {
-        showError('يرجى ملء جميع الحقول المطلوبة');
-        return;
-      }
-
-      // حساب الإجمالي (نفس حساب calcTotal)
-      const baseCost = prices[animal] * quantity;
-      const butcher = butcherCost[service] * quantity;
-      const delivFee = deliveryCost[delivery];
-      const total = baseCost + butcher + delivFee;
-
-      // صياغة رسالة واتساب
-      // \n = سطر جديد في الرسالة
-      const msg = `السلام عليكم، أود طلب:\n- الماشية: ${animal}\n- الكمية: ${quantity}\n- الخدمة: ${service}\n- التوصيل: ${delivery}\n- رقمي: ${phone}\n- الإجمالي: ${total} ريال\n\nشكراً`;
-
-      // ترميز الرسالة (تحويل الأحرف الخاصة إلى أكواد آمنة للـ URL)
-      // مثلاً: المسافات تصبح %20
-      const encodedMsg = encodeURIComponent(msg);
-
-      // بناء رابط واتساب
-      // https://wa.me/PHONE?text=MESSAGE
-      // PHONE = رقم هاتف صاحب المشروع
-      // MESSAGE = الرسالة المُشفرة
-      const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`;
-
-      // فتح الرابط في نافذة جديدة
-      // '_blank' = فتح في نافذة جديدة (لا تترك الموقع)
-      window.open(whatsappURL, '_blank');
-    }
-
-    /* دالة: showToast(message)
-       ============================================
-       الوظيفة:
-       عرض إشعار صغير أسفل الشاشة يختفي بعد 3 ثوانٍ
-       
-       المعاملات:
-       - message: النص الذي يظهر في الإشعار
-       
-       مثال:
-       showToast('تم تحديث حالة الطلب')
-       
-       الخطوات:
-       1. إدراج النص في عنصر الإشعار
-       2. إضافة فئة CSS (show) لتظهيره
-       3. انتظار 3 ثوانٍ
-       4. إزالة الفئة لإخفاء الإشعار
-    */
-    function showToast(message) {
-      // اختر عنصر الإشعار من HTML
-      const toast = document.getElementById('toast');
-
-      // أدرج النص
-      toast.textContent = message;
-
-      // أضف فئة show (تغيّر الـ opacity من 0 إلى 1)
-      toast.classList.add('show');
-
-      // بعد 3 ثوانٍ (3000 ميلي ثانية)
-      setTimeout(() => {
-        // أزل فئة show (يختفي الإشعار)
-        toast.classList.remove('show');
-      }, 3000);
-    }
-
-    /* دالة: clearMessages()
-       ============================================
-       الوظيفة: إخفاء جميع رسائل الأخطاء والنجاح
-    */
-    function clearMessages() {
-      // إخفاء رسالة الخطأ (إذا كانت مرئية)
-      document.getElementById('errMsg').classList.add('hidden');
-
-      // إخفاء رسالة النجاح (إذا كانت مرئية)
-      document.getElementById('successMsg').classList.add('hidden');
-    }
-
-    /* دالة: showError(msg)
-       ============================================
-       الوظيفة: عرض رسالة خطأ حمراء للمستخدم
-       
-       المعاملات:
-       - msg: نص رسالة الخطأ
-    */
-    function showError(msg) {
-      // اختر عنصر الخطأ
-      const errDiv = document.getElementById('errMsg');
-
-      // أدرج النص
-      errDiv.textContent = msg;
-
-      // أظهره (أزل فئة hidden)
-      errDiv.classList.remove('hidden');
-    }
-
-    /* دالة: showSuccess(msg)
-       ============================================
-       الوظيفة: عرض رسالة نجاح خضراء للمستخدم
-       
-       المعاملات:
-       - msg: نص رسالة النجاح
-    */
-    function showSuccess(msg) {
-      // اختر عنصر النجاح
-      const sucDiv = document.getElementById('successMsg');
-
-      // أدرج النص
-      sucDiv.textContent = msg;
-
-      // أظهره
-      sucDiv.classList.remove('hidden');
-    }
-
-    /* ============================================
-       SECTION 6: معالجة إرسال النموذج
-       ============================================
-    */
-
-    /* حدث onsubmit لـ orderForm
-       ============================================
-       الوظيفة:
-       عند الضغط على زر "تأكيد وحفظ الطلب"، يتم:
-       1. التحقق من جميع البيانات
-       2. حساب الإجمالي
-       3. إنشاء كائن طلب جديد
-       4. حفظ الطلب في localStorage
-       5. عرض رسالة نجاح
-       6. مسح النموذج
-    */
-    document.getElementById('orderForm').onsubmit = function(e) {
-      // منع السلوك الافتراضي للنموذج (إعادة تحميل الصفحة)
-      e.preventDefault();
-
-      // مسح أي رسائل سابقة
-      clearMessages();
-
-      // جمع البيانات من جميع الحقول
-      const animal = document.getElementById('animal').value;
-      const service = document.getElementById('service').value;
-      const delivery = document.getElementById('delivery').value;
-      const quantity = parseInt(document.getElementById('quantity').value, 10);
-      const location = document.getElementById('location').value.trim();
-      // .trim() = إزالة المسافات الزائدة في البداية والنهاية
-      const phone = document.getElementById('phone').value.trim();
-
-      // التحقق من أن جميع الحقول المطلوبة مملوءة
-      if (!animal || !service || !delivery || !quantity || quantity < 1 || !location || !phone) {
-        showError('يرجى إدخال جميع البيانات المطلوبة.');
-        return; // توقف الدالة
-      }
-
-      // حساب الإجمالي
-      const baseCost = prices[animal] * quantity;
-      const butcher = butcherCost[service] * quantity;
-      const delivFee = deliveryCost[delivery];
-      const total = baseCost + butcher + delivFee;
-
-      // إنشاء كائن طلب جديد
-      // هذا الكائن يحتوي على جميع معاملات الطلب
-      const order = {
-        id: Date.now(),
-        // Date.now() = الوقت الحالي بالميلي ثانية
-        // يُستخدم كمعرّف فريد لكل طلب
-
-        date: new Date().toLocaleString('ar-SA'),
-        // التاريخ والوقت الحالي بالصيغة العربية
-        // مثال: "26‏/11‏/2025، 6:10:32 م"
-
-        animal, 
-        service, 
-        delivery, 
-        quantity, 
-        location, 
-        phone,
-        // كل هذه هي اختصارات (Shorthand)
-        // animal = animal: animal
-        // تعني: نسخ قيمة المتغير animal إلى كائن باسم animal
-
-        cutting: document.getElementById('cutting').value,
-        // توزيع التقطيع
-
-        notes: document.getElementById('notes').value,
-        // الملاحظات الخاصة
-
-        payMethod: document.getElementById('payMethod').value,
-        // طريقة الدفع المختارة
-
-        total,
-        // الإجمالي النهائي
-
-        status: "معلق",
-        // الحالة الافتراضية = معلق (الطلب الجديد يبدأ معلقاً)
-
-        statusUpdatedAt: new Date().toLocaleString('ar-SA')
-        // وقت تحديث الحالة (أول مرة = وقت الإنشاء)
-      };
-
-      // قراءة جميع الطلبات السابقة من localStorage
-      // localStorage.getItem('meatOrders') = اقرأ البيانات المحفوظة
-      // JSON.parse(...) = حول النص إلى كائن جافاسكريبت
-      // || [] = إذا لم تكن هناك بيانات، استخدم مصفوفة فارغة
-      let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-
-      // إضافة الطلب الجديد إلى المصفوفة
-      orders.push(order);
-
-      // حفظ المصفوفة المُحدَّثة مجدداً في localStorage
-      // JSON.stringify(...) = حول الكائن إلى نص
-      localStorage.setItem('meatOrders', JSON.stringify(orders));
-
-      // عرض رسالة نجاح بتفاصيل الطلب
-      showSuccess(`✅ تم حفظ طلبك بنجاح!\nرقم الطلب: ${order.id}\nالمبلغ: ${total} ريال\nسيتم التواصل معك قريباً على الرقم: ${phone}`);
-
-      // مسح النموذج (إعادة تعيين القيم الافتراضية)
-      document.getElementById('orderForm').reset();
-
-      // إخفاء قسم الدفع
-      document.getElementById('paymentSection').classList.add('hidden');
-
-      // إخفاء صندوق التكاليف
-      document.getElementById('outputCost').classList.add('hidden');
-
-      // تحديث وقت آخر تحديث في الفوتر
-      document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-SA');
-    };
-
-    /* ============================================
-       SECTION 7: دوال الفلترة والترتيب
-       ============================================
-    */
-
-    /* دالة: setFilterStatus(status)
-       ============================================
-       الوظيفة:
-       تحديث فلتر الحالة المختارة وإعادة تحميل القائمة
-       
-       المعاملات:
-       - status: الحالة المختارة (الكل، معلق، إلخ)
-       
-       مثال:
-       setFilterStatus('معلق') = عرض الطلبات المعلقة فقط
-    */
-    function setFilterStatus(status) {
-      // تحديث المتغير العام
-      currentFilterStatus = status;
-
-      // إعادة تحميل قائمة الطلبات بالفلتر الجديد
-      loadOrders();
-    }
-
-    /* دالة: setSortBy(sortBy)
-       ============================================
-       الوظيفة:
-       تحديث طريقة الترتيب وإعادة تحميل القائمة
-       
-       المعاملات:
-       - sortBy: طريقة الترتيب (newest، oldest، amountHigh، amountLow)
-       
-       مثال:
-       setSortBy('amountHigh') = ترتيب من الأعلى مبلغاً
-    */
-    function setSortBy(sortBy) {
-      // تحديث المتغير العام
-      currentSortBy = sortBy;
-
-      // إعادة تحميل قائمة الطلبات بالترتيب الجديد
-      loadOrders();
-    }
-
-    /* ============================================
-       SECTION 8: دالة تحميل وعرض الطلبات (الدالة الأهم!)
-       ============================================
-    */
-
-    /* دالة: loadOrders()
-       ============================================
-       الوظيفة:
-       تحميل جميع الطلبات من localStorage، فلترتها، ترتيبها، وعرضها
-       
-       هذه الدالة تُستدعى:
-       1. عند فتح تبويب "طلباتي"
-       2. عند تغيير حالة الطلب
-       3. عند حذف أو إضافة طلب
-       4. عند تغيير الفلتر أو الترتيب
-    */
-    function loadOrders() {
-      // قراءة جميع الطلبات من localStorage
-      const orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-
-      // اختيار عنصر قائمة الطلبات
-      const ordersList = document.getElementById('ordersList');
-
-      // اختيار عناصر الإحصائيات
-      const totalOrders = document.getElementById('totalOrders');
-      const totalSpent = document.getElementById('totalSpent');
-
-      // ============================================
-      // حساب الإحصائيات من البيانات الحقيقية
-      // ============================================
-
-      // إجمالي عدد الطلبات
-      const total = orders.length;
-
-      // إجمالي المبلغ المُنفق
-      // reduce = تجميع جميع القيم بعملية واحدة
-      // (sum, o) => sum + o.total
-      // sum = المجموع (يبدأ من 0)
-      // o = كل طلب في المصفوفة
-      // sum + o.total = إضافة المبلغ إلى المجموع
-      const totalAmount = orders.reduce((sum, o) => sum + o.total, 0);
-
-      // عدد الطلبات حسب كل حالة
-      // filter = اختر الطلبات التي تطابق الشرط
-      // .length = اعدد عدد الطلبات
-      const pending = orders.filter(o => o.status === 'معلق').length;
-      const processing = orders.filter(o => o.status === 'قيد التحضير').length;
-      const delivered = orders.filter(o => o.status === 'تم التوصيل').length;
-      const cancelled = orders.filter(o => o.status === 'ملغى').length;
-
-      // إدراج الإحصائيات في الصفحة
-      // toLocaleString('ar-SA') = تنسيق الرقم بصيغة عربية
-      totalOrders.textContent = total.toLocaleString('ar-SA');
-      totalSpent.textContent = totalAmount.toLocaleString('ar-SA') + ' ر.س';
-
-      document.getElementById('pendingCount').textContent = pending.toLocaleString('ar-SA');
-      document.getElementById('processingCount').textContent = processing.toLocaleString('ar-SA');
-      document.getElementById('deliveredCount').textContent = delivered.toLocaleString('ar-SA');
-      document.getElementById('cancelledCount').textContent = cancelled.toLocaleString('ar-SA');
-
-      // ============================================
-      // تطبيق الفلترة
-      // ============================================
-
-      // إنشاء نسخة من المصفوفة للعمل عليها
-      // [...orders] = نسخ سطحية (لا تؤثر على الأصل)
-      let viewOrders = [...orders];
-
-      // إذا كان الفلتر ليس "الكل"، طبّق الفلترة
-      if (currentFilterStatus !== 'الكل') {
-        // احذف جميع الطلبات التي لا تطابق الحالة المختارة
-        viewOrders = viewOrders.filter(o => o.status === currentFilterStatus);
-      }
-
-      // ============================================
-      // تطبيق الترتيب
-      // ============================================
-
-      // sort = رتّب المصفوفة
-      // (a, b) = طلبان متتاليان
-      // إذا كانت النتيجة سالبة: a قبل b
-      // إذا كانت النتيجة موجبة: b قبل a
-      // إذا كانت النتيجة 0: لا تتغير الترتيب
-      viewOrders.sort((a, b) => {
-        if (currentSortBy === 'newest') {
-          // الأحدث أولاً = الرقم الأكبر أولاً
-          return b.id - a.id;
-        } else if (currentSortBy === 'oldest') {
-          // الأقدم أولاً = الرقم الأصغر أولاً
-          return a.id - b.id;
-        } else if (currentSortBy === 'amountHigh') {
-          // من الأعلى مبلغاً
-          return b.total - a.total;
-        } else if (currentSortBy === 'amountLow') {
-          // من الأقل مبلغاً
-          return a.total - b.total;
-        }
-        return 0;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((registration) => {
+            console.log('✅ Service Worker مسجل بنجاح!');
+            setInterval(() => {
+              registration.update();
+            }, 3600000);
+          })
+          .catch((error) => {
+            console.warn('⚠️ خطأ في تسجيل Service Worker:', error);
+          });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
       });
+    }
+  </script>
 
-      // ============================================
-      // معالجة عدم وجود طلبات
-      // ============================================
+  <!-- دعم التثبيت (PWA Install Prompt) -->
+  <script>
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('📱 التطبيق جاهز للتثبيت!');
+    });
 
-      // إذا لم توجد طلبات بعد الفلترة
-      if (viewOrders.length === 0) {
-        // عرض رسالة "لا توجد طلبات"
-        ordersList.innerHTML = '<p style="text-align: center; color: #7d888c;">لا توجد طلبات حسب الفلتر الحالي</p>';
-        return; // توقف الدالة هنا
+    window.addEventListener('appinstalled', () => {
+      console.log('🎉 تم تثبيت التطبيق بنجاح!');
+      deferredPrompt = null;
+    });
+  </script>
+
+  <!-- دعم الوضع المظلم للـ Manifest -->
+  <script>
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function updateThemeColor() {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (darkModeQuery.matches) {
+        metaThemeColor.setAttribute('content', '#16213E');
+      } else {
+        metaThemeColor.setAttribute('content', '#21808D');
       }
-
-      // ============================================
-      // بناء وعرض قائمة الطلبات
-      // ============================================
-
-      // map = حول كل طلب إلى HTML
-      // .join('') = ربط جميع الـ HTML مع بعضها
-      ordersList.innerHTML = viewOrders.map(o => {
-        // للكل طلب، احصل على معلومات الحالة (اللون والأيقونة)
-        const statusInfo = getStatusInfo(o.status);
-
-        // بناء HTML لهذا الطلب
-        // ${...} = إدراج قيم المتغيرات داخل النص
-        return `
-        <div class="order-item">
-          <!-- رأس الطلب: رقمه وحالته -->
-          <div class="order-item-header">📦 الطلب رقم: ${o.id}
-            <span class="status-badge ${statusInfo.class}">${statusInfo.icon} ${o.status}</span>
-          </div>
-
-          <!-- تاريخ إنشاء الطلب -->
-          <div><strong>التاريخ:</strong> ${o.date}</div>
-
-          <!-- وقت آخر تحديث للحالة -->
-          <div><strong>آخر تحديث للحالة:</strong> ${o.statusUpdatedAt || 'غير متوفر'}</div>
-
-          <!-- بيانات الطلب -->
-          <div><strong>الماشية:</strong> ${o.animal} (الكمية: ${o.quantity})</div>
-          <div><strong>الخدمة:</strong> ${o.service}</div>
-          <div><strong>التوصيل:</strong> ${o.delivery}</div>
-          <div><strong>الموقع:</strong> ${o.location}</div>
-          <div><strong>الرقم:</strong> ${o.phone}</div>
-          <div style="color: var(--color-primary); font-weight: 600;">💰 الإجمالي: ${o.total} ريال</div>
-          
-          <!-- أزرار تغيير الحالة -->
-          <div class="status-buttons">
-            <!-- الزر "معلق" -->
-            <!-- ${o.status === 'معلق' ? 'active' : ''} = أضف فئة active إذا كانت الحالة الحالية "معلق" -->
-            <button class="status-btn ${o.status === 'معلق' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'معلق')">معلق</button>
-
-            <!-- الزر "قيد التحضير" -->
-            <button class="status-btn ${o.status === 'قيد التحضير' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'قيد التحضير')">قيد التحضير</button>
-
-            <!-- الزر "تم التوصيل" -->
-            <button class="status-btn ${o.status === 'تم التوصيل' ? 'active' : ''}" onclick="updateOrderStatus(${o.id}, 'تم التوصيل')">تم التوصيل</button>
-
-            <!-- الزر "ملغى" (بلون أحمر) -->
-            <button class="status-btn" style="border-color: var(--color-error); color: var(--color-error);" onclick="updateOrderStatus(${o.id}, 'ملغى')">ملغى</button>
-          </div>
-
-          <!-- أزرار الإجراءات -->
-          <div class="action-buttons">
-            <!-- زر نسخ التفاصيل -->
-            <button class="btn-small" onclick="copyOrderDetails(${o.id})">نسخ التفاصيل</button>
-
-            <!-- زر حذف الطلب (بلون أحمر) -->
-            <button class="btn-small" onclick="deleteOrder(${o.id})" style="border-color: var(--color-error); color: var(--color-error);">حذف</button>
-          </div>
-        </div>
-      `;
-      }).join('');
     }
-
-    /* ============================================
-       SECTION 9: دوال معالجة الطلبات الفردية
-       ============================================
-    */
-
-    /* دالة: getStatusInfo(status)
-       ============================================
-       الوظيفة:
-       الحصول على معلومات الحالة (اللون والأيقونة)
-       
-       المعاملات:
-       - status: اسم الحالة (معلق، قيد التحضير، إلخ)
-       
-       الإرجاع:
-       كائن يحتوي على:
-       - class: اسم الفئة CSS (للون الخلفية)
-       - icon: الأيقونة (رمز تعبيري)
-    */
-    function getStatusInfo(status) {
-      // قاموس يربط كل حالة بمعلوماتها
-      const statusMap = {
-        "معلق": { class: "status-pending", icon: "⏳" },
-        "قيد التحضير": { class: "status-processing", icon: "⚙️" },
-        "تم التوصيل": { class: "status-delivered", icon: "🚚" },
-        "ملغى": { class: "status-cancelled", icon: "❌" }
-      };
-
-      // أرجع معلومات الحالة، أو الحالة الافتراضية إذا لم تُوجد
-      // statusMap[status] = ابحث عن الحالة في القاموس
-      // || statusMap["معلق"] = إذا لم توجد، استخدم "معلق"
-      return statusMap[status] || statusMap["معلق"];
-    }
-
-    /* دالة: copyOrderDetails(orderId)
-       ============================================
-       الوظيفة:
-       نسخ تفاصيل الطلب إلى الحافظة (Clipboard) بحيث يمكن لصقه في مكان آخر
-       
-       المعاملات:
-       - orderId: رقم الطلب الفريد
-    */
-    function copyOrderDetails(orderId) {
-      // قراءة جميع الطلبات
-      const orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-
-      // البحث عن الطلب المطلوب
-      // find = ابحث عن أول عنصر يطابق الشرط
-      const order = orders.find(o => o.id === orderId);
-
-      // إذا لم يُوجد الطلب، توقف الدالة
-      if (!order) return;
-
-      // بناء نص يحتوي على تفاصيل الطلب
-      const text = `طلب رقم: ${order.id}\nالماشية: ${order.animal}\nالكمية: ${order.quantity}\nالخدمة: ${order.service}\nالتوصيل: ${order.delivery}\nالموقع: ${order.location}\nالرقم: ${order.phone}\nالإجمالي: ${order.total} ريال`;
-
-      // نسخ النص إلى الحافظة
-      // navigator.clipboard.writeText(text) = وظيفة المتصفح لنسخ النص
-      // .then() = بعد اكتمال النسخ بنجاح
-      navigator.clipboard.writeText(text).then(() => alert('✓ تم نسخ تفاصيل الطلب'));
-    }
-
-    /* دالة: deleteOrder(orderId)
-       ============================================
-       الوظيفة:
-       حذف طلب واحد من السجل
-       
-       المعاملات:
-       - orderId: رقم الطلب المراد حذفه
-    */
-    function deleteOrder(orderId) {
-      // طلب تأكيد من المستخدم
-      // confirm = نافذة تسأل هل أنت متأكد؟
-      if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
-
-      // قراءة جميع الطلبات
-      let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-
-      // حذف الطلب المطلوب
-      // filter = اختر جميع الطلبات ما عدا هذا الطلب
-      orders = orders.filter(o => o.id !== orderId);
-
-      // حفظ المصفوفة المُحدَّثة
-      localStorage.setItem('meatOrders', JSON.stringify(orders));
-
-      // إعادة تحميل القائمة
-      loadOrders();
-    }
-
-    /* دالة: updateOrderStatus(orderId, newStatus)
-       ============================================
-       الوظيفة:
-       تغيير حالة الطلب وتسجيل وقت التحديث
-       
-       المعاملات:
-       - orderId: رقم الطلب
-       - newStatus: الحالة الجديدة
-    */
-    function updateOrderStatus(orderId, newStatus) {
-      // قراءة جميع الطلبات
-      let orders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-
-      // البحث عن الطلب المطلوب
-      const order = orders.find(o => o.id === orderId);
-
-      // إذا لم يُوجد الطلب، توقف الدالة
-      if (!order) return;
-      
-      // تحديث الحالة
-      order.status = newStatus;
-
-      // تحديث وقت آخر تحديث
-      order.statusUpdatedAt = new Date().toLocaleString('ar-SA');
-
-      // حفظ المصفوفة المُحدَّثة
-      localStorage.setItem('meatOrders', JSON.stringify(orders));
-
-      // إعادة تحميل القائمة
-      loadOrders();
-
-      // عرض إشعار النجاح
-      showToast(`تم تحديث حالة الطلب إلى: ${newStatus}`);
-    }
-
-    /* ============================================
-       SECTION 10: دالة حذف جميع الطلبات
-       ============================================
-    */
-
-    /* دالة: clearAllOrders()
-       ============================================
-       الوظيفة:
-       حذف جميع الطلبات من السجل
-       ⚠️ تحذير: هذه عملية لا يمكن التراجع عنها!
-    */
-    function clearAllOrders() {
-      // طلب تأكيد من المستخدم (مرتين للتأكد)
-      if (!confirm('هل أنت متأكد من حذف جميع الطلبات؟ هذا لا يمكن التراجع عنه!')) return;
-
-      // حذف جميع الطلبات من localStorage
-      localStorage.removeItem('meatOrders');
-
-      // عرض رسالة تأكيد
-      alert('✓ تم حذف جميع الطلبات');
-
-      // إعادة تحميل القائمة (ستكون فارغة الآن)
-      loadOrders();
-    }
-
-    /* ============================================
-       SECTION 11: تهيئة الصفحة (Initialization)
-       ============================================
-    */
-
-    /* عند تحميل الصفحة لأول مرة:
-       تحديث وقت آخر تحديث في الفوتر
-    */
-    document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-SA');
-
+    
+    updateThemeColor();
+    darkModeQuery.addEventListener('change', updateThemeColor);
   </script>
 </body>
 </html>
