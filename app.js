@@ -1,6 +1,6 @@
 /* 🍖 لحوم الرياض - app.js - FIX NULL TOTAL */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygGltJNat_bWGkiTtun_npkLxXrksqbrna71TwtomcPsjnLahSLvrWQAjDXEsjoK35/exec";
 
 let allOrders = [];
 let filteredOrders = [];
