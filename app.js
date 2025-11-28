@@ -1,7 +1,7 @@
 /* 🍖 لحوم الرياض - app.js - النسخة الكاملة المتقدمة */
 
 // ⚙️ إعدادات Google Apps Script
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7yw44zyt6umfDsMAbRKSI0upyVwJ8GwUexgktNjeJ/dev";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv-cpqzGykk_bS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
 
 // 🌐 المتغيرات العامة
 let allOrders = [];
@@ -158,14 +158,19 @@ async function handleAddOrder(event) {
     id: 'ORD-' + Date.now()
   };
 
-  try {
-    // إرسال للـ Google Sheets + Telegram
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData)
-    });
+try {
+  console.log("📤 Sending data to:", APPS_SCRIPT_URL);
+  console.log("📦 Data:", JSON.stringify(orderData));
+  
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(orderData)
+  });
+  
+  console.log("✅ Response status:", response.status);
+  console.log("✅ Response:", await response.text());
+
 
     // حفظ محلي
     allOrders.push(orderData);
