@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - FIXED FORM SUBMISSION */
+/* 🍖 لحوم الرياض - app.js - FINAL PERFECT VERSION */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
 
@@ -21,41 +21,39 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupFormListener() {
-  console.log("🔍 Looking for save button...");
+  console.log("🔍 Looking for EXACT save button...");
   
-  // البحث عن الزر بناءً على النص
+  // ✅ الطريقة الصحيقة: البحث الدقيق عن الزر الصحيح فقط
   const buttons = document.querySelectorAll('button');
-  let found = false;
+  let saveButtonFound = false;
   
-  buttons.forEach((btn, idx) => {
+  buttons.forEach((btn) => {
     const text = btn.textContent.trim();
-    console.log(`Button ${idx}: "${text}" | type: "${btn.type}"`);
     
-    // البحث عن أي زر يحتوي على "حفظ"
-    if (text.includes('حفظ') || text.includes('Save') || btn.type === 'submit') {
-      console.log("✅ Found save button!");
+    // ✅ البحث الدقيق: فقط الزر الذي نصه يحتوي على "حفظ"
+    // ❌ لا نبحث عن جميع أزرار submit
+    if (text.includes('حفظ') && text.includes('الطلب')) {
+      console.log("✅ Found EXACT save button: " + text);
       
-      // إضافة click listener مباشر
+      // إضافة click listener واحد فقط لهذا الزر
       btn.addEventListener('click', (e) => {
-        console.log("🔥🔥🔥 BUTTON CLICKED!");
         e.preventDefault();
         handleAddOrder();
       });
       
-      found = true;
+      saveButtonFound = true;
+      return; // توقف البحث - وجدنا الزر الصحيح!
     }
   });
   
-  if (!found) {
-    console.warn("⚠️ Save button not found, trying form listener only");
+  if (!saveButtonFound) {
+    console.warn("⚠️ Exact save button not found");
   }
   
-  // أيضاً ربط الـ Form نفسها
+  // ربط الـ Form كـ backup
   const form = document.getElementById('orderForm');
   if (form) {
-    console.log("✅ Form found, adding submit listener");
     form.addEventListener('submit', (e) => {
-      console.log("🔥 FORM SUBMIT EVENT!");
       e.preventDefault();
       handleAddOrder();
     });
@@ -93,10 +91,8 @@ function renderOrders() {
   `).join('');
 }
 
-// 💾 ADD ORDER - دالة رئيسية بسيطة
+// 💾 ADD ORDER - دالة واحدة صحيحة
 function handleAddOrder() {
-  console.log("🔥 handleAddOrder called");
-  
   const name = document.getElementById('customerName')?.value?.trim();
   const phone = document.getElementById('customerPhone')?.value?.trim();
   const animal = document.getElementById('animalType')?.value || '';
@@ -105,11 +101,9 @@ function handleAddOrder() {
   const total = parseFloat(document.getElementById('totalAmount')?.textContent?.replace(/,/g, '') || 0);
   const service = document.getElementById('serviceType')?.value || '';
 
-  console.log("📋 Data:", { name, phone, animal, qty, price, total, service });
-
+  // ✅ التحقق الأساسي الأول
   if (!name || !phone) {
     alert('❌ الرجاء ملء الاسم والهاتف');
-    console.error("❌ Name or phone missing");
     return;
   }
 
@@ -130,37 +124,30 @@ function handleAddOrder() {
   try {
     allOrders.push(order);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    console.log("✅ SAVED TO LOCALSTORAGE - Total:", allOrders.length);
+    console.log("✅ Order saved:", allOrders.length);
   } catch (e) {
-    console.error("❌ Save failed:", e);
     alert('❌ خطأ في الحفظ');
     return;
   }
 
   alert('✅ تم حفظ الطلب بنجاح!');
 
-  // Reset
   const form = document.getElementById('orderForm');
-  if (form) {
-    form.reset();
-    console.log("Form reset");
-  }
+  if (form) form.reset();
   
   loadOrders();
   updateStats();
 
-  // Close modal
   const modal = document.getElementById('orderModal');
   if (modal) {
     try {
       const bsModal = bootstrap.Modal.getInstance(modal);
       if (bsModal) bsModal.hide();
     } catch (e) {
-      console.log("⚠️ Modal close:", e.message);
+      console.log("Modal close attempted");
     }
   }
 
-  // Sync
   syncWithGoogleSheets(order);
 }
 
@@ -170,11 +157,11 @@ function syncWithGoogleSheets(order) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
   }).then(r => console.log("✅ Google Sheets synced"))
-    .catch(e => console.log("⚠️ GAS:", e.message));
+    .catch(e => console.log("⚠️ Sync note:", e.message));
 }
 
 function deleteOrder(id) {
-  if (confirm('حذف؟')) {
+  if (confirm('حذف هذا الطلب؟')) {
     allOrders = allOrders.filter(o => o.id !== id);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
     loadOrders();
@@ -192,8 +179,6 @@ function updateStats() {
   
   if (el1) el1.textContent = total;
   if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
-  
-  console.log("📊 Stats: " + total + " orders, " + revenue + " revenue");
 }
 
-console.log("✅ app.js loaded - FIXED");
+console.log("✅ app.js FINAL VERSION loaded");
