@@ -1,27 +1,202 @@
-/* 🍖 لحوم الرياض - app.js - FIX SYNC WITH GOOGLE SHEETS */
+/* 🍖 لحوم الرياض - app.js - PROFESSIONAL VERSION v2.0 */
+/* النسخة الاحترافية الكاملة - مع الحفاظ على الربط بـ Google Sheets و Telegram */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygGltJNat_bWGkiTtun_npkLxXrksqbrna71TwtomcPsjnLahSLvrWQAjDXEsjoK35/exec";
+
+// ==================== 📊 البيانات الأساسية ====================
+
+const ANIMALS_DATA = {
+  'غنم نعيمي': 'يتميز بجودة لحمه وطعمه الغني، يعتبر من الأنواع المطلوبة بكثرة للمناسبات',
+  'غنم نجدي': 'معروف بحجمه الكبير ولحمه المميز الغني بالعصارة',
+  'غنم حري': 'يتحمل الظروف المناخية القاسية، مناسب للبيئة الجافة',
+  'غنم سواكني': 'يتميز بلحمه الجيد وخيار اقتصادي مناسب، ألوان مختلفة (أحمر، أبيض، أسود)',
+  'غنم بربري': 'خيار صحي وطعمه خفيف، مناسب لعمليات التسمين والتجارة',
+  'ماعز': 'لحم ماعز طازج وجودة عالية',
+  'جمل': 'لحم جمل - للطلبات الكبيرة والجملة فقط'
+};
+
+const AGES = [
+  '6 شهور',
+  '1 سنة',
+  'سنة ونصف',
+  'سنتان'
+];
+
+const SERVICES = {
+  'توصيل مجاني': {
+    name: 'توصيل مجاني',
+    type: 'delivery',
+    price: 0,
+    area: 'الرياض',
+    description: 'توصيل مجاني داخل الرياض'
+  },
+  'توصيل برسم': {
+    name: 'توصيل برسم',
+    type: 'delivery_paid',
+    base: 50,
+    perKm: 1,
+    description: 'يبدأ من 50 ريال + 1 ريال لكل كيلومتر'
+  },
+  'ذبح': {
+    name: 'خدمة الذبح',
+    type: 'additional',
+    price: 20,
+    description: 'خدمة الذبح الحلال'
+  },
+  'تقطيع': {
+    name: 'خدمة التقطيع',
+    type: 'additional',
+    price: 25,
+    description: 'تقطيع اللحم بحسب الطلب'
+  },
+  'تغليف': {
+    name: 'خدمة التغليف',
+    type: 'additional',
+    price: 15,
+    description: 'تغليف احترافي وآمن'
+  },
+  'استلام من المحل': {
+    name: 'استلام من المحل',
+    type: 'pickup',
+    price: 0,
+    location: 'الشفا',
+    description: 'استلام من محل الشفا'
+  }
+};
+
+const REGIONS = {
+  'الرياض': {
+    name: 'الرياض',
+    minQty: 1,
+    deliveryFree: true
+  },
+  'خارج الرياض (جملة فقط)': {
+    name: 'خارج الرياض',
+    minQty: 10,
+    deliveryFree: false
+  }
+};
+
+// ==================== 💾 متغيرات التطبيق ====================
 
 let allOrders = [];
 let filteredOrders = [];
 
-function calculateTotal() {
-  const qty = parseInt(document.getElementById('quantity')?.value || 0);
-  const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const total = qty * price;
-  const el = document.getElementById('totalAmount');
-  if (el) el.textContent = total.toLocaleString('ar-SA');
+// ==================== 🎨 الدوال المساعدة ====================
+
+function formatCurrency(amount) {
+  return amount.toLocaleString('ar-SA') + ' ر.س';
 }
 
+function getAnimalDescription(animal) {
+  return ANIMALS_DATA[animal] || '';
+}
+
+function calculateDeliveryFee(distance = 0, deliveryType = 'free') {
+  if (deliveryType === 'free') return 0;
+  if (deliveryType === 'pickup') return 0;
+  if (deliveryType === 'paid') {
+    const fee = SERVICES['توصيل برسم'];
+    return fee.base + (distance * fee.perKm);
+  }
+  return 0;
+}
+
+// ==================== 🖼️ التهيئة والعرض ====================
+
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("🔥 DOMContentLoaded fired");
+  console.log("🔥 App initialized - Professional v2.0");
   loadOrders();
   updateStats();
   setupFormListener();
+  populateSelects();
+  setupServiceListener();
+  setupDeleteAllButton();
+  setupExportButton();
 });
 
+function populateSelects() {
+  // ملء قائمة الحيوانات
+  const animalSelect = document.getElementById('animalType');
+  if (animalSelect) {
+    animalSelect.innerHTML = '<option value="">اختر نوع الحيوان</option>';
+    Object.keys(ANIMALS_DATA).forEach(animal => {
+      const option = document.createElement('option');
+      option.value = animal;
+      option.textContent = animal;
+      animalSelect.appendChild(option);
+    });
+    
+    animalSelect.addEventListener('change', () => {
+      const desc = getAnimalDescription(animalSelect.value);
+      const descEl = document.getElementById('animalDescription');
+      if (descEl) {
+        descEl.textContent = desc;
+        descEl.style.display = desc ? 'block' : 'none';
+      }
+    });
+  }
+
+  // ملء قائمة الأعمار
+  const ageSelect = document.getElementById('animalAge');
+  if (ageSelect) {
+    ageSelect.innerHTML = '<option value="">اختر العمر</option>';
+    AGES.forEach(age => {
+      const option = document.createElement('option');
+      option.value = age;
+      option.textContent = age;
+      ageSelect.appendChild(option);
+    });
+  }
+
+  // ملء قائمة الخدمات
+  const serviceSelect = document.getElementById('serviceType');
+  if (serviceSelect) {
+    serviceSelect.innerHTML = '<option value="">اختر الخدمة</option>';
+    Object.keys(SERVICES).forEach(key => {
+      const service = SERVICES[key];
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = service.name;
+      option.title = service.description;
+      serviceSelect.appendChild(option);
+    });
+  }
+
+  // ملء قائمة المناطق
+  const regionSelect = document.getElementById('region');
+  if (regionSelect) {
+    regionSelect.innerHTML = '<option value="">اختر المنطقة</option>';
+    Object.keys(REGIONS).forEach(key => {
+      const region = REGIONS[key];
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = region.name;
+      regionSelect.appendChild(option);
+    });
+  }
+}
+
+function setupServiceListener() {
+  const serviceSelect = document.getElementById('serviceType');
+  if (serviceSelect) {
+    serviceSelect.addEventListener('change', () => {
+      const selected = SERVICES[serviceSelect.value];
+      const distanceField = document.getElementById('distanceField');
+      const locationField = document.getElementById('locationField');
+      
+      if (distanceField) {
+        distanceField.style.display = (selected?.type === 'delivery_paid') ? 'block' : 'none';
+      }
+      if (locationField) {
+        locationField.style.display = (selected?.type === 'pickup') ? 'block' : 'none';
+      }
+    });
+  }
+}
+
 function setupFormListener() {
-  console.log("🔍 Looking for EXACT save button...");
+  console.log("🔍 Setting up form listeners");
   
   const buttons = document.querySelectorAll('button');
   let saveButtonFound = false;
@@ -30,7 +205,7 @@ function setupFormListener() {
     const text = btn.textContent.trim();
     
     if (text.includes('حفظ') && text.includes('الطلب')) {
-      console.log("✅ Found EXACT save button: " + text);
+      console.log("✅ Found save button: " + text);
       
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -38,12 +213,11 @@ function setupFormListener() {
       });
       
       saveButtonFound = true;
-      return;
     }
   });
   
   if (!saveButtonFound) {
-    console.warn("⚠️ Exact save button not found");
+    console.warn("⚠️ Save button not found");
   }
   
   const form = document.getElementById('orderForm');
@@ -52,6 +226,30 @@ function setupFormListener() {
       e.preventDefault();
       handleAddOrder();
     });
+  }
+}
+
+function setupDeleteAllButton() {
+  const deleteAllBtn = document.getElementById('deleteAllBtn');
+  if (deleteAllBtn) {
+    deleteAllBtn.addEventListener('click', () => {
+      if (confirm('⚠️ هل أنت متأكد من حذف جميع الطلبات؟ هذه العملية لا تُرجع!')) {
+        if (confirm('تأكيد نهائي: حذف جميع البيانات؟')) {
+          allOrders = [];
+          localStorage.setItem('meatOrders', JSON.stringify([]));
+          loadOrders();
+          updateStats();
+          alert('✅ تم حذف جميع البيانات');
+        }
+      }
+    });
+  }
+}
+
+function setupExportButton() {
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportToCSV);
   }
 }
 
@@ -66,7 +264,7 @@ function renderOrders() {
   if (!tbody) return;
   
   if (!filteredOrders.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="text-center">لا توجد طلبات</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="text-center py-3">لا توجد طلبات حالياً</td></tr>';
     return;
   }
   
@@ -76,57 +274,73 @@ function renderOrders() {
       <td>${o.customer}</td>
       <td>${o.phone}</td>
       <td>${o.animal}</td>
+      <td>${o.age || '-'}</td>
       <td>${o.quantity}</td>
-      <td>${o.price}</td>
-      <td>${o.total || 0}</td>
+      <td>${o.pricePerUnit} ر.س</td>
+      <td>${o.deliveryFee || 0} ر.س</td>
+      <td><strong>${o.total || 0} ر.س</strong></td>
       <td>${o.service}</td>
-      <td>${o.status}</td>
-      <td><button class="btn btn-sm btn-danger" onclick="deleteOrder('${o.id}')">حذف</button></td>
+      <td>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${o.id}')">
+          🗑️ حذف
+        </button>
+      </td>
     </tr>
   `).join('');
 }
 
-// 💾 ADD ORDER
+// ==================== 💾 إضافة طلب جديد ====================
+
 function handleAddOrder() {
   const name = document.getElementById('customerName')?.value?.trim();
   const phone = document.getElementById('customerPhone')?.value?.trim();
   const animal = document.getElementById('animalType')?.value || '';
+  const age = document.getElementById('animalAge')?.value || '';
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
-  const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  
-  let totalEl = document.getElementById('totalAmount');
-  let total = 0;
-  
-  if (totalEl) {
-    const textTotal = totalEl.textContent?.trim();
-    if (textTotal) {
-      total = parseFloat(textTotal.replace(/,/g, '')) || 0;
-    }
-    if (total === 0) {
-      total = qty * price;
-    }
-  } else {
-    total = qty * price;
-  }
-  
+  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
   const service = document.getElementById('serviceType')?.value || '';
-
-  if (!name || !phone) {
-    alert('❌ الرجاء ملء الاسم والهاتف');
+  const region = document.getElementById('region')?.value || 'الرياض';
+  const address = document.getElementById('address')?.value?.trim() || '';
+  const distance = parseFloat(document.getElementById('distance')?.value || 0);
+  
+  // التحقق من البيانات المطلوبة
+  if (!name || !phone || !animal || !qty || !pricePerUnit || !service) {
+    alert('❌ الرجاء ملء جميع الحقول المطلوبة');
     return;
   }
 
-  console.log("✅ Total value:", total, "| Qty:", qty, "| Price:", price);
+  // حساب رسوم التوصيل
+  const serviceObj = SERVICES[service];
+  let deliveryFee = 0;
+
+  if (serviceObj.type === 'delivery_paid') {
+    deliveryFee = calculateDeliveryFee(distance, 'paid');
+  } else if (serviceObj.type === 'delivery_free') {
+    deliveryFee = 0;
+  }
+
+  const subtotal = qty * pricePerUnit;
+  const total = subtotal + deliveryFee;
+
+  console.log("✅ Order details:", {
+    qty, pricePerUnit, subtotal, deliveryFee, total
+  });
 
   const order = {
     id: 'ORD-' + Date.now(),
     customer: name,
     phone: phone,
     animal: animal,
+    age: age,
     quantity: qty,
-    price: price,
+    pricePerUnit: pricePerUnit,
+    subtotal: subtotal,
+    deliveryFee: deliveryFee,
     total: total,
     service: service,
+    region: region,
+    address: address,
+    distance: distance,
     status: 'جديد',
     date: new Date().toLocaleDateString('ar-SA'),
     timestamp: new Date().toLocaleString('ar-SA')
@@ -159,18 +373,18 @@ function handleAddOrder() {
     }
   }
 
-  // 🔑 CRITICAL: SYNC WITH GOOGLE SHEETS
-  console.log("🔄 Attempting to sync with Google Sheets...");
-  console.log("📤 Sending data:", JSON.stringify(order));
+  // 🔑 SYNC WITH GOOGLE SHEETS & TELEGRAM
+  console.log("🔄 Syncing with Google Sheets...");
   syncWithGoogleSheets(order);
 }
 
-// 📤 SYNC TO GOOGLE SHEETS
+// ==================== 📤 SYNC TO GOOGLE SHEETS & TELEGRAM ====================
+
 function syncWithGoogleSheets(order) {
   const payload = JSON.stringify(order);
   
   console.log("🌐 API URL:", APPS_SCRIPT_URL);
-  console.log("📦 Payload:", payload);
+  console.log("📦 Sending order:", order.id);
   
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -178,20 +392,21 @@ function syncWithGoogleSheets(order) {
       'Content-Type': 'application/json'
     },
     body: payload,
-    mode: 'no-cors' // ⚠️ IMPORTANT: CORS MODE
+    mode: 'no-cors'
   })
   .then(r => {
-    console.log("✅ Response received:", r);
+    console.log("✅ Response received:", r.status);
     return r.text();
   })
   .then(text => {
-    console.log("✅ Response text:", text);
+    console.log("✅ Sync completed");
   })
   .catch(e => {
     console.error("❌ Sync error:", e.message);
-    console.error("❌ Full error:", e);
   });
 }
+
+// ==================== 🗑️ حذف طلب ====================
 
 function deleteOrder(id) {
   if (confirm('حذف هذا الطلب؟')) {
@@ -203,6 +418,8 @@ function deleteOrder(id) {
   }
 }
 
+// ==================== 📊 إحصائيات ====================
+
 function updateStats() {
   const total = allOrders.length;
   const revenue = allOrders.reduce((s, o) => s + (o.total || 0), 0);
@@ -211,7 +428,76 @@ function updateStats() {
   const el2 = document.getElementById('totalRevenue');
   
   if (el1) el1.textContent = total;
-  if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
+  if (el2) el2.textContent = formatCurrency(revenue);
 }
 
-console.log("✅ app.js loaded - WITH GOOGLE SHEETS SYNC");
+// ==================== 📥 تصدير ====================
+
+function exportToCSV() {
+  if (allOrders.length === 0) {
+    alert('❌ لا توجد طلبات للتصدير');
+    return;
+  }
+
+  const headers = ['رقم الطلب', 'العميل', 'الهاتف', 'نوع الحيوان', 'العمر', 'الكمية', 'السعر للوحدة', 'رسوم التوصيل', 'الإجمالي', 'الخدمة', 'المنطقة', 'التاريخ'];
+  
+  let csv = headers.join(',') + '\n';
+  
+  allOrders.forEach(order => {
+    csv += [
+      order.id,
+      order.customer,
+      order.phone,
+      order.animal,
+      order.age || '-',
+      order.quantity,
+      order.pricePerUnit,
+      order.deliveryFee || 0,
+      order.total,
+      order.service,
+      order.region,
+      order.date
+    ].join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `orders-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  alert('✅ تم تصدير البيانات بنجاح');
+}
+
+// ==================== 🔍 البحث والتصفية ====================
+
+function searchOrders(query) {
+  const q = query.toLowerCase();
+  filteredOrders = allOrders.filter(o => 
+    o.id.toLowerCase().includes(q) ||
+    o.customer.toLowerCase().includes(q) ||
+    o.phone.includes(q) ||
+    o.animal.toLowerCase().includes(q)
+  );
+  renderOrders();
+}
+
+// ==================== ✅ تحديث الحالة ====================
+
+function updateOrderStatus(id, status) {
+  const order = allOrders.find(o => o.id === id);
+  if (order) {
+    order.status = status;
+    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+    loadOrders();
+    alert('✅ تم تحديث الحالة');
+  }
+}
+
+console.log("✅ app.js loaded - Professional v2.0 - WITH SYNC");
