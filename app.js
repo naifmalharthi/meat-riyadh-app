@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - FINAL PERFECT VERSION */
+/* 🍖 لحوم الرياض - app.js - FIX NULL TOTAL */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
 
@@ -23,26 +23,22 @@ window.addEventListener('DOMContentLoaded', () => {
 function setupFormListener() {
   console.log("🔍 Looking for EXACT save button...");
   
-  // ✅ الطريقة الصحيقة: البحث الدقيق عن الزر الصحيح فقط
   const buttons = document.querySelectorAll('button');
   let saveButtonFound = false;
   
   buttons.forEach((btn) => {
     const text = btn.textContent.trim();
     
-    // ✅ البحث الدقيق: فقط الزر الذي نصه يحتوي على "حفظ"
-    // ❌ لا نبحث عن جميع أزرار submit
     if (text.includes('حفظ') && text.includes('الطلب')) {
       console.log("✅ Found EXACT save button: " + text);
       
-      // إضافة click listener واحد فقط لهذا الزر
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         handleAddOrder();
       });
       
       saveButtonFound = true;
-      return; // توقف البحث - وجدنا الزر الصحيح!
+      return;
     }
   });
   
@@ -50,7 +46,6 @@ function setupFormListener() {
     console.warn("⚠️ Exact save button not found");
   }
   
-  // ربط الـ Form كـ backup
   const form = document.getElementById('orderForm');
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -83,7 +78,7 @@ function renderOrders() {
       <td>${o.animal}</td>
       <td>${o.quantity}</td>
       <td>${o.price}</td>
-      <td>${o.total}</td>
+      <td>${o.total || 0}</td>
       <td>${o.service}</td>
       <td>${o.status}</td>
       <td><button class="btn btn-sm btn-danger" onclick="deleteOrder('${o.id}')">حذف</button></td>
@@ -91,21 +86,41 @@ function renderOrders() {
   `).join('');
 }
 
-// 💾 ADD ORDER - دالة واحدة صحيحة
+// 💾 ADD ORDER
 function handleAddOrder() {
   const name = document.getElementById('customerName')?.value?.trim();
   const phone = document.getElementById('customerPhone')?.value?.trim();
   const animal = document.getElementById('animalType')?.value || '';
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
   const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const total = parseFloat(document.getElementById('totalAmount')?.textContent?.replace(/,/g, '') || 0);
+  
+  // ✅ FIX: احصل على الإجمالي بطرق متعددة
+  let totalEl = document.getElementById('totalAmount');
+  let total = 0;
+  
+  if (totalEl) {
+    // جرب textContent أولاً
+    const textTotal = totalEl.textContent?.trim();
+    if (textTotal) {
+      total = parseFloat(textTotal.replace(/,/g, '')) || 0;
+    }
+    // إذا لم ينجح، احسبها يدوياً
+    if (total === 0) {
+      total = qty * price;
+    }
+  } else {
+    // إذا لم توجد العنصر، احسبها من qty و price
+    total = qty * price;
+  }
+  
   const service = document.getElementById('serviceType')?.value || '';
 
-  // ✅ التحقق الأساسي الأول
   if (!name || !phone) {
     alert('❌ الرجاء ملء الاسم والهاتف');
     return;
   }
+
+  console.log("✅ Total value:", total, "| Qty:", qty, "| Price:", price);
 
   const order = {
     id: 'ORD-' + Date.now(),
@@ -181,4 +196,4 @@ function updateStats() {
   if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
 }
 
-console.log("✅ app.js FINAL VERSION loaded");
+console.log("✅ app.js loaded - NULL FIX");
