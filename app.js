@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - نسخة صحيحة 100% - FIXED */
+/* 🍖 لحوم الرياض - app.js - نسخة صحيحة 100% - FINAL */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv-cpqzGykk_bS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
@@ -7,9 +7,8 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv
 let allOrders = [];
 let filteredOrders = [];
 
-// 💰 حساب الإجمالي تلقائياً (GLOBAL - يعمل في أي وقت)
+// 💰 حساب الإجمالي تلقائياً - يجب تكون GLOBAL من البداية
 function calculateTotal() {
-  console.log("💰 calculateTotal called");
   const quantityInput = document.getElementById('quantity');
   const priceInput = document.getElementById('pricePerUnit');
   const totalOutput = document.getElementById('totalAmount');
@@ -19,64 +18,40 @@ function calculateTotal() {
     const price = parseFloat(priceInput.value) || 0;
     const total = qty * price;
     totalOutput.textContent = total.toLocaleString('ar-SA');
-    console.log(`✅ Total calculated: ${qty} × ${price} = ${total}`);
   }
 }
 
 // 🚀 تحميل البيانات عند بدء التطبيق
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("✅ Page loaded - initializing...");
+  console.log("✅ APP STARTED");
   loadOrders();
   updateStats();
-  attachEventListeners();
-  attachCalculatorListeners();
+  attachFormListener();
 });
 
-// 📌 ربط الأحداث بالعناصر
-function attachEventListeners() {
+// 📌 ربط الـ Form بـ handleAddOrder
+function attachFormListener() {
   const form = document.getElementById('orderForm');
   if (form) {
-    console.log("✅ Form found - attaching submit listener");
+    console.log("✅ Form attached");
     form.addEventListener('submit', handleAddOrder);
   } else {
-    console.error("❌ orderForm not found!");
-  }
-}
-
-// 📌 ربط أحداث الآلة الحاسبة
-function attachCalculatorListeners() {
-  const quantityInput = document.getElementById('quantity');
-  const priceInput = document.getElementById('pricePerUnit');
-
-  if (quantityInput && priceInput) {
-    console.log("✅ Calculator inputs found - attaching listeners");
-    quantityInput.addEventListener('input', calculateTotal);
-    quantityInput.addEventListener('change', calculateTotal);
-    priceInput.addEventListener('input', calculateTotal);
-    priceInput.addEventListener('change', calculateTotal);
-  } else {
-    console.warn("⚠️ Calculator inputs not found - will use inline handlers");
+    console.error("❌ Form NOT found");
   }
 }
 
 // 💾 تحميل الطلبات من localStorage
 function loadOrders() {
-  console.log("📂 Loading orders from localStorage...");
   allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
-  console.log(`✅ Loaded ${allOrders.length} orders`);
   filteredOrders = [...allOrders];
   renderOrders();
+  console.log("✅ Loaded " + allOrders.length + " orders");
 }
 
 // 📝 عرض الطلبات في الجدول
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
-  if (!tbody) {
-    console.error("❌ ordersTableBody not found!");
-    return;
-  }
-
-  console.log(`📊 Rendering ${filteredOrders.length} orders...`);
+  if (!tbody) return;
 
   if (filteredOrders.length === 0) {
     tbody.innerHTML = '<tr><td colspan="10" class="text-center">لا توجد طلبات</td></tr>';
@@ -94,9 +69,7 @@ function renderOrders() {
       <td>${order.total || ''}</td>
       <td>${order.service || ''}</td>
       <td>${order.status || 'جديد'}</td>
-      <td>
-        <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">حذف</button>
-      </td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">حذف</button></td>
     </tr>
   `).join('');
 }
@@ -104,68 +77,59 @@ function renderOrders() {
 // 💾 إضافة طلب جديد
 function handleAddOrder(event) {
   event.preventDefault();
-  console.log("🔄 Processing order form submission...");
+  console.log("🔄 Form submitted");
 
   try {
-    // جمع البيانات من النموذج
-    const customerNameInput = document.getElementById('customerName');
-    const customerPhoneInput = document.getElementById('customerPhone');
-    const animalTypeInput = document.getElementById('animalType');
-    const quantityInput = document.getElementById('quantity');
-    const pricePerUnitInput = document.getElementById('pricePerUnit');
-    const totalAmountInput = document.getElementById('totalAmount');
-    const serviceTypeInput = document.getElementById('serviceType');
-    const notesInput = document.getElementById('notes');
+    const customerName = document.getElementById('customerName');
+    const customerPhone = document.getElementById('customerPhone');
+    const animalType = document.getElementById('animalType');
+    const quantity = document.getElementById('quantity');
+    const pricePerUnit = document.getElementById('pricePerUnit');
+    const totalAmount = document.getElementById('totalAmount');
+    const serviceType = document.getElementById('serviceType');
+    const notes = document.getElementById('notes');
 
-    // التحقق من وجود الحقول
-    if (!customerNameInput || !customerPhoneInput) {
-      console.error("❌ Form inputs not found!");
-      showAlert('❌ خطأ: بعض حقول النموذج غير موجودة', 'error');
+    if (!customerName || !customerPhone) {
+      alert('❌ الحقول غير موجودة');
       return;
     }
 
     const orderData = {
       id: 'ORD-' + Date.now(),
-      customer: customerNameInput.value.trim(),
-      phone: customerPhoneInput.value.trim(),
-      animal: animalTypeInput ? animalTypeInput.value : '',
-      quantity: quantityInput ? parseInt(quantityInput.value) || 0 : 0,
-      price: pricePerUnitInput ? parseFloat(pricePerUnitInput.value) || 0 : 0,
-      total: totalAmountInput ? parseFloat(totalAmountInput.textContent || totalAmountInput.value) || 0 : 0,
-      service: serviceTypeInput ? serviceTypeInput.value : '',
+      customer: customerName.value.trim(),
+      phone: customerPhone.value.trim(),
+      animal: animalType ? animalType.value : '',
+      quantity: quantity ? parseInt(quantity.value) || 0 : 0,
+      price: pricePerUnit ? parseFloat(pricePerUnit.value) || 0 : 0,
+      total: totalAmount ? parseFloat(totalAmount.textContent || totalAmount.value) || 0 : 0,
+      service: serviceType ? serviceType.value : '',
       status: 'جديد',
-      notes: notesInput ? notesInput.value.trim() : '',
+      notes: notes ? notes.value.trim() : '',
       date: new Date().toLocaleDateString('ar-SA'),
       timestamp: new Date().toLocaleString('ar-SA')
     };
 
-    console.log("📋 Order data:", JSON.stringify(orderData));
-
-    // التحقق من البيانات الأساسية
+    // التحقق من البيانات
     if (!orderData.customer || !orderData.phone) {
-      console.error("❌ Missing required fields");
-      showAlert('❌ الرجاء ملء الاسم والهاتف', 'error');
+      alert('❌ الرجاء ملء الاسم والهاتف');
       return;
     }
 
-    // 1️⃣ حفظ محلي FIRST (الأهم!)
-    console.log("💾 Saving to localStorage...");
+    // حفظ محلي
     allOrders.push(orderData);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    console.log("✅ Saved to localStorage successfully");
+    console.log("✅ Saved order: " + orderData.id);
 
-    // 2️⃣ إرسال للـ Google Apps Script (لاحقاً)
-    console.log("📤 Sending to Google Apps Script...");
+    // إرسال للـ Google Apps Script
     sendToGoogleAppsScript(orderData);
 
-    // 3️⃣ تحديث الواجهة
-    showAlert('✅ تم حفظ الطلب بنجاح!', 'success');
+    // تحديث الواجهة
+    alert('✅ تم حفظ الطلب بنجاح!');
     
     // تنظيف النموذج
     const form = document.getElementById('orderForm');
     if (form) form.reset();
     
-    // تحديث الإحصائيات والجدول
     loadOrders();
     updateStats();
 
@@ -176,45 +140,34 @@ function handleAddOrder(event) {
         const bsModal = bootstrap.Modal.getInstance(modal);
         if (bsModal) bsModal.hide();
       }
-    }, 1500);
+    }, 500);
 
   } catch (error) {
-    console.error("❌ Error:", error);
-    showAlert('❌ حدث خطأ: ' + error.message, 'error');
+    console.error(error);
+    alert('❌ خطأ: ' + error.message);
   }
 }
 
 // 📤 إرسال البيانات للـ Google Apps Script
 async function sendToGoogleAppsScript(orderData) {
   try {
-    console.log("🌐 Sending to Google Apps Script...");
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData)
     });
-
-    console.log("📡 Response status:", response.status);
-    const result = await response.text();
-    console.log("📡 Response:", result);
-
-    if (response.ok) {
-      console.log("✅ Sent to Google Apps Script successfully");
-    } else {
-      console.error("⚠️ Google Apps Script returned:", result);
-    }
+    console.log("📡 Sent to GAS, status: " + response.status);
   } catch (error) {
-    console.log("⚠️ Note: Google Apps Script fetch completed. Local save successful.", error.message);
+    console.log("⚠️ GAS error (expected): " + error.message);
   }
 }
 
 // 🗑️ حذف طلب
 function deleteOrder(orderId) {
-  if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
-    console.log("🗑️ Deleting order:", orderId);
+  if (confirm('هل متأكد من الحذف؟')) {
     allOrders = allOrders.filter(o => o.id !== orderId);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    showAlert('✅ تم حذف الطلب', 'success');
+    alert('✅ تم الحذف');
     loadOrders();
     updateStats();
   }
@@ -222,7 +175,6 @@ function deleteOrder(orderId) {
 
 // 📊 تحديث الإحصائيات
 function updateStats() {
-  console.log("📊 Updating statistics...");
   const total = allOrders.length;
   const totalRevenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
 
@@ -231,27 +183,6 @@ function updateStats() {
 
   if (totalOrdersEl) totalOrdersEl.textContent = total;
   if (totalRevenueEl) totalRevenueEl.textContent = totalRevenue.toLocaleString('ar-SA');
-
-  console.log(`✅ Stats updated: ${total} orders, Revenue: ${totalRevenue}`);
 }
 
-// 📢 عرض التنبيهات
-function showAlert(message, type) {
-  console.log(`📢 Alert [${type}]: ${message}`);
-  const alertBox = document.getElementById('alertBox');
-  if (!alertBox) {
-    console.error("❌ alertBox not found!");
-    alert(message);
-    return;
-  }
-
-  alertBox.textContent = message;
-  alertBox.className = `alert alert-${type === 'error' ? 'danger' : type} show`;
-  alertBox.style.display = 'block';
-
-  setTimeout(() => {
-    alertBox.style.display = 'none';
-  }, 4000);
-}
-
-console.log("✅ app.js loaded successfully");
+console.log("✅ app.js loaded");
