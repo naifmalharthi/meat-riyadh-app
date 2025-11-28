@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - DEBUG + FIX */
+/* 🍖 لحوم الرياض - app.js - FIXED FORM SUBMISSION */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
 
@@ -13,7 +13,6 @@ function calculateTotal() {
   if (el) el.textContent = total.toLocaleString('ar-SA');
 }
 
-// 🚀 تأكد من تحميل التطبيق
 window.addEventListener('DOMContentLoaded', () => {
   console.log("🔥 DOMContentLoaded fired");
   loadOrders();
@@ -21,39 +20,46 @@ window.addEventListener('DOMContentLoaded', () => {
   setupFormListener();
 });
 
-// 📌 ربط الـ Form بطريقة موثوقة
 function setupFormListener() {
-  console.log("🔍 Looking for form...");
+  console.log("🔍 Looking for save button...");
   
-  // طريقة 1: البحث عن الـ Form بـ ID
-  const form = document.getElementById('orderForm');
-  if (form) {
-    console.log("✅ Form found by ID");
-    form.addEventListener('submit', handleAddOrder);
-  } else {
-    console.log("⚠️ Form not found by ID, searching for submit button...");
+  // البحث عن الزر بناءً على النص
+  const buttons = document.querySelectorAll('button');
+  let found = false;
+  
+  buttons.forEach((btn, idx) => {
+    const text = btn.textContent.trim();
+    console.log(`Button ${idx}: "${text}" | type: "${btn.type}"`);
     
-    // طريقة 2: البحث عن الزر مباشرة
-    const buttons = document.querySelectorAll('button');
-    buttons.forEach((btn, idx) => {
-      console.log(`Button ${idx}:`, btn.textContent, btn.type);
-      if (btn.textContent.includes('حفظ') || btn.type === 'submit') {
-        console.log("✅ Found save button:", btn.textContent);
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          handleAddOrder(e);
-        });
-      }
-    });
+    // البحث عن أي زر يحتوي على "حفظ"
+    if (text.includes('حفظ') || text.includes('Save') || btn.type === 'submit') {
+      console.log("✅ Found save button!");
+      
+      // إضافة click listener مباشر
+      btn.addEventListener('click', (e) => {
+        console.log("🔥🔥🔥 BUTTON CLICKED!");
+        e.preventDefault();
+        handleAddOrder();
+      });
+      
+      found = true;
+    }
+  });
+  
+  if (!found) {
+    console.warn("⚠️ Save button not found, trying form listener only");
   }
   
-  // طريقة 3: البحث عن جميع الـ Forms
-  const allForms = document.querySelectorAll('form');
-  console.log("Total forms found:", allForms.length);
-  allForms.forEach((f, idx) => {
-    console.log(`Form ${idx}:`, f.id);
-    f.addEventListener('submit', handleAddOrder);
-  });
+  // أيضاً ربط الـ Form نفسها
+  const form = document.getElementById('orderForm');
+  if (form) {
+    console.log("✅ Form found, adding submit listener");
+    form.addEventListener('submit', (e) => {
+      console.log("🔥 FORM SUBMIT EVENT!");
+      e.preventDefault();
+      handleAddOrder();
+    });
+  }
 }
 
 function loadOrders() {
@@ -87,50 +93,23 @@ function renderOrders() {
   `).join('');
 }
 
-// 💾 ADD ORDER - الدالة الرئيسية
-function handleAddOrder(event) {
-  console.log("🔥🔥🔥 FORM SUBMITTED!");
-  if (event) event.preventDefault();
+// 💾 ADD ORDER - دالة رئيسية بسيطة
+function handleAddOrder() {
+  console.log("🔥 handleAddOrder called");
   
-  console.log("📋 Collecting data...");
-  
-  const nameEl = document.getElementById('customerName');
-  const phoneEl = document.getElementById('customerPhone');
-  const animalEl = document.getElementById('animalType');
-  const qtyEl = document.getElementById('quantity');
-  const priceEl = document.getElementById('pricePerUnit');
-  const totalEl = document.getElementById('totalAmount');
-  const serviceEl = document.getElementById('serviceType');
-  
-  console.log("Elements found:");
-  console.log("- customerName:", nameEl ? "✅" : "❌");
-  console.log("- customerPhone:", phoneEl ? "✅" : "❌");
-  console.log("- animalType:", animalEl ? "✅" : "❌");
-  console.log("- quantity:", qtyEl ? "✅" : "❌");
-  console.log("- pricePerUnit:", priceEl ? "✅" : "❌");
-  console.log("- totalAmount:", totalEl ? "✅" : "❌");
-  console.log("- serviceType:", serviceEl ? "✅" : "❌");
-  
-  const name = nameEl?.value?.trim();
-  const phone = phoneEl?.value?.trim();
-  const animal = animalEl?.value || '';
-  const qty = parseInt(qtyEl?.value || 0);
-  const price = parseFloat(priceEl?.value || 0);
-  const total = parseFloat(totalEl?.textContent?.replace(/,/g, '') || 0);
-  const service = serviceEl?.value || '';
+  const name = document.getElementById('customerName')?.value?.trim();
+  const phone = document.getElementById('customerPhone')?.value?.trim();
+  const animal = document.getElementById('animalType')?.value || '';
+  const qty = parseInt(document.getElementById('quantity')?.value || 0);
+  const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
+  const total = parseFloat(document.getElementById('totalAmount')?.textContent?.replace(/,/g, '') || 0);
+  const service = document.getElementById('serviceType')?.value || '';
 
-  console.log("Data collected:");
-  console.log("- Name:", name);
-  console.log("- Phone:", phone);
-  console.log("- Animal:", animal);
-  console.log("- Qty:", qty);
-  console.log("- Price:", price);
-  console.log("- Total:", total);
-  console.log("- Service:", service);
+  console.log("📋 Data:", { name, phone, animal, qty, price, total, service });
 
   if (!name || !phone) {
-    console.error("❌ Missing name or phone");
     alert('❌ الرجاء ملء الاسم والهاتف');
+    console.error("❌ Name or phone missing");
     return;
   }
 
@@ -148,13 +127,10 @@ function handleAddOrder(event) {
     timestamp: new Date().toLocaleString('ar-SA')
   };
 
-  console.log("📦 Order object:", order);
-
   try {
     allOrders.push(order);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    console.log("✅ SAVED TO LOCALSTORAGE");
-    console.log("Total orders now:", allOrders.length);
+    console.log("✅ SAVED TO LOCALSTORAGE - Total:", allOrders.length);
   } catch (e) {
     console.error("❌ Save failed:", e);
     alert('❌ خطأ في الحفظ');
@@ -163,21 +139,28 @@ function handleAddOrder(event) {
 
   alert('✅ تم حفظ الطلب بنجاح!');
 
-  const formEl = document.getElementById('orderForm');
-  if (formEl) {
-    console.log("Resetting form...");
-    formEl.reset();
+  // Reset
+  const form = document.getElementById('orderForm');
+  if (form) {
+    form.reset();
+    console.log("Form reset");
   }
   
   loadOrders();
   updateStats();
 
+  // Close modal
   const modal = document.getElementById('orderModal');
   if (modal) {
-    const bsModal = bootstrap.Modal.getInstance(modal);
-    if (bsModal) bsModal.hide();
+    try {
+      const bsModal = bootstrap.Modal.getInstance(modal);
+      if (bsModal) bsModal.hide();
+    } catch (e) {
+      console.log("⚠️ Modal close:", e.message);
+    }
   }
 
+  // Sync
   syncWithGoogleSheets(order);
 }
 
@@ -210,7 +193,7 @@ function updateStats() {
   if (el1) el1.textContent = total;
   if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
   
-  console.log("📊 Stats updated: " + total + " orders, " + revenue + " revenue");
+  console.log("📊 Stats: " + total + " orders, " + revenue + " revenue");
 }
 
-console.log("✅ app.js loaded with DEBUG mode");
+console.log("✅ app.js loaded - FIXED");
