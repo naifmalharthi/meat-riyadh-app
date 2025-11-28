@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - FIX NULL TOTAL */
+/* 🍖 لحوم الرياض - app.js - FIX SYNC WITH GOOGLE SHEETS */
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygGltJNat_bWGkiTtun_npkLxXrksqbrna71TwtomcPsjnLahSLvrWQAjDXEsjoK35/exec";
 
@@ -94,22 +94,18 @@ function handleAddOrder() {
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
   const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
   
-  // ✅ FIX: احصل على الإجمالي بطرق متعددة
   let totalEl = document.getElementById('totalAmount');
   let total = 0;
   
   if (totalEl) {
-    // جرب textContent أولاً
     const textTotal = totalEl.textContent?.trim();
     if (textTotal) {
       total = parseFloat(textTotal.replace(/,/g, '')) || 0;
     }
-    // إذا لم ينجح، احسبها يدوياً
     if (total === 0) {
       total = qty * price;
     }
   } else {
-    // إذا لم توجد العنصر، احسبها من qty و price
     total = qty * price;
   }
   
@@ -139,9 +135,9 @@ function handleAddOrder() {
   try {
     allOrders.push(order);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-    console.log("✅ Order saved:", allOrders.length);
+    console.log("✅ Order saved locally:", allOrders.length);
   } catch (e) {
-    alert('❌ خطأ في الحفظ');
+    alert('❌ خطأ في الحفظ المحلي');
     return;
   }
 
@@ -163,16 +159,38 @@ function handleAddOrder() {
     }
   }
 
+  // 🔑 CRITICAL: SYNC WITH GOOGLE SHEETS
+  console.log("🔄 Attempting to sync with Google Sheets...");
+  console.log("📤 Sending data:", JSON.stringify(order));
   syncWithGoogleSheets(order);
 }
 
+// 📤 SYNC TO GOOGLE SHEETS
 function syncWithGoogleSheets(order) {
+  const payload = JSON.stringify(order);
+  
+  console.log("🌐 API URL:", APPS_SCRIPT_URL);
+  console.log("📦 Payload:", payload);
+  
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(order)
-  }).then(r => console.log("✅ Google Sheets synced"))
-    .catch(e => console.log("⚠️ Sync note:", e.message));
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    body: payload,
+    mode: 'no-cors' // ⚠️ IMPORTANT: CORS MODE
+  })
+  .then(r => {
+    console.log("✅ Response received:", r);
+    return r.text();
+  })
+  .then(text => {
+    console.log("✅ Response text:", text);
+  })
+  .catch(e => {
+    console.error("❌ Sync error:", e.message);
+    console.error("❌ Full error:", e);
+  });
 }
 
 function deleteOrder(id) {
@@ -196,4 +214,4 @@ function updateStats() {
   if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
 }
 
-console.log("✅ app.js loaded - NULL FIX");
+console.log("✅ app.js loaded - WITH GOOGLE SHEETS SYNC");
