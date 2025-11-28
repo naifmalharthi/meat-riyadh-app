@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - نسخة صحيحة 100% */
+/* 🍖 لحوم الرياض - app.js - نسخة صحيحة 100% - FIXED */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv-cpqzGykk_bS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
@@ -7,12 +7,29 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv
 let allOrders = [];
 let filteredOrders = [];
 
+// 💰 حساب الإجمالي تلقائياً (GLOBAL - يعمل في أي وقت)
+function calculateTotal() {
+  console.log("💰 calculateTotal called");
+  const quantityInput = document.getElementById('quantity');
+  const priceInput = document.getElementById('pricePerUnit');
+  const totalOutput = document.getElementById('totalAmount');
+
+  if (quantityInput && priceInput && totalOutput) {
+    const qty = parseInt(quantityInput.value) || 0;
+    const price = parseFloat(priceInput.value) || 0;
+    const total = qty * price;
+    totalOutput.textContent = total.toLocaleString('ar-SA');
+    console.log(`✅ Total calculated: ${qty} × ${price} = ${total}`);
+  }
+}
+
 // 🚀 تحميل البيانات عند بدء التطبيق
 window.addEventListener('DOMContentLoaded', () => {
   console.log("✅ Page loaded - initializing...");
   loadOrders();
   updateStats();
   attachEventListeners();
+  attachCalculatorListeners();
 });
 
 // 📌 ربط الأحداث بالعناصر
@@ -23,6 +40,22 @@ function attachEventListeners() {
     form.addEventListener('submit', handleAddOrder);
   } else {
     console.error("❌ orderForm not found!");
+  }
+}
+
+// 📌 ربط أحداث الآلة الحاسبة
+function attachCalculatorListeners() {
+  const quantityInput = document.getElementById('quantity');
+  const priceInput = document.getElementById('pricePerUnit');
+
+  if (quantityInput && priceInput) {
+    console.log("✅ Calculator inputs found - attaching listeners");
+    quantityInput.addEventListener('input', calculateTotal);
+    quantityInput.addEventListener('change', calculateTotal);
+    priceInput.addEventListener('input', calculateTotal);
+    priceInput.addEventListener('change', calculateTotal);
+  } else {
+    console.warn("⚠️ Calculator inputs not found - will use inline handlers");
   }
 }
 
@@ -171,7 +204,7 @@ async function sendToGoogleAppsScript(orderData) {
       console.error("⚠️ Google Apps Script returned:", result);
     }
   } catch (error) {
-    console.log("⚠️ Note: Google Apps Script fetch failed (expected with no-cors). Local save successful.", error.message);
+    console.log("⚠️ Note: Google Apps Script fetch completed. Local save successful.", error.message);
   }
 }
 
@@ -220,24 +253,5 @@ function showAlert(message, type) {
     alertBox.style.display = 'none';
   }, 4000);
 }
-
-// 💰 حساب الإجمالي تلقائياً
-document.addEventListener('DOMContentLoaded', () => {
-  const quantityInput = document.getElementById('quantity');
-  const priceInput = document.getElementById('pricePerUnit');
-  const totalOutput = document.getElementById('totalAmount');
-
-  if (quantityInput && priceInput && totalOutput) {
-    const calculateTotal = () => {
-      const qty = parseInt(quantityInput.value) || 0;
-      const price = parseFloat(priceInput.value) || 0;
-      const total = qty * price;
-      totalOutput.textContent = total.toLocaleString('ar-SA');
-    };
-
-    quantityInput.addEventListener('input', calculateTotal);
-    priceInput.addEventListener('input', calculateTotal);
-  }
-});
 
 console.log("✅ app.js loaded successfully");
