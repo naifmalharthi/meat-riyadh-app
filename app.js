@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - النسخة الكاملة المتقدمة */
+/* 🍖 لحوم الرياض - app.js - النسخة الجديدة الكاملة */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv-cpqzGykk_bS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
@@ -6,13 +6,13 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv
 // 🌐 المتغيرات العامة
 let allOrders = [];
 let filteredOrders = [];
+let currentSort = { field: 'id', direction: 'desc' };
 
 // 🚀 تحميل البيانات عند بدء التطبيق
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
   loadOrders();
   updateStats();
-  updateReports();
-  updateSystemInfo();
+  checkDarkMode();
 });
 
 // 💾 تحميل الطلبات من localStorage
@@ -20,124 +20,71 @@ function loadOrders() {
   allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
   filteredOrders = [...allOrders];
   renderOrders();
+  updateStats();
 }
 
-// 📝 عرض الطلبات
+// 📝 عرض الطلبات في الجدول
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
-  
+  const searchText = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const filterStatus = document.getElementById('filterStatus')?.value || '';
+
+  // تطبيق البحث والفلترة
+  filteredOrders = allOrders.filter(order => {
+    const matchesSearch = !searchText || 
+      order.id.toString().includes(searchText) ||
+      order.customer.toLowerCase().includes(searchText) ||
+      order.phone.includes(searchText);
+    
+    const matchesStatus = !filterStatus || order.status === filterStatus;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  // التصنيف
+  filteredOrders.sort((a, b) => {
+    let aVal = a[currentSort.field];
+    let bVal = b[currentSort.field];
+    
+    if (typeof aVal === 'string') {
+      aVal = aVal.toLowerCase();
+      bVal = bVal.toLowerCase();
+    }
+    
+    return currentSort.direction === 'asc' 
+      ? aVal > bVal ? 1 : -1 
+      : aVal < bVal ? 1 : -1;
+  });
+
+  // عرض الطلبات
   if (filteredOrders.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center">لا توجد طلبات</td></tr>';
     return;
   }
 
   tbody.innerHTML = filteredOrders.map(order => `
     <tr>
       <td>${order.id}</td>
-      <td>${order.customer || '-'}</td>
-      <td>${order.phone || '-'}</td>
+      <td>${order.customer}</td>
+      <td>${order.phone}</td>
       <td>${order.animal}</td>
       <td>${order.quantity}</td>
-      <td>${order.total} ر.س</td>
+      <td>${order.price}</td>
+      <td>${order.total}</td>
+      <td>${order.service}</td>
       <td>
-        <span class="badge badge-${getBadgeClass(order.status)}">
-          ${order.status}
-        </span>
+        <select class="form-control form-control-sm" onchange="updateOrderStatus('${order.id}', this.value)">
+          <option value="جديد" ${order.status === 'جديد' ? 'selected' : ''}>جديد</option>
+          <option value="قيد المعالجة" ${order.status === 'قيد المعالجة' ? 'selected' : ''}>قيد المعالجة</option>
+          <option value="تم التوصيل" ${order.status === 'تم التوصيل' ? 'selected' : ''}>تم التوصيل</option>
+          <option value="ملغى" ${order.status === 'ملغى' ? 'selected' : ''}>ملغى</option>
+        </select>
       </td>
-      <td>${order.date}</td>
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">حذف</button>
+      </td>
     </tr>
   `).join('');
-}
-
-// 🔍 تصنيف Badge
-function getBadgeClass(status) {
-  const map = {
-    'معلق': 'pending',
-    'قيد التحضير': 'processing',
-    'تم التوصيل': 'completed',
-    'ملغى': 'cancelled'
-  };
-  return map[status] || 'pending';
-}
-
-// 🔎 البحث والفلترة
-function filterOrders() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('statusFilter').value;
-
-  filteredOrders = allOrders.filter(order => {
-    const matchesSearch = !search || 
-      order.id.toLowerCase().includes(search) ||
-      order.phone.includes(search) ||
-      order.customer.toLowerCase().includes(search);
-    
-    const matchesStatus = !status || order.status === status;
-    
-    return matchesSearch && matchesStatus;
-  });
-
-  renderOrders();
-}
-
-// 📊 تحديث الإحصائيات
-function updateStats() {
-  const totalOrders = allOrders.length;
-  const totalRevenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
-  const averageAmount = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-  const pendingOrders = allOrders.filter(o => o.status === 'معلق').length;
-
-  document.getElementById('statTotal').textContent = totalOrders;
-  document.getElementById('statRevenue').textContent = totalRevenue.toFixed(0) + ' ر.س';
-  document.getElementById('statAverage').textContent = averageAmount.toFixed(0) + ' ر.س';
-  document.getElementById('statPending').textContent = pendingOrders;
-}
-
-// 📈 تحديث التقارير
-function updateReports() {
-  if (!document.getElementById('reports-tab').classList.contains('active')) return;
-
-  // أعلى مبيعة
-  const topOrder = allOrders.reduce((max, o) => (o.total > max.total ? o : max), allOrders[0] || {});
-  document.getElementById('topSale').textContent = topOrder.total ? topOrder.total + ' ر.س' : '-';
-
-  // عدد العملاء الفريدين
-  const uniqueCustomers = new Set(allOrders.map(o => o.phone)).size;
-  document.getElementById('totalCustomers').textContent = uniqueCustomers;
-
-  // أكثر ماشية
-  const animalCounts = {};
-  allOrders.forEach(o => {
-    animalCounts[o.animal] = (animalCounts[o.animal] || 0) + 1;
-  });
-  const topAnimal = Object.entries(animalCounts).sort((a, b) => b[1] - a[1])[0];
-  document.getElementById('topAnimal').textContent = topAnimal ? topAnimal[0] : '-';
-
-  // نسبة الإنجاز
-  const completed = allOrders.filter(o => o.status === 'تم التوصيل').length;
-  const rate = allOrders.length > 0 ? Math.round((completed / allOrders.length) * 100) : 0;
-  document.getElementById('completionRate').textContent = rate + '%';
-
-  // توزيع الحالات
-  document.getElementById('dist-pending').textContent = allOrders.filter(o => o.status === 'معلق').length;
-  document.getElementById('dist-processing').textContent = allOrders.filter(o => o.status === 'قيد التحضير').length;
-  document.getElementById('dist-completed').textContent = allOrders.filter(o => o.status === 'تم التوصيل').length;
-  document.getElementById('dist-cancelled').textContent = allOrders.filter(o => o.status === 'ملغى').length;
-
-  // توزيع الماشيات
-  let animalHTML = '<table style="width: 100%;">';
-  Object.entries(animalCounts)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([animal, count]) => {
-      const percentage = Math.round((count / allOrders.length) * 100) || 0;
-      animalHTML += `
-        <tr>
-          <td style="text-align: left;">${animal}</td>
-          <td style="text-align: right;">${count} (${percentage}%)</td>
-        </tr>
-      `;
-    });
-  animalHTML += '</table>';
-  document.getElementById('animalDistribution').innerHTML = animalHTML || '<p>لا توجد بيانات</p>';
 }
 
 // 💾 إضافة طلب جديد
@@ -145,6 +92,7 @@ async function handleAddOrder(event) {
   event.preventDefault();
 
   const orderData = {
+    id: 'ORD-' + Date.now(),
     customer: document.getElementById('customerName').value,
     phone: document.getElementById('customerPhone').value,
     animal: document.getElementById('animalType').value,
@@ -152,68 +100,132 @@ async function handleAddOrder(event) {
     price: parseFloat(document.getElementById('pricePerUnit').value),
     total: parseFloat(document.getElementById('totalAmount').value),
     service: document.getElementById('serviceType').value,
-    status: document.getElementById('status').value,
+    status: 'جديد',
     notes: document.getElementById('notes').value,
-    date: document.getElementById('orderDate').value,
-    id: 'ORD-' + Date.now()
+    date: new Date().toLocaleDateString('ar-SA'),
+    timestamp: new Date().toLocaleString('ar-SA')
   };
 
-try {
-  console.log("📤 Sending data to:", APPS_SCRIPT_URL);
-  console.log("📦 Data:", JSON.stringify(orderData));
-  
-  const response = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData)
-  });
-  
-  console.log("✅ Response status:", response.status);
-  console.log("✅ Response:", await response.text());
+  try {
+    console.log("📤 جاري الإرسال إلى Google Apps Script...");
+    console.log("📦 البيانات:", JSON.stringify(orderData));
 
+    // إرسال للـ Google Apps Script + Telegram + Google Sheets
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+
+    console.log("✅ الحالة:", response.status);
+    const responseText = await response.text();
+    console.log("✅ الرد:", responseText);
 
     // حفظ محلي
     allOrders.push(orderData);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
 
-    showAlert('✅ تم حفظ الطلب بنجاح! تم إشعار البائع.', 'success', 'modalAlertBox');
+    showAlert('✅ تم حفظ الطلب بنجاح! تم إشعار البائع عبر Telegram.', 'success');
+    
+    // تنظيف النموذج
+    document.getElementById('orderForm').reset();
+    document.getElementById('totalAmount').textContent = '0';
     
     loadOrders();
     updateStats();
-    updateSystemInfo();
 
-    setTimeout(() => closeOrderModal(), 1500);
+    // إغلاق الـ Modal
+    setTimeout(() => {
+      const modal = document.getElementById('orderModal');
+      if (modal) {
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+      }
+    }, 1500);
 
   } catch (error) {
-    console.error(error);
-    showAlert('❌ حدث خطأ، حاول مرة أخرى', 'error', 'modalAlertBox');
+    console.error("❌ خطأ:", error);
+    showAlert('❌ حدث خطأ: ' + error.message, 'error');
   }
 }
 
+// 🔄 تحديث حالة الطلب
+function updateOrderStatus(orderId, newStatus) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (order) {
+    order.status = newStatus;
+    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+    showAlert(`✅ تم تحديث الحالة إلى: ${newStatus}`, 'success');
+    loadOrders();
+  }
+}
+
+// 🗑️ حذف طلب
+function deleteOrder(orderId) {
+  if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+    allOrders = allOrders.filter(o => o.id !== orderId);
+    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+    showAlert('✅ تم حذف الطلب', 'success');
+    loadOrders();
+  }
+}
+
+// 📊 تحديث الإحصائيات
+function updateStats() {
+  const total = allOrders.length;
+  const delivered = allOrders.filter(o => o.status === 'تم التوصيل').length;
+  const pending = allOrders.filter(o => o.status === 'جديد' || o.status === 'قيد المعالجة').length;
+  const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+
+  document.getElementById('totalOrders').textContent = total;
+  document.getElementById('deliveredOrders').textContent = delivered;
+  document.getElementById('pendingOrders').textContent = pending;
+  document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ar-SA');
+}
+
 // 📢 عرض التنبيهات
-function showAlert(message, type, elementId = 'alertBox') {
-  const box = document.getElementById(elementId);
-  if (!box) return;
+function showAlert(message, type) {
+  const alertBox = document.getElementById('alertBox');
+  if (!alertBox) return;
   
-  box.textContent = message;
-  box.className = `alert show alert-${type}`;
+  alertBox.textContent = message;
+  alertBox.className = `alert show alert-${type}`;
   
-  setTimeout(() => box.classList.remove('show'), 4000);
+  setTimeout(() => alertBox.classList.remove('show'), 4000);
 }
 
-// 📥 تنزيل البيانات
-function downloadData() {
-  const dataStr = JSON.stringify(allOrders, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `meat-riyadh-orders-${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+// 🔍 البحث
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  const filterStatus = document.getElementById('filterStatus');
+  
+  if (searchInput) searchInput.addEventListener('input', renderOrders);
+  if (filterStatus) filterStatus.addEventListener('change', renderOrders);
+});
+
+// 💰 حساب الإجمالي تلقائياً
+function calculateTotal() {
+  const quantity = parseInt(document.getElementById('quantity').value) || 0;
+  const price = parseFloat(document.getElementById('pricePerUnit').value) || 0;
+  const total = quantity * price;
+  
+  document.getElementById('totalAmount').textContent = total.toLocaleString('ar-SA');
+  return total;
 }
 
-// 📤 استيراد البيانات
+// 🌙 الوضع المظلم
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+function checkDarkMode() {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+}
+
+// 📥 استيراد البيانات
 function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -226,32 +238,33 @@ function importData(event) {
         allOrders = data;
         localStorage.setItem('meatOrders', JSON.stringify(allOrders));
         loadOrders();
-        updateStats();
-        alert('✅ تم استيراد البيانات بنجاح!');
+        showAlert('✅ تم استيراد البيانات بنجاح!', 'success');
       }
     } catch (err) {
-      alert('❌ خطأ في الملف');
+      showAlert('❌ خطأ في الملف', 'error');
     }
   };
   reader.readAsText(file);
 }
 
+// 📤 تصدير البيانات
+function exportData() {
+  const dataStr = JSON.stringify(allOrders, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `meat-riyadh-orders-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // 🗑️ حذف جميع البيانات
 function deleteAllData() {
-  if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
+  if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا!')) {
     allOrders = [];
     localStorage.removeItem('meatOrders');
     loadOrders();
-    updateStats();
-    alert('✅ تم حذف البيانات');
+    showAlert('✅ تم حذف جميع البيانات', 'success');
   }
-}
-
-// ℹ️ معلومات النظام
-function updateSystemInfo() {
-  document.getElementById('totalOrdersInfo').textContent = allOrders.length;
-  document.getElementById('lastUpdateInfo').textContent = new Date().toLocaleString('ar-SA');
-  
-  const dataSize = (JSON.stringify(allOrders).length / 1024).toFixed(2);
-  document.getElementById('dataSize').textContent = dataSize + ' KB';
 }

@@ -3,896 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="🍖 لحوم الرياض - نظام إدارة الطلبات المتقدم">
-  <meta name="theme-color" content="#2a8f9f">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍖</text></svg>">
-  <title>🍖 لحوم الرياض v4.0 - نظام إدارة الطلبات</title>
+  <meta name="description" content="تطبيق إدارة الطلبات - لحوم الرياض">
+  <meta name="theme-color" content="#dc3545">
+  
+  <title>🍖 لحوم الرياض</title>
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  
   <style>
+    :root {
+      --primary: #dc3545;
+      --secondary: #6c757d;
+      --success: #28a745;
+      --info: #17a2b8;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    :root {
-      --primary: #2a8f9f;
-      --secondary: #1d7480;
-      --light: #f0f8f9;
-      --bg: #e8f5f7;
-      --text: #134252;
-      --border: #e0e0e0;
-      --success: #047857;
-      --warning: #FFA500;
-      --danger: #c0152f;
-      --info: #2a8f9f;
-    }
-
-    html, body {
-      height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
-      background: linear-gradient(135deg, var(--light) 0%, var(--bg) 100%);
-      padding: 20px;
-      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
-      transition: background 0.3s;
+      padding: 10px;
     }
 
     body.dark-mode {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      color: #e0e0e0;
+      background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+      color: #fff;
     }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    /* ==================== Navbar ==================== */
     .navbar {
-      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
+      background: linear-gradient(90deg, var(--primary) 0%, #ff6b6b 100%);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin-bottom: 20px;
     }
 
-    .navbar h1 {
+    .navbar .navbar-brand {
       font-size: 24px;
-      margin: 0;
-      flex: 1;
-      min-width: 200px;
+      font-weight: bold;
+      color: white !important;
     }
 
-    .navbar-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+    .navbar-text {
+      color: rgba(255,255,255,0.9) !important;
     }
 
-    /* ==================== Tabs ==================== */
-    .tabs-container {
-      background: white;
-      border-radius: 12px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-    }
-
-    .tabs-header {
-      display: flex;
-      border-bottom: 2px solid var(--border);
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 15px 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-      text-align: center;
-    }
-
-    .tab-btn:hover {
-      background: var(--light);
-    }
-
-    .tab-btn.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-    }
-
-    body.dark-mode .tab-btn {
-      color: #ccc;
-    }
-
-    body.dark-mode .tab-btn:hover {
-      background: #333;
-    }
-
-    body.dark-mode .tab-btn.active {
-      color: #4db8d6;
-    }
-
-    .tab-content {
-      display: none;
-      padding: 30px;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* ==================== Stats ==================== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      border-right: 4px solid var(--primary);
-      transition: transform 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    body.dark-mode .stat-card {
-      background: #2d2d2d;
-      border-right-color: #4db8d6;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .stat-value {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 5px;
-    }
-
-    .stat-change {
-      font-size: 12px;
-      color: var(--success);
-    }
-
-    body.dark-mode .stat-label {
-      color: #999;
-    }
-
-    body.dark-mode .stat-value {
-      color: #4db8d6;
-    }
-
-    /* ==================== Card ==================== */
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      margin-bottom: 20px;
-    }
-
-    body.dark-mode .card {
-      background: #2d2d2d;
-    }
-
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* ==================== Search & Filter ==================== */
-    .search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .search-input, .filter-select {
-      padding: 10px 15px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      min-width: 200px;
-      flex: 1;
-    }
-
-    body.dark-mode .search-input,
-    body.dark-mode .filter-select {
-      background: #1a1a1a;
-      color: #e0e0e0;
-      border-color: #444;
-    }
-
-    .search-input:focus, .filter-select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 8px rgba(42, 143, 159, 0.2);
-    }
-
-    /* ==================== Table ==================== */
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      padding: 15px;
-      text-align: right;
-      background: var(--light);
-      border-bottom: 2px solid var(--border);
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    td {
-      padding: 15px;
-      border-bottom: 1px solid var(--border);
-      text-align: right;
-    }
-
-    tr:hover {
-      background: var(--light);
-    }
-
-    body.dark-mode tr:hover {
-      background: #333;
-    }
-
-    body.dark-mode th {
-      background: #1a1a1a;
-      color: #e0e0e0;
-    }
-
-    body.dark-mode td {
-      color: #e0e0e0;
-    }
-
-    /* ==================== Status Badge ==================== */
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: white;
-    }
-
-    .badge-pending {
-      background: var(--warning);
-    }
-
-    .badge-processing {
-      background: var(--info);
-    }
-
-    .badge-completed {
-      background: var(--success);
-    }
-
-    .badge-cancelled {
-      background: var(--danger);
-    }
-
-    /* ==================== Buttons ==================== */
-    .btn {
-      padding: 10px 20px;
       border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+      background: linear-gradient(90deg, var(--primary) 0%, #ff6b6b 100%);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      font-weight: bold;
+      border: none;
+    }
+
+    .btn {
       border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: 500;
       transition: all 0.3s;
     }
 
     .btn-primary {
       background: var(--primary);
-      color: white;
+      border: none;
     }
 
     .btn-primary:hover {
-      background: var(--secondary);
+      background: #c82333;
       transform: translateY(-2px);
     }
 
-    .btn-secondary {
-      background: var(--light);
-      color: var(--text);
+    .form-control {
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      padding: 10px 15px;
     }
 
-    .btn-secondary:hover {
-      background: var(--border);
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
     }
 
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    /* ==================== Modal ==================== */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-    }
-
-    .modal.show {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
       background: white;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 95%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
-    body.dark-mode .modal-content {
-      background: #2d2d2d;
-      color: #e0e0e0;
+    .stat-card h3 {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 28px;
+    }
+
+    .stat-card p {
+      color: #666;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .table {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table thead th {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 15px;
+    }
+
+    .table tbody td {
+      padding: 12px 15px;
+      vertical-align: middle;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .alert {
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid var(--border);
-    }
-
-    .modal-header h2 {
-      margin: 0;
-      color: var(--text);
-    }
-
-    .close-btn {
-      background: none;
+      background: linear-gradient(90deg, var(--primary) 0%, #ff6b6b 100%);
+      color: white;
       border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #666;
-      transition: color 0.3s;
     }
 
-    .close-btn:hover {
-      color: var(--danger);
+    .modal-header .btn-close {
+      filter: brightness(0) invert(1);
     }
 
-    /* ==================== Form ==================== */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-grid.full {
-      grid-template-columns: 1fr;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .form-group label {
+    .form-label {
       font-weight: 600;
+      color: #333;
       margin-bottom: 8px;
-      font-size: 14px;
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      padding: 12px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 14px;
-      transition: all 0.3s;
+    .text-center {
+      text-align: center;
     }
 
-    body.dark-mode .form-group input,
-    body.dark-mode .form-group select,
-    body.dark-mode .form-group textarea {
-      background: #1a1a1a;
-      color: #e0e0e0;
-      border-color: #444;
+    body.dark-mode .card,
+    body.dark-mode .stat-card {
+      background: #2d3436;
+      color: white;
     }
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 8px rgba(42, 143, 159, 0.2);
+    body.dark-mode .table {
+      color: white;
     }
 
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
+    body.dark-mode .form-control {
+      background: #424242;
+      color: white;
+      border-color: #555;
     }
 
-    /* ==================== Alert ==================== */
-    .alert {
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: none;
-      font-size: 14px;
-      border-left: 4px solid;
-    }
-
-    .alert.show {
-      display: block;
-    }
-
-    .alert-success {
-      background: #d1f4e7;
-      color: #047857;
-      border-left-color: #047857;
-    }
-
-    .alert-error {
-      background: #fed7d7;
-      color: #c0152f;
-      border-left-color: #c0152f;
-    }
-
-    body.dark-mode .alert-success {
-      background: rgba(4, 120, 87, 0.2);
-    }
-
-    body.dark-mode .alert-error {
-      background: rgba(192, 21, 47, 0.2);
-    }
-
-    /* ==================== Dark Mode Toggle ==================== */
-    .theme-toggle {
-      background: white;
-      border: 2px solid var(--border);
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      transition: all 0.3s;
-    }
-
-    .theme-toggle:hover {
-      background: var(--light);
-    }
-
-    body.dark-mode .theme-toggle {
-      background: #1a1a1a;
-      border-color: #444;
-      color: #ffb800;
-    }
-
-    /* ==================== Responsive ==================== */
     @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
+      .stat-card {
+        margin-bottom: 15px;
       }
 
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .navbar {
-        flex-direction: column;
-      }
-
-      .tabs-header {
-        flex-wrap: wrap;
-      }
-
-      .tab-btn {
-        flex: 1;
-        min-width: 100px;
-      }
-
-      table {
+      .table {
         font-size: 12px;
       }
 
-      th, td {
-        padding: 10px;
-      }
-
-      .stat-value {
-        font-size: 24px;
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 11px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Navbar -->
-    <div class="navbar">
-      <h1>🍖 لحوم الرياض - v4.0</h1>
-      <div class="navbar-actions">
-        <button class="btn btn-primary" onclick="openOrderModal()">➕ طلب جديد</button>
-        <button class="theme-toggle" onclick="toggleDarkMode()" title="تبديل المظهر">🌙</button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">🍖 لحوم الرياض</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <span class="navbar-text me-3">آخر تحديث: <span id="lastUpdate">الآن</span></span>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-light btn-sm" onclick="toggleDarkMode()">🌙</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <!-- Alert Box -->
+    <div id="alertBox" class="alert alert-info" style="display: none;"></div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+          <h3 id="totalOrders">0</h3>
+          <p>إجمالي الطلبات</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+          <h3 id="pendingOrders" style="color: #ffc107;">0</h3>
+          <p>طلبات قيد المعالجة</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+          <h3 id="deliveredOrders" style="color: #28a745;">0</h3>
+          <p>طلبات مُنجزة</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+          <h3 id="totalRevenue" style="color: #17a2b8;">0</h3>
+          <p>إجمالي الإيرادات</p>
+        </div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-container">
-      <div class="tabs-header">
-        <button class="tab-btn active" onclick="switchTab('orders')">📦 الطلبات</button>
-        <button class="tab-btn" onclick="switchTab('reports')">📊 التقارير</button>
-        <button class="tab-btn" onclick="switchTab('settings')">⚙️ الإعدادات</button>
-      </div>
-
-      <!-- Tab 1: Orders -->
-      <div class="tab-content active" id="orders-tab">
-        <div id="alertBox" class="alert"></div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">إجمالي الطلبات</div>
-            <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-change">↑ آخر 30 يوم</div>
+    <!-- Main Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-8">
+            <h5 class="mb-0">📋 قائمة الطلبات</h5>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">الإيرادات الكلية</div>
-            <div class="stat-value" id="statRevenue">0 ر.س</div>
-            <div class="stat-change">من جميع الطلبات</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">متوسط قيمة الطلب</div>
-            <div class="stat-value" id="statAverage">0 ر.س</div>
-            <div class="stat-change">المتوسط الحالي</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">الطلبات المعلقة</div>
-            <div class="stat-value" id="statPending">0</div>
-            <div class="stat-change">بانتظار المعالجة</div>
+          <div class="col-md-4 text-end">
+            <button class="btn btn-light btn-sm" onclick="document.getElementById('searchInput').focus()">🔍 بحث</button>
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#orderModal">➕ طلب جديد</button>
+            <button class="btn btn-info btn-sm" onclick="exportData()">📤 تصدير</button>
+            <button class="btn btn-warning btn-sm" onclick="document.getElementById('importFile').click()">📥 استيراد</button>
+            <input type="file" id="importFile" style="display: none;" onchange="importData(event)" accept=".json">
           </div>
         </div>
+      </div>
 
-        <!-- Search & Filter -->
-        <div class="card">
-          <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput" placeholder="🔍 ابحث برقم الطلب أو رقم الهاتف..." onkeyup="filterOrders()">
-            <select class="filter-select" id="statusFilter" onchange="filterOrders()">
-              <option value="">جميع الحالات</option>
-              <option value="معلق">⏳ معلق</option>
-              <option value="قيد التحضير">🔄 قيد التحضير</option>
-              <option value="تم التوصيل">✅ تم التوصيل</option>
-              <option value="ملغى">❌ ملغى</option>
+      <div class="card-body">
+        <!-- Search and Filter -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="searchInput" placeholder="ابحث بـ: رقم الطلب أو الاسم أو الهاتف...">
+          </div>
+          <div class="col-md-6">
+            <select class="form-control" id="filterStatus">
+              <option value="">كل الحالات</option>
+              <option value="جديد">جديد</option>
+              <option value="قيد المعالجة">قيد المعالجة</option>
+              <option value="تم التوصيل">تم التوصيل</option>
+              <option value="ملغى">ملغى</option>
             </select>
           </div>
         </div>
 
-        <!-- Orders Table -->
-        <div class="card">
-          <h3 class="card-title">📋 جميع الطلبات</h3>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>رقم الطلب</th>
-                  <th>اسم الزبون</th>
-                  <th>الهاتف</th>
-                  <th>الماشية</th>
-                  <th>الكمية</th>
-                  <th>المبلغ</th>
-                  <th>الحالة</th>
-                  <th>التاريخ</th>
-                </tr>
-              </thead>
-              <tbody id="ordersTableBody">
-                <tr>
-                  <td colspan="8" style="text-align: center; color: #999;">لا توجد طلبات</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 2: Reports -->
-      <div class="tab-content" id="reports-tab">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">أعلى مبيعات</div>
-            <div class="stat-value" id="topSale">-</div>
-            <div class="stat-change">أفضل طلب</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">عدد العملاء</div>
-            <div class="stat-value" id="totalCustomers">0</div>
-            <div class="stat-change">عملاء مختلفون</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">أكثر ماشية طلباً</div>
-            <div class="stat-value" id="topAnimal">-</div>
-            <div class="stat-change">الأنواع الشهيرة</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">نسبة الإنجاز</div>
-            <div class="stat-value" id="completionRate">0%</div>
-            <div class="stat-change">الطلبات المنجزة</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 class="card-title">📈 توزيع الطلبات حسب الحالة</h3>
-          <div id="statusDistribution" style="padding: 20px;">
-            <table style="width: 100%;">
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
               <tr>
-                <td style="text-align: left;">معلق</td>
-                <td style="text-align: right;"><span id="dist-pending">0</span> طلب</td>
+                <th>رقم الطلب</th>
+                <th>اسم الزبون</th>
+                <th>الهاتف</th>
+                <th>الماشية</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الإجمالي</th>
+                <th>الخدمة</th>
+                <th>الحالة</th>
+                <th>الإجراء</th>
               </tr>
-              <tr>
-                <td style="text-align: left;">قيد التحضير</td>
-                <td style="text-align: right;"><span id="dist-processing">0</span> طلب</td>
-              </tr>
-              <tr>
-                <td style="text-align: left;">تم التوصيل</td>
-                <td style="text-align: right;"><span id="dist-completed">0</span> طلب</td>
-              </tr>
-              <tr>
-                <td style="text-align: left;">ملغى</td>
-                <td style="text-align: right;"><span id="dist-cancelled">0</span> طلب</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 class="card-title">🐄 توزيع الماشيات</h3>
-          <div id="animalDistribution" style="padding: 20px;"></div>
-        </div>
-      </div>
-
-      <!-- Tab 3: Settings -->
-      <div class="tab-content" id="settings-tab">
-        <div class="card">
-          <h3 class="card-title">💾 إدارة البيانات</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-            <button class="btn btn-primary" onclick="downloadData()" style="width: 100%; padding: 15px;">⬇️ تنزيل البيانات (JSON)</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" style="width: 100%; padding: 15px;">📤 استيراد بيانات</button>
-            <button class="btn btn-danger" onclick="deleteAllData()" style="width: 100%; padding: 15px;">🗑️ حذف جميع البيانات</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 class="card-title">ℹ️ معلومات النظام</h3>
-          <table style="width: 100%;">
-            <tr>
-              <td>الإصدار:</td>
-              <td style="text-align: left; color: var(--primary);">v4.0</td>
-            </tr>
-            <tr>
-              <td>عدد الطلبات المحفوظة:</td>
-              <td style="text-align: left; color: var(--primary);"><span id="totalOrdersInfo">0</span></td>
-            </tr>
-            <tr>
-              <td>آخر تحديث:</td>
-              <td style="text-align: left;" id="lastUpdateInfo">-</td>
-            </tr>
-            <tr>
-              <td>حجم البيانات:</td>
-              <td style="text-align: left;" id="dataSize">-</td>
-            </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="10" class="text-center">لا توجد طلبات بعد</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modal: Add New Order -->
-  <div id="orderModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>➕ إنشاء طلب جديد</h2>
-        <button class="close-btn" onclick="closeOrderModal()">✕</button>
+    <!-- Danger Zone -->
+    <div class="card border-danger">
+      <div class="card-header bg-danger">
+        <h5 class="mb-0">⚠️ منطقة خطرة</h5>
       </div>
-
-      <div id="modalAlertBox" class="alert"></div>
-
-      <form id="orderForm" onsubmit="handleAddOrder(event)">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>اسم الزبون *</label>
-            <input type="text" id="customerName" required>
-          </div>
-          <div class="form-group">
-            <label>رقم الهاتف *</label>
-            <input type="tel" id="customerPhone" required>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label>نوع الماشية *</label>
-            <select id="animalType" required>
-              <option value="">-- اختر --</option>
-              <option value="بقر">🐄 بقر</option>
-              <option value="غنم">🐑 غنم</option>
-              <option value="ماعز">🐐 ماعز</option>
-              <option value="جمل">🐪 جمل</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>الكمية (عدد الرؤوس) *</label>
-            <input type="number" id="quantity" min="1" required onchange="calculateTotal()">
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label>السعر للوحدة (ر.س) *</label>
-            <input type="number" id="pricePerUnit" min="0" step="100" required onchange="calculateTotal()">
-          </div>
-          <div class="form-group">
-            <label>المبلغ الإجمالي (ر.س) *</label>
-            <input type="number" id="totalAmount" readonly>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label>نوع الخدمة *</label>
-            <select id="serviceType" required>
-              <option value="">-- اختر --</option>
-              <option value="توصيل">🚚 توصيل</option>
-              <option value="استلام">📦 استلام</option>
-              <option value="تفتيش">🔍 تفتيش</option>
-              <option value="أخرى">📋 أخرى</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>حالة الطلب *</label>
-            <select id="status" required>
-              <option value="معلق">⏳ معلق</option>
-              <option value="قيد التحضير">🔄 قيد التحضير</option>
-              <option value="تم التوصيل">✅ تم التوصيل</option>
-              <option value="ملغى">❌ ملغى</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-grid full">
-          <div class="form-group">
-            <label>ملاحظات إضافية</label>
-            <textarea id="notes"></textarea>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label>تاريخ الطلب *</label>
-            <input type="date" id="orderDate" required>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button type="button" class="btn btn-secondary" onclick="closeOrderModal()">إلغاء</button>
-          <button type="submit" class="btn btn-primary">💾 حفظ الطلب</button>
-        </div>
-      </form>
+      <div class="card-body">
+        <button class="btn btn-danger" onclick="deleteAllData()">🗑️ حذف جميع البيانات</button>
+      </div>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Add Order Modal -->
+  <div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">➕ إضافة طلب جديد</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="orderForm">
+            <div class="mb-3">
+              <label class="form-label">اسم الزبون *</label>
+              <input type="text" class="form-control" id="customerName" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">رقم الهاتف *</label>
+              <input type="tel" class="form-control" id="customerPhone" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">نوع الماشية *</label>
+              <select class="form-control" id="animalType" required>
+                <option value="">اختر...</option>
+                <option value="غنم">🐑 غنم</option>
+                <option value="ماعز">🐐 ماعز</option>
+                <option value="بقر">🐄 بقر</option>
+                <option value="دجاج">🐔 دجاج</option>
+                <option value="مختلط">🐾 مختلط</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">الكمية (رأس) *</label>
+              <input type="number" class="form-control" id="quantity" min="1" required onchange="calculateTotal()">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">السعر للرأس (ر.س) *</label>
+              <input type="number" class="form-control" id="pricePerUnit" min="0" step="0.01" required onchange="calculateTotal()">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">الإجمالي (ر.س)</label>
+              <p class="form-control-plaintext text-primary fw-bold" id="totalAmount">0</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">نوع الخدمة</label>
+              <select class="form-control" id="serviceType">
+                <option value="توصيل مجاني">توصيل مجاني</option>
+                <option value="توصيل برسم">توصيل برسم</option>
+                <option value="استلام من المحل">استلام من المحل</option>
+                <option value="ذبح وتعبئة">ذبح وتعبئة</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">ملاحظات</label>
+              <textarea class="form-control" id="notes" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn btn-primary" onclick="handleAddOrder(event)">💾 حفظ الطلب</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- App JS -->
   <script src="app.js"></script>
+  
+  <!-- Service Worker -->
   <script>
-    // تسجيل Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
     }
-
-    // تبديل المظهر الداكن
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    }
-
-    // تحميل إعداد المظهر
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
-    }
-
-    // تبديل التبويبات
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabName + '-tab').classList.add('active');
-      event.target.classList.add('active');
-      updateReports();
-    }
-
-    // فتح/إغلاق Modal
-    function openOrderModal() {
-      document.getElementById('orderModal').classList.add('show');
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('orderDate').value = today;
-    }
-
-    function closeOrderModal() {
-      document.getElementById('orderModal').classList.remove('show');
-      document.getElementById('orderForm').reset();
-    }
-
-    // حساب المبلغ
-    function calculateTotal() {
-      const qty = parseFloat(document.getElementById('quantity').value) || 0;
-      const price = parseFloat(document.getElementById('pricePerUnit').value) || 0;
-      document.getElementById('totalAmount').value = (qty * price).toFixed(0);
-    }
-
-    // إغلاق Modal عند الضغط خارجه
-    window.addEventListener('click', (e) => {
-      const modal = document.getElementById('orderModal');
-      if (e.target === modal) closeOrderModal();
-    });
   </script>
 </body>
 </html>
