@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - v3.1 - COMPLETE + FIXED 🔧 */
+/* 🍖 لحوم الرياض - app.js - v3.2 - COMPLETE + FIXED + DATA ✨ */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
@@ -10,21 +10,50 @@ let filteredOrders = [];
 let selectedOrderId = null;
 let currentStatusFilter = 'all';
 
-// 🎯 تعريفات الماشية
-const animalPrices = {
-  'بقر': 3000,
-  'غنم نعيمي': 2500,
-  'غنم بربري': 1500,
-  'ماعز': 1200,
-  'جمل': 5000
+// 🎯 [📊 البيانات الكاملة] أنواع الأغنام مع الأوصاف التفصيلية
+const animalDescriptions = {
+  'غنم نعيمي': 'يتميز بجودة لحمه وطعمه الغني، يعتبر من الأنواع المطلوبة بكثرة للمناسبات',
+  'غنم نجدي': 'معروف بحجمه الكبير ولحمه المميز الغني بالعصارة',
+  'غنم حري': 'يتحمل الظروف المناخية القاسية، مناسب للبيئة الجافة',
+  'غنم سواكني': 'يتميز بلحمه الجيد وخيار اقتصادي مناسب، ألوان مختلفة (أحمر، أبيض، أسود)',
+  'غنم بربري': 'خيار صحي وطعمه خفيف، مناسب لعمليات التسمين والتجارة',
+  'ماعز': 'لحم ماعز طازج وجودة عالية',
+  'جمل': 'لحم جمل - للطلبات الكبيرة والجملة فقط'
 };
 
-const animalDescriptions = {
-  'بقر': 'ماشية كبيرة - وزن متوسط 600 كجم',
-  'غنم نعيمي': 'غنم محلي - وزن متوسط 40 كجم',
-  'غنم بربري': 'غنم مستورد - وزن متوسط 50 كجم',
-  'ماعز': 'ماعز - وزن متوسط 35 كجم',
-  'جمل': 'جمل - وزن متوسط 600 كجم'
+// 🎯 [📊 الأعمار المتاحة]
+const AGES = [
+  '6 شهور',
+  '1 سنة',
+  'سنة ونصف',
+  'سنتان'
+];
+
+// 🎯 [📊 الخدمات المتاحة]
+const SERVICES = {
+  'توصيل مجاني': { name: 'توصيل مجاني', price: 0, description: 'توصيل مجاني داخل الرياض' },
+  'توصيل برسم': { name: 'توصيل برسم', price: 50, description: 'يبدأ من 50 ريال + 1 ريال/كم' },
+  'ذبح': { name: 'خدمة الذبح', price: 20, description: 'خدمة الذبح الحلال' },
+  'تقطيع': { name: 'خدمة التقطيع', price: 25, description: 'تقطيع اللحم بحسب الطلب' },
+  'تغليف': { name: 'خدمة التغليف', price: 15, description: 'تغليف احترافي وآمن' },
+  'استلام من المحل': { name: 'استلام من المحل', price: 0, description: 'استلام من محل الشفا' }
+};
+
+// 🎯 [📊 المناطق]
+const REGIONS = {
+  'الرياض': { name: 'الرياض', minQty: 1 },
+  'خارج الرياض (جملة فقط)': { name: 'خارج الرياض', minQty: 10 }
+};
+
+// 🎯 [📊 الأسعار المرجعية للحيوانات]
+const animalPrices = {
+  'غنم نعيمي': 1800,
+  'غنم نجدي': 1900,
+  'غنم حري': 1600,
+  'غنم سواكني': 1500,
+  'غنم بربري': 1400,
+  'ماعز': 1200,
+  'جمل': 5000
 };
 
 // 🌙 [🔧 إصلاح 1] DARK MODE - وضع غامق
@@ -67,7 +96,7 @@ function calculateTotal() {
   }
 }
 
-// 🐄 اختيار نوع الماشية
+// 🐄 اختيار نوع الماشية - محسّنة مع البيانات الجديدة
 function onAnimalChange() {
   const animalSelect = document.getElementById('animalType');
   const descBox = document.getElementById('animalDescBox');
@@ -95,6 +124,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // 🌙 Initialize Dark Mode
   initDarkMode();
   
+  // 📊 Populate dropdowns with data
+  populateSelects();
+  
   // Load and setup
   loadOrders();
   updateStats();
@@ -105,6 +137,60 @@ window.addEventListener('DOMContentLoaded', () => {
   
   console.log("✅ App Ready!");
 });
+
+// 📊 [جديد] ملء القوائم المنسدلة من البيانات
+function populateSelects() {
+  // Fill Animals
+  const animalSelect = document.getElementById('animalType');
+  if (animalSelect) {
+    animalSelect.innerHTML = '<option value="">اختر نوع الحيوان</option>';
+    Object.keys(animalDescriptions).forEach(animal => {
+      const option = document.createElement('option');
+      option.value = animal;
+      option.textContent = animal;
+      animalSelect.appendChild(option);
+    });
+  }
+
+  // Fill Ages
+  const ageSelect = document.getElementById('animalAge');
+  if (ageSelect) {
+    ageSelect.innerHTML = '<option value="">اختر العمر</option>';
+    AGES.forEach(age => {
+      const option = document.createElement('option');
+      option.value = age;
+      option.textContent = age;
+      ageSelect.appendChild(option);
+    });
+  }
+
+  // Fill Services
+  const serviceSelect = document.getElementById('serviceType');
+  if (serviceSelect) {
+    serviceSelect.innerHTML = '<option value="">اختر الخدمة</option>';
+    Object.keys(SERVICES).forEach(key => {
+      const service = SERVICES[key];
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = service.name;
+      option.title = service.description;
+      serviceSelect.appendChild(option);
+    });
+  }
+
+  // Fill Regions
+  const regionSelect = document.getElementById('region');
+  if (regionSelect) {
+    regionSelect.innerHTML = '<option value="">اختر المنطقة</option>';
+    Object.keys(REGIONS).forEach(key => {
+      const region = REGIONS[key];
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = region.name;
+      regionSelect.appendChild(option);
+    });
+  }
+}
 
 // 🎯 Setup all event listeners
 function setupEventListeners() {
@@ -168,6 +254,7 @@ async function handleAddOrder() {
   const name = document.getElementById('customerName')?.value?.trim();
   const phone = document.getElementById('customerPhone')?.value?.trim();
   const animal = document.getElementById('animalType')?.value;
+  const age = document.getElementById('animalAge')?.value || '';
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
   const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
   
@@ -183,6 +270,7 @@ async function handleAddOrder() {
   const status = document.getElementById('status')?.value || 'معلق';
   const notes = document.getElementById('notes')?.value || '';
   const date = document.getElementById('orderDate')?.value;
+  const region = document.getElementById('region')?.value || 'الرياض';
 
   // Validation
   if (!name || !phone || !animal || qty <= 0 || price <= 0) {
@@ -195,6 +283,7 @@ async function handleAddOrder() {
     customer: name,
     phone: phone,
     animal: animal,
+    age: age,
     quantity: qty,
     price: price,
     total: total,
@@ -202,6 +291,7 @@ async function handleAddOrder() {
     status: status,
     notes: notes,
     date: date,
+    region: region,
     timestamp: new Date().toLocaleString('ar-SA')
   };
 
@@ -398,4 +488,4 @@ function closeOrderModal() {
 }
 
 // ✅ COMPLETE APP LOADED
-console.log("✅ app.js loaded - v3.1 - COMPLETE + FIXED ✨");
+console.log("✅ app.js loaded - v3.2 - COMPLETE + FIXED + DATA ✨");
