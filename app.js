@@ -1,12 +1,10 @@
-/* 🍖 لحوم الرياض - app.js - نسخة بسيطة وموثوقة */
+/* 🍖 لحوم الرياض - app.js - DEBUG + FIX */
 
-// ⚙️ إعدادات
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
 
 let allOrders = [];
 let filteredOrders = [];
 
-// 💰 حساب الإجمالي
 function calculateTotal() {
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
   const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
@@ -15,27 +13,55 @@ function calculateTotal() {
   if (el) el.textContent = total.toLocaleString('ar-SA');
 }
 
-// 🚀 Start
+// 🚀 تأكد من تحميل التطبيق
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("✅ App loaded");
+  console.log("🔥 DOMContentLoaded fired");
   loadOrders();
   updateStats();
-  
-  // ربط الـ Form
-  const form = document.getElementById('orderForm');
-  if (form) {
-    form.addEventListener('submit', handleAddOrder);
-  }
+  setupFormListener();
 });
 
-// 💾 Load Orders
+// 📌 ربط الـ Form بطريقة موثوقة
+function setupFormListener() {
+  console.log("🔍 Looking for form...");
+  
+  // طريقة 1: البحث عن الـ Form بـ ID
+  const form = document.getElementById('orderForm');
+  if (form) {
+    console.log("✅ Form found by ID");
+    form.addEventListener('submit', handleAddOrder);
+  } else {
+    console.log("⚠️ Form not found by ID, searching for submit button...");
+    
+    // طريقة 2: البحث عن الزر مباشرة
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((btn, idx) => {
+      console.log(`Button ${idx}:`, btn.textContent, btn.type);
+      if (btn.textContent.includes('حفظ') || btn.type === 'submit') {
+        console.log("✅ Found save button:", btn.textContent);
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          handleAddOrder(e);
+        });
+      }
+    });
+  }
+  
+  // طريقة 3: البحث عن جميع الـ Forms
+  const allForms = document.querySelectorAll('form');
+  console.log("Total forms found:", allForms.length);
+  allForms.forEach((f, idx) => {
+    console.log(`Form ${idx}:`, f.id);
+    f.addEventListener('submit', handleAddOrder);
+  });
+}
+
 function loadOrders() {
   allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
   filteredOrders = [...allOrders];
   renderOrders();
 }
 
-// 📝 Render
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
@@ -61,22 +87,49 @@ function renderOrders() {
   `).join('');
 }
 
-// 💾 ADD ORDER
+// 💾 ADD ORDER - الدالة الرئيسية
 function handleAddOrder(event) {
-  event.preventDefault();
+  console.log("🔥🔥🔥 FORM SUBMITTED!");
+  if (event) event.preventDefault();
   
-  const name = document.getElementById('customerName')?.value?.trim();
-  const phone = document.getElementById('customerPhone')?.value?.trim();
-  const animal = document.getElementById('animalType')?.value || '';
-  const qty = parseInt(document.getElementById('quantity')?.value || 0);
-  const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const total = parseFloat(document.getElementById('totalAmount')?.textContent?.replace(/,/g, '') || 0);
-  const service = document.getElementById('serviceType')?.value || '';
-  const status = 'جديد';
-  const date = new Date().toLocaleDateString('ar-SA');
-  const timestamp = new Date().toLocaleString('ar-SA');
+  console.log("📋 Collecting data...");
+  
+  const nameEl = document.getElementById('customerName');
+  const phoneEl = document.getElementById('customerPhone');
+  const animalEl = document.getElementById('animalType');
+  const qtyEl = document.getElementById('quantity');
+  const priceEl = document.getElementById('pricePerUnit');
+  const totalEl = document.getElementById('totalAmount');
+  const serviceEl = document.getElementById('serviceType');
+  
+  console.log("Elements found:");
+  console.log("- customerName:", nameEl ? "✅" : "❌");
+  console.log("- customerPhone:", phoneEl ? "✅" : "❌");
+  console.log("- animalType:", animalEl ? "✅" : "❌");
+  console.log("- quantity:", qtyEl ? "✅" : "❌");
+  console.log("- pricePerUnit:", priceEl ? "✅" : "❌");
+  console.log("- totalAmount:", totalEl ? "✅" : "❌");
+  console.log("- serviceType:", serviceEl ? "✅" : "❌");
+  
+  const name = nameEl?.value?.trim();
+  const phone = phoneEl?.value?.trim();
+  const animal = animalEl?.value || '';
+  const qty = parseInt(qtyEl?.value || 0);
+  const price = parseFloat(priceEl?.value || 0);
+  const total = parseFloat(totalEl?.textContent?.replace(/,/g, '') || 0);
+  const service = serviceEl?.value || '';
+
+  console.log("Data collected:");
+  console.log("- Name:", name);
+  console.log("- Phone:", phone);
+  console.log("- Animal:", animal);
+  console.log("- Qty:", qty);
+  console.log("- Price:", price);
+  console.log("- Total:", total);
+  console.log("- Service:", service);
 
   if (!name || !phone) {
+    console.error("❌ Missing name or phone");
     alert('❌ الرجاء ملء الاسم والهاتف');
     return;
   }
@@ -90,54 +143,55 @@ function handleAddOrder(event) {
     price: price,
     total: total,
     service: service,
-    status: status,
-    date: date,
-    timestamp: timestamp
+    status: 'جديد',
+    date: new Date().toLocaleDateString('ar-SA'),
+    timestamp: new Date().toLocaleString('ar-SA')
   };
 
-  // SAVE
-  allOrders.push(order);
-  localStorage.setItem('meatOrders', JSON.stringify(allOrders));
-  
-  console.log("✅ Order saved:", order);
+  console.log("📦 Order object:", order);
 
-  // ALERT
+  try {
+    allOrders.push(order);
+    localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+    console.log("✅ SAVED TO LOCALSTORAGE");
+    console.log("Total orders now:", allOrders.length);
+  } catch (e) {
+    console.error("❌ Save failed:", e);
+    alert('❌ خطأ في الحفظ');
+    return;
+  }
+
   alert('✅ تم حفظ الطلب بنجاح!');
 
-  // Reset form
-  document.getElementById('orderForm')?.reset?.();
+  const formEl = document.getElementById('orderForm');
+  if (formEl) {
+    console.log("Resetting form...");
+    formEl.reset();
+  }
   
-  // Update UI
   loadOrders();
   updateStats();
 
-  // Close modal
   const modal = document.getElementById('orderModal');
   if (modal) {
     const bsModal = bootstrap.Modal.getInstance(modal);
-    bsModal?.hide?.();
+    if (bsModal) bsModal.hide();
   }
 
-  // Try to sync with Google Sheets (non-blocking)
   syncWithGoogleSheets(order);
 }
 
-// 📤 Sync with Google Sheets
 function syncWithGoogleSheets(order) {
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
-  }).then(r => {
-    console.log("✅ Synced with Google Sheets");
-  }).catch(e => {
-    console.log("⚠️ Google Sheets sync failed (local save is safe):", e.message);
-  });
+  }).then(r => console.log("✅ Google Sheets synced"))
+    .catch(e => console.log("⚠️ GAS:", e.message));
 }
 
-// 🗑️ Delete
 function deleteOrder(id) {
-  if (confirm('حذف هذا الطلب؟')) {
+  if (confirm('حذف؟')) {
     allOrders = allOrders.filter(o => o.id !== id);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
     loadOrders();
@@ -146,7 +200,6 @@ function deleteOrder(id) {
   }
 }
 
-// 📊 Stats
 function updateStats() {
   const total = allOrders.length;
   const revenue = allOrders.reduce((s, o) => s + (o.total || 0), 0);
@@ -156,6 +209,8 @@ function updateStats() {
   
   if (el1) el1.textContent = total;
   if (el2) el2.textContent = revenue.toLocaleString('ar-SA');
+  
+  console.log("📊 Stats updated: " + total + " orders, " + revenue + " revenue");
 }
 
-console.log("✅ App ready");
+console.log("✅ app.js loaded with DEBUG mode");
