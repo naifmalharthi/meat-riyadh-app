@@ -1,7 +1,7 @@
 /* 🍖 لحوم الرياض - app.js - النسخة الكاملة المتقدمة */
 
 // ⚙️ إعدادات Google Apps Script
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7yw44zyt6umfDsMAbRKSI0upyVwJ8GwUexgktNjeJ/dev";
 
 // 🌐 المتغيرات العامة
 let allOrders = [];
