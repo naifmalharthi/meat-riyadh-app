@@ -147,7 +147,6 @@ async function handleAddOrder(event) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
-        mode: 'no-cors'
       });
 
       console.log("✅ تم الإرسال للـ Google Apps Script");
