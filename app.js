@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - النسخة الجديدة الكاملة */
+/* 🍖 لحوم الرياض - app.js - النسخة المصححة */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSy_TUYejv-cpqzGykk_bS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
@@ -13,7 +13,16 @@ window.addEventListener('DOMContentLoaded', () => {
   loadOrders();
   updateStats();
   checkDarkMode();
+  setupEventListeners();
 });
+
+// 📌 ربط حدث الزر
+function setupEventListeners() {
+  const form = document.getElementById('orderForm');
+  if (form) {
+    form.addEventListener('submit', handleAddOrder);
+  }
+}
 
 // 💾 تحميل الطلبات من localStorage
 function loadOrders() {
@@ -26,6 +35,8 @@ function loadOrders() {
 // 📝 عرض الطلبات في الجدول
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
+
   const searchText = document.getElementById('searchInput')?.value.toLowerCase() || '';
   const filterStatus = document.getElementById('filterStatus')?.value || '';
 
@@ -87,49 +98,75 @@ function renderOrders() {
   `).join('');
 }
 
+// 💰 حساب الإجمالي تلقائياً
+function calculateTotal() {
+  const quantity = parseInt(document.getElementById('quantity')?.value) || 0;
+  const price = parseFloat(document.getElementById('pricePerUnit')?.value) || 0;
+  const total = quantity * price;
+  
+  const totalElement = document.getElementById('totalAmount');
+  if (totalElement) {
+    totalElement.textContent = total.toLocaleString('ar-SA');
+  }
+  return total;
+}
+
 // 💾 إضافة طلب جديد
 async function handleAddOrder(event) {
   event.preventDefault();
-
-  const orderData = {
-    id: 'ORD-' + Date.now(),
-    customer: document.getElementById('customerName').value,
-    phone: document.getElementById('customerPhone').value,
-    animal: document.getElementById('animalType').value,
-    quantity: parseInt(document.getElementById('quantity').value),
-    price: parseFloat(document.getElementById('pricePerUnit').value),
-    total: parseFloat(document.getElementById('totalAmount').value),
-    service: document.getElementById('serviceType').value,
-    status: 'جديد',
-    notes: document.getElementById('notes').value,
-    date: new Date().toLocaleDateString('ar-SA'),
-    timestamp: new Date().toLocaleString('ar-SA')
-  };
+  
+  console.log("📤 جاري معالجة الطلب...");
 
   try {
-    console.log("📤 جاري الإرسال إلى Google Apps Script...");
-    console.log("📦 البيانات:", JSON.stringify(orderData));
+    const orderData = {
+      id: 'ORD-' + Date.now(),
+      customer: document.getElementById('customerName')?.value || '',
+      phone: document.getElementById('customerPhone')?.value || '',
+      animal: document.getElementById('animalType')?.value || '',
+      quantity: parseInt(document.getElementById('quantity')?.value) || 0,
+      price: parseFloat(document.getElementById('pricePerUnit')?.value) || 0,
+      total: parseFloat(document.getElementById('totalAmount')?.textContent || '0'),
+      service: document.getElementById('serviceType')?.value || '',
+      status: 'جديد',
+      notes: document.getElementById('notes')?.value || '',
+      date: new Date().toLocaleDateString('ar-SA'),
+      timestamp: new Date().toLocaleString('ar-SA')
+    };
 
-    // إرسال للـ Google Apps Script + Telegram + Google Sheets
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData)
-    });
+    // التحقق من البيانات
+    if (!orderData.customer || !orderData.phone) {
+      showAlert('❌ الرجاء ملء جميع الحقول المطلوبة', 'error');
+      return;
+    }
 
-    console.log("✅ الحالة:", response.status);
-    const responseText = await response.text();
-    console.log("✅ الرد:", responseText);
+    console.log("✅ بيانات الطلب:", JSON.stringify(orderData));
 
-    // حفظ محلي
+    // محاولة الإرسال لـ Google Apps Script
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+        mode: 'no-cors'
+      });
+
+      console.log("✅ تم الإرسال للـ Google Apps Script");
+    } catch (error) {
+      console.log("⚠️ تحذير:", error.message);
+    }
+
+    // حفظ محلي (هام!)
     allOrders.push(orderData);
     localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+    console.log("💾 تم الحفظ محلياً");
 
-    showAlert('✅ تم حفظ الطلب بنجاح! تم إشعار البائع عبر Telegram.', 'success');
+    showAlert('✅ تم حفظ الطلب بنجاح!', 'success');
     
     // تنظيف النموذج
-    document.getElementById('orderForm').reset();
-    document.getElementById('totalAmount').textContent = '0';
+    const form = document.getElementById('orderForm');
+    if (form) form.reset();
+    const totalElement = document.getElementById('totalAmount');
+    if (totalElement) totalElement.textContent = '0';
     
     loadOrders();
     updateStats();
@@ -175,12 +212,17 @@ function updateStats() {
   const total = allOrders.length;
   const delivered = allOrders.filter(o => o.status === 'تم التوصيل').length;
   const pending = allOrders.filter(o => o.status === 'جديد' || o.status === 'قيد المعالجة').length;
-  const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+  const totalRevenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
 
-  document.getElementById('totalOrders').textContent = total;
-  document.getElementById('deliveredOrders').textContent = delivered;
-  document.getElementById('pendingOrders').textContent = pending;
-  document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ar-SA');
+  const totalOrdersEl = document.getElementById('totalOrders');
+  const deliveredEl = document.getElementById('deliveredOrders');
+  const pendingEl = document.getElementById('pendingOrders');
+  const revenueEl = document.getElementById('totalRevenue');
+
+  if (totalOrdersEl) totalOrdersEl.textContent = total;
+  if (deliveredEl) deliveredEl.textContent = delivered;
+  if (pendingEl) pendingEl.textContent = pending;
+  if (revenueEl) revenueEl.textContent = totalRevenue.toLocaleString('ar-SA');
 }
 
 // 📢 عرض التنبيهات
@@ -189,9 +231,12 @@ function showAlert(message, type) {
   if (!alertBox) return;
   
   alertBox.textContent = message;
-  alertBox.className = `alert show alert-${type}`;
+  alertBox.className = `alert alert-${type === 'error' ? 'danger' : type} show`;
+  alertBox.style.display = 'block';
   
-  setTimeout(() => alertBox.classList.remove('show'), 4000);
+  setTimeout(() => {
+    alertBox.style.display = 'none';
+  }, 4000);
 }
 
 // 🔍 البحث
@@ -202,16 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) searchInput.addEventListener('input', renderOrders);
   if (filterStatus) filterStatus.addEventListener('change', renderOrders);
 });
-
-// 💰 حساب الإجمالي تلقائياً
-function calculateTotal() {
-  const quantity = parseInt(document.getElementById('quantity').value) || 0;
-  const price = parseFloat(document.getElementById('pricePerUnit').value) || 0;
-  const total = quantity * price;
-  
-  document.getElementById('totalAmount').textContent = total.toLocaleString('ar-SA');
-  return total;
-}
 
 // 🌙 الوضع المظلم
 function toggleDarkMode() {
