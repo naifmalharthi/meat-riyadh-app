@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - v3.3 - COMPLETE + FIXED + DATA + MODAL FIX ✨ */
+/* 🍖 لحوم الرياض - app.js - v3.4 - FIXED DEFAULT LIGHT MODE ✨ */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
@@ -56,14 +56,21 @@ const animalPrices = {
   'جمل': 5000
 };
 
-// 🌙 [🔧 إصلاح 1] DARK MODE - وضع غامق
+// 🌙 [🔧 إصلاح 1] DARK MODE - وضع غامق - الآن الافتراضي Light Mode
 function initDarkMode() {
   const darkModeBtn = document.getElementById('darkModeToggle');
-  const savedMode = localStorage.getItem('darkMode') === 'true';
+  const savedMode = localStorage.getItem('darkMode');
   
-  if (savedMode) {
+  // ✅ إذا لم يتم حفظ أي شيء، نستخدم Light Mode (false)
+  // إذا كان مخزن، نستخدم القيمة المحفوظة
+  const isDarkMode = savedMode === 'true' ? true : false;
+  
+  if (isDarkMode) {
     document.documentElement.setAttribute('data-color-scheme', 'dark');
     if (darkModeBtn) darkModeBtn.textContent = '☀️ وضع فاتح';
+  } else {
+    document.documentElement.removeAttribute('data-color-scheme');
+    if (darkModeBtn) darkModeBtn.textContent = '🌙 وضع غامق';
   }
   
   if (darkModeBtn) {
@@ -139,7 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // ❌ [NEW] إغلاق Modal أولاً - قبل أي شيء
   initializeModal();
   
-  // 🌙 Initialize Dark Mode
+  // 🌙 Initialize Dark Mode - الآن Light Mode افتراضياً
   initDarkMode();
   
   // 📊 Populate dropdowns with data
@@ -506,4 +513,4 @@ function closeOrderModal() {
 }
 
 // ✅ COMPLETE APP LOADED
-console.log("✅ app.js loaded - v3.3 - COMPLETE + FIXED + DATA + MODAL FIX ✨");
+console.log("✅ app.js loaded - v3.4 - COMPLETE + FIXED + DATA + MODAL CLOSE + DEFAULT LIGHT MODE ✨");
