@@ -1,4 +1,4 @@
-/* 🍖 لحوم الرياض - app.js - v3.2 - COMPLETE + FIXED + DATA ✨ */
+/* 🍖 لحوم الرياض - app.js - v3.3 - COMPLETE + FIXED + DATA + MODAL FIX ✨ */
 
 // ⚙️ إعدادات Google Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
@@ -117,9 +117,27 @@ function onAnimalChange() {
   }
 }
 
+// ❌ [🔧 إصلاح 4] إغلاق Modal تلقائياً عند البدء
+function initializeModal() {
+  const modal = document.getElementById('orderModal');
+  if (modal) {
+    try {
+      const bsModal = bootstrap?.Modal?.getInstance(modal);
+      if (bsModal) bsModal.hide();
+    } catch (e) {
+      console.log("Modal initialization attempted");
+    }
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+  }
+}
+
 // 🚀 تحميل البيانات عند بدء التطبيق
 window.addEventListener('DOMContentLoaded', () => {
   console.log("🔥 App DOMContentLoaded - Loading data...");
+  
+  // ❌ [NEW] إغلاق Modal أولاً - قبل أي شيء
+  initializeModal();
   
   // 🌙 Initialize Dark Mode
   initDarkMode();
@@ -488,4 +506,4 @@ function closeOrderModal() {
 }
 
 // ✅ COMPLETE APP LOADED
-console.log("✅ app.js loaded - v3.2 - COMPLETE + FIXED + DATA ✨");
+console.log("✅ app.js loaded - v3.3 - COMPLETE + FIXED + DATA + MODAL FIX ✨");
