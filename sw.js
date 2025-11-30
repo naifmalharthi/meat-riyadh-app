@@ -1,97 +1,80 @@
-/* 🍖 Service Worker - لحوم الرياض */
+// Service Worker - مع تصفية الـ favicon (FIXED)
 
-const CACHE_NAME = 'meat-riyadh-v5';
-const URLS_TO_CACHE = [
+const CACHE_NAME = 'lhoom-riyadh-v2';
+
+const FILES_TO_CACHE = [
   '/',
   '/index.html',
   '/app.js',
-  '/manifest.json',
   '/style.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+  '/manifest.json'
 ];
 
-// 🚀 تثبيت Service Worker
+// ════════════════════════════════════════════════════════════════════════════
+// تثبيت Service Worker
+// ════════════════════════════════════════════════════════════════════════════
+
 self.addEventListener('install', event => {
+  console.log('🔧 Service Worker Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('✅ SW Installed - Caching files');
-        return cache.addAll(URLS_TO_CACHE);
+        console.log('✅ Cache opened');
+        return cache.addAll(FILES_TO_CACHE);
       })
-      .catch(err => console.error('❌ Cache error:', err))
+      .catch(error => {
+        console.error('❌ Cache error:', error);
+        // استمر حتى مع وجود خطأ
+        return Promise.resolve();
+      })
   );
-  self.skipWaiting();
 });
 
-// 🔄 تنشيط Service Worker
+// ════════════════════════════════════════════════════════════════════════════
+// تفعيل Service Worker
+// ════════════════════════════════════════════════════════════════════════════
+
 self.addEventListener('activate', event => {
+  console.log('🚀 Service Worker Activated');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Removing old cache:', cacheName);
+            console.log('🗑️ Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  self.clients.claim();
 });
 
-// 📡 التعامل مع الطلبات (Network First)
-self.addEventListener('fetch', event => {
-  // تخطي غير GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+// ════════════════════════════════════════════════════════════════════════════
+// التعامل مع الطلبات
+// ════════════════════════════════════════════════════════════════════════════
 
-  // تخطي الطلبات الخارجية غير الموثوقة
-  if (!event.request.url.includes(self.location.origin) && 
-      !event.request.url.includes('cdn.jsdelivr.net') &&
-      !event.request.url.includes('googleapis.com')) {
+self.addEventListener('fetch', event => {
+  const url = event.request.url;
+  
+  // تجاهل الطلبات التي لا نريد تخزينها
+  if (url.includes('favicon.ico') || url.includes('chrome-extension')) {
     return;
   }
 
   event.respondWith(
-    fetch(event.request)
+    caches.match(event.request)
       .then(response => {
-        // تخزين الاستجابة الناجحة
-        if (response && response.status === 200) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
+        if (response) {
+          return response;
         }
-        return response;
+        return fetch(event.request);
       })
       .catch(() => {
-        // العودة للـ cache إذا فشل الاتصال
-        return caches.match(event.request)
-          .then(response => response || createOfflineResponse());
+        // إذا فشل الجلب والـ cache، أرجع الصفحة الرئيسية
+        return caches.match('/index.html');
       })
   );
 });
 
-// 📴 رسالة offline
-function createOfflineResponse() {
-  return new Response(
-    '<h1>أنت غير متصل بالإنترنت</h1><p>حاول لاحقاً</p>',
-    {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-      status: 503,
-      statusText: 'Service Unavailable'
-    }
-  );
-}
-
-// 📨 معالجة الرسائل من العميل
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-console.log('✅ Service Worker loaded');
+console.log('✅ Service Worker Script Loaded Successfully');

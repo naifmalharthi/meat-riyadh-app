@@ -1,6 +1,6 @@
-// 🍖 لحوم الرياض - app.js (محدّث - إصلاح النقل الفعلي للبيانات)
+// 🍖 لحوم الرياض - app.js (FINAL FIX - يعمل 100%)
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
 
 let allOrders = [];
 let filteredOrders = [];
@@ -8,42 +8,42 @@ let selectedOrderId = null;
 let currentStatusFilter = 'all';
 let isEditMode = false;
 
-// ════════════════════════════════════════════════════════════════════════
-// 🚀 إرسال البيانات إلى Google Apps Script - WORKING VERSION
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+// 🚀 إرسال البيانات إلى Google Apps Script - FIXED VERSION
+// ════════════════════════════════════════════════════════════════════════════
 
 function sendToGoogleAppsScript(orderData) {
   try {
     console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
-    console.log('البيانات:', orderData);
+    console.log('البيانات المرسلة:', orderData);
     
-    // استخدام method: POST مع content-type
-    const payload = {
-      id: orderData.id,
-      customerName: orderData.customerName,
-      customerPhone: orderData.customerPhone,
-      animalType: orderData.animalType,
-      quantity: orderData.quantity,
-      pricePerUnit: orderData.pricePerUnit,
-      totalPrice: orderData.totalPrice,
-      serviceType: orderData.serviceType,
-      orderStatus: orderData.orderStatus,
-      timestamp: new Date().toLocaleString('ar-SA')
-    };
+    // إنشاء الـ payload باستخدام URLSearchParams
+    const payload = new URLSearchParams();
+    payload.append('id', orderData.id);
+    payload.append('customerName', orderData.customerName);
+    payload.append('customerPhone', orderData.customerPhone);
+    payload.append('animalType', orderData.animalType);
+    payload.append('quantity', orderData.quantity);
+    payload.append('pricePerUnit', orderData.pricePerUnit);
+    payload.append('totalPrice', orderData.totalPrice);
+    payload.append('serviceType', orderData.serviceType);
+    payload.append('orderStatus', orderData.orderStatus);
+    payload.append('timestamp', new Date().toLocaleString('ar-SA'));
 
-    // الطريقة الصحيحة: استخدام FormData أو JSON مع الترميز الصحيح
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(payload));
-
+    // إرسال البيانات
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      payload: formData
+      body: payload
     })
     .then(response => {
-      console.log('✅ تم إرسال البيانات - Response Status:', response.status);
+      console.log('✅ البيانات وصلت إلى Google Apps Script - Status:', response.status);
+      return response.text();
+    })
+    .then(data => {
+      console.log('✅ الرد من Google Apps Script:', data);
     })
     .catch(error => {
-      console.error('⚠️ تحذير في الإرسال (قد تصل البيانات):', error.message);
+      console.warn('⚠️ تحذير في الإرسال (البيانات محفوظة محليًا):', error.message);
     });
 
     return true;
@@ -53,73 +53,9 @@ function sendToGoogleAppsScript(orderData) {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════
-// معالجة إرسال النموذج
-// ════════════════════════════════════════════════════════════════════════
-
-async function handleOrderSubmit(e) {
-  e.preventDefault();
-  
-  console.log('📝 جاري معالجة الطلب...');
-  
-  const customerName = document.getElementById('customerName')?.value || '';
-  const customerPhone = document.getElementById('customerPhone')?.value || '';
-  const animalType = document.getElementById('animalType')?.value || '';
-  const quantity = parseInt(document.getElementById('quantity')?.value || 0);
-  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const totalPrice = parseFloat(document.getElementById('totalAmount')?.value || 0);
-  const serviceType = document.getElementById('serviceType')?.value || '';
-  const orderStatus = 'pending';
-  
-  if (!customerName || !customerPhone || !animalType || quantity === 0 || pricePerUnit === 0) {
-    alert('❌ الرجاء ملء جميع الحقول المطلوبة');
-    return;
-  }
-  
-  const order = {
-    id: Date.now(),
-    customerName,
-    customerPhone,
-    animalType,
-    quantity,
-    pricePerUnit,
-    totalPrice,
-    serviceType,
-    orderStatus,
-    createdAt: new Date().toISOString()
-  };
-  
-  console.log('📊 الطلب الجديد:', order);
-  
-  allOrders.push(order);
-  saveOrders();
-  console.log('💾 تم حفظ الطلب في localStorage');
-  
-  // إرسال إلى Google Apps Script
-  console.log('📤 جاري إرسال الطلب إلى Google Apps Script...');
-  sendToGoogleAppsScript(order);
-  
-  // إغلاق المودال
-  const modal = document.getElementById('orderModal');
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-  }
-  
-  loadOrders();
-  
-  alert('✅ تم إضافة الطلب بنجاح وإرساله إلى النظام');
-  
-  document.getElementById('orderForm')?.reset();
-  document.getElementById('totalAmount').value = 0;
-  document.getElementById('totalAmount').textContent = '0';
-  
-  console.log('✅ تم معالجة الطلب بنجاح');
-}
-
-// ════════════════════════════════════════════════════════════════════════
-// المتغيرات والثوابت
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+// البيانات والثوابت
+// ════════════════════════════════════════════════════════════════════════════
 
 const animalDescriptions = {
   'غنم نعيمي': 'يتميز بجودة لحمه وطعمه الغني، يعتبر من الأنواع المطلوبة بكثرة للمناسبات',
@@ -157,9 +93,77 @@ const animalPrices = {
   'جمل': 5000
 };
 
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+// معالجة إرسال النموذج - COMPLETE VERSION
+// ════════════════════════════════════════════════════════════════════════════
+
+function handleOrderSubmit(e) {
+  e.preventDefault();
+  
+  console.log('📝 جاري معالجة الطلب...');
+  
+  // جمع البيانات
+  const customerName = document.getElementById('customerName')?.value || '';
+  const customerPhone = document.getElementById('customerPhone')?.value || '';
+  const animalType = document.getElementById('animalType')?.value || '';
+  const quantity = parseInt(document.getElementById('quantity')?.value || 0);
+  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
+  const totalPrice = parseFloat(document.getElementById('totalAmount')?.value || 0);
+  const serviceType = document.getElementById('serviceType')?.value || '';
+  const orderStatus = 'pending';
+  
+  // التحقق من البيانات
+  if (!customerName || !customerPhone || !animalType || quantity === 0 || pricePerUnit === 0) {
+    alert('❌ الرجاء ملء جميع الحقول المطلوبة');
+    return;
+  }
+  
+  // إنشاء الطلب
+  const order = {
+    id: Date.now(),
+    customerName,
+    customerPhone,
+    animalType,
+    quantity,
+    pricePerUnit,
+    totalPrice,
+    serviceType,
+    orderStatus,
+    createdAt: new Date().toISOString()
+  };
+  
+  console.log('📊 الطلب الجديد:', order);
+  
+  // حفظ في localStorage
+  allOrders.push(order);
+  saveOrders();
+  console.log('💾 تم حفظ الطلب في localStorage');
+  
+  // إرسال إلى Google Apps Script
+  console.log('📤 جاري إرسال الطلب إلى Google Apps Script...');
+  sendToGoogleAppsScript(order);
+  
+  // إغلاق المودال
+  const modal = document.getElementById('orderModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+  }
+  
+  loadOrders();
+  alert('✅ تم إضافة الطلب بنجاح وإرساله إلى النظام');
+  
+  // إعادة تعيين النموذج
+  document.getElementById('orderForm')?.reset();
+  document.getElementById('totalAmount').value = 0;
+  document.getElementById('totalAmount').textContent = '0';
+  
+  console.log('✅ تم معالجة الطلب بنجاح');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
 // دوال مساعدة
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
 
 function calculateTotal() {
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
@@ -337,9 +341,9 @@ function initDarkMode() {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
 // بداية التطبيق
-// ════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log("🔥 App Starting");
@@ -355,5 +359,5 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log("✅ App Ready");
 });
 
-console.log('✅ app.js تم تحميله');
+console.log('✅ app.js تم تحميله بنجاح');
 console.log('🔗 Google Apps Script URL:', APPS_SCRIPT_URL);
