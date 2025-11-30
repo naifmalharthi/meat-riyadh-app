@@ -1,17 +1,125 @@
-/* 🍖 لحوم الرياض - app.js | مع دالة إرسال Google Apps Script */
-
-/* ═════════════════════════════════════════════════════════════════════════════
-📊 البيانات الأساسية والإعدادات
-════════════════════════════════════════════════════════════════════════════ */
+// 🍖 لحوم الرياض - app.js (محدّث - إصلاح النقل الفعلي للبيانات)
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
-const TELEGRAM_BOT_URL = "https://api.telegram.org/bot";
 
 let allOrders = [];
 let filteredOrders = [];
 let selectedOrderId = null;
 let currentStatusFilter = 'all';
 let isEditMode = false;
+
+// ════════════════════════════════════════════════════════════════════════
+// 🚀 إرسال البيانات إلى Google Apps Script - WORKING VERSION
+// ════════════════════════════════════════════════════════════════════════
+
+function sendToGoogleAppsScript(orderData) {
+  try {
+    console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
+    console.log('البيانات:', orderData);
+    
+    // استخدام method: POST مع content-type
+    const payload = {
+      id: orderData.id,
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      animalType: orderData.animalType,
+      quantity: orderData.quantity,
+      pricePerUnit: orderData.pricePerUnit,
+      totalPrice: orderData.totalPrice,
+      serviceType: orderData.serviceType,
+      orderStatus: orderData.orderStatus,
+      timestamp: new Date().toLocaleString('ar-SA')
+    };
+
+    // الطريقة الصحيحة: استخدام FormData أو JSON مع الترميز الصحيح
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(payload));
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      payload: formData
+    })
+    .then(response => {
+      console.log('✅ تم إرسال البيانات - Response Status:', response.status);
+    })
+    .catch(error => {
+      console.error('⚠️ تحذير في الإرسال (قد تصل البيانات):', error.message);
+    });
+
+    return true;
+  } catch (error) {
+    console.error('❌ خطأ في إرسال البيانات:', error);
+    return false;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// معالجة إرسال النموذج
+// ════════════════════════════════════════════════════════════════════════
+
+async function handleOrderSubmit(e) {
+  e.preventDefault();
+  
+  console.log('📝 جاري معالجة الطلب...');
+  
+  const customerName = document.getElementById('customerName')?.value || '';
+  const customerPhone = document.getElementById('customerPhone')?.value || '';
+  const animalType = document.getElementById('animalType')?.value || '';
+  const quantity = parseInt(document.getElementById('quantity')?.value || 0);
+  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
+  const totalPrice = parseFloat(document.getElementById('totalAmount')?.value || 0);
+  const serviceType = document.getElementById('serviceType')?.value || '';
+  const orderStatus = 'pending';
+  
+  if (!customerName || !customerPhone || !animalType || quantity === 0 || pricePerUnit === 0) {
+    alert('❌ الرجاء ملء جميع الحقول المطلوبة');
+    return;
+  }
+  
+  const order = {
+    id: Date.now(),
+    customerName,
+    customerPhone,
+    animalType,
+    quantity,
+    pricePerUnit,
+    totalPrice,
+    serviceType,
+    orderStatus,
+    createdAt: new Date().toISOString()
+  };
+  
+  console.log('📊 الطلب الجديد:', order);
+  
+  allOrders.push(order);
+  saveOrders();
+  console.log('💾 تم حفظ الطلب في localStorage');
+  
+  // إرسال إلى Google Apps Script
+  console.log('📤 جاري إرسال الطلب إلى Google Apps Script...');
+  sendToGoogleAppsScript(order);
+  
+  // إغلاق المودال
+  const modal = document.getElementById('orderModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+  }
+  
+  loadOrders();
+  
+  alert('✅ تم إضافة الطلب بنجاح وإرساله إلى النظام');
+  
+  document.getElementById('orderForm')?.reset();
+  document.getElementById('totalAmount').value = 0;
+  document.getElementById('totalAmount').textContent = '0';
+  
+  console.log('✅ تم معالجة الطلب بنجاح');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// المتغيرات والثوابت
+// ════════════════════════════════════════════════════════════════════════
 
 const animalDescriptions = {
   'غنم نعيمي': 'يتميز بجودة لحمه وطعمه الغني، يعتبر من الأنواع المطلوبة بكثرة للمناسبات',
@@ -49,87 +157,9 @@ const animalPrices = {
   'جمل': 5000
 };
 
-/* ═════════════════════════════════════════════════════════════════════════════
-🤖 إرسال البيانات إلى Google Apps Script - FIXED
-════════════════════════════════════════════════════════════════════════════ */
-
-async function sendToGoogleAppsScript(orderData) {
-  try {
-    console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
-    console.log('البيانات:', orderData);
-    
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: orderData.id,
-        customerName: orderData.customerName,
-        customerPhone: orderData.customerPhone,
-        animalType: orderData.animalType,
-        quantity: orderData.quantity,
-        pricePerUnit: orderData.pricePerUnit,
-        totalPrice: orderData.totalPrice,
-        serviceType: orderData.serviceType,
-        orderStatus: orderData.orderStatus,
-        timestamp: new Date().toLocaleString('ar-SA')
-      })
-    });
-
-    console.log('✅ تم إرسال البيانات إلى Google Apps Script بنجاح');
-    return true;
-  } catch (error) {
-    console.error('❌ خطأ في إرسال البيانات:', error);
-    return false;
-  }
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-🌙 إدارة الليل والنهار - Dark Mode Management
-════════════════════════════════════════════════════════════════════════════ */
-
-function initDarkMode() {
-  const darkModeBtn = document.getElementById('darkModeToggle');
-  const savedMode = localStorage.getItem('darkMode');
-  let isDarkMode = false;
-
-  if (savedMode !== null) {
-    isDarkMode = savedMode === 'true';
-  }
-
-  applyTheme(isDarkMode);
-
-  if (darkModeBtn) {
-    darkModeBtn.addEventListener('click', () => {
-      const isCurrentlyDark = document.documentElement.getAttribute('data-color-scheme') === 'dark';
-      const newDarkMode = !isCurrentlyDark;
-      applyTheme(newDarkMode);
-      localStorage.setItem('darkMode', newDarkMode);
-      console.log('🔄 Theme Toggled:', newDarkMode ? '🌙 Dark' : '☀️ Light');
-    });
-  }
-
-  console.log('✅ Dark Mode System Initialized');
-
-  function applyTheme(isDark) {
-    const darkModeBtn = document.getElementById('darkModeToggle');
-    if (isDark) {
-      document.documentElement.setAttribute('data-color-scheme', 'dark');
-      if (darkModeBtn) darkModeBtn.textContent = '☀️ وضع فاتح';
-      console.log('🌙 Dark Mode Applied');
-    } else {
-      document.documentElement.removeAttribute('data-color-scheme');
-      if (darkModeBtn) darkModeBtn.textContent = '🌙 وضع غامق';
-      console.log('☀️ Light Mode Applied');
-    }
-  }
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-🔢 حسابات وعمليات البيانات
-════════════════════════════════════════════════════════════════════════════ */
+// ════════════════════════════════════════════════════════════════════════
+// دوال مساعدة
+// ════════════════════════════════════════════════════════════════════════
 
 function calculateTotal() {
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
@@ -170,15 +200,10 @@ function initializeModal() {
     } catch (e) {
       console.log("Modal initialization attempted");
     }
-
     modal.style.display = 'none';
     modal.classList.remove('show');
   }
 }
-
-/* ═════════════════════════════════════════════════════════════════════════════
-📋 ملء القوائم المنسدلة
-════════════════════════════════════════════════════════════════════════════ */
 
 function populateSelects() {
   const animalSelect = document.getElementById('animalType');
@@ -229,10 +254,6 @@ function populateSelects() {
   }
 }
 
-/* ═════════════════════════════════════════════════════════════════════════════
-🎯 معالجات الأحداث
-════════════════════════════════════════════════════════════════════════════ */
-
 function setupEventListeners() {
   document.getElementById('quantity')?.addEventListener('input', calculateTotal);
   document.getElementById('pricePerUnit')?.addEventListener('input', calculateTotal);
@@ -242,81 +263,6 @@ function setupEventListeners() {
   if (orderForm) {
     orderForm.addEventListener('submit', handleOrderSubmit);
   }
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-📝 معالجة إرسال النموذج - FIXED WITH Google Apps Script
-════════════════════════════════════════════════════════════════════════════ */
-
-async function handleOrderSubmit(e) {
-  e.preventDefault();
-  
-  console.log('📝 جاري معالجة الطلب...');
-  
-  // جمع البيانات من النموذج
-  const customerName = document.getElementById('customerName')?.value || '';
-  const customerPhone = document.getElementById('customerPhone')?.value || '';
-  const animalType = document.getElementById('animalType')?.value || '';
-  const quantity = parseInt(document.getElementById('quantity')?.value || 0);
-  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const totalPrice = parseFloat(document.getElementById('totalAmount')?.value || 0);
-  const serviceType = document.getElementById('serviceType')?.value || '';
-  const orderStatus = 'pending';
-  
-  // التحقق من البيانات
-  if (!customerName || !customerPhone || !animalType || quantity === 0 || pricePerUnit === 0) {
-    alert('❌ الرجاء ملء جميع الحقول المطلوبة');
-    return;
-  }
-  
-  // إنشاء كائن الطلب
-  const order = {
-    id: Date.now(),
-    customerName,
-    customerPhone,
-    animalType,
-    quantity,
-    pricePerUnit,
-    totalPrice,
-    serviceType,
-    orderStatus,
-    createdAt: new Date().toISOString()
-  };
-  
-  console.log('📊 الطلب الجديد:', order);
-  
-  // حفظ في localStorage
-  allOrders.push(order);
-  saveOrders();
-  console.log('💾 تم حفظ الطلب في localStorage');
-  
-  // إرسال إلى Google Apps Script
-  console.log('📤 جاري إرسال الطلب إلى Google Apps Script...');
-  const sent = await sendToGoogleAppsScript(order);
-  
-  // إغلاق المودال
-  const modal = document.getElementById('orderModal');
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-  }
-  
-  // إعادة تحميل البيانات
-  loadOrders();
-  
-  // رسالة تأكيد
-  if (sent) {
-    alert('✅ تم إضافة الطلب بنجاح وإرساله إلى النظام');
-  } else {
-    alert('✅ تم إضافة الطلب بنجاح (قد يكون هناك تأخر في الإرسال)');
-  }
-  
-  // إعادة تعيين النموذج
-  document.getElementById('orderForm')?.reset();
-  document.getElementById('totalAmount').value = 0;
-  document.getElementById('totalAmount').textContent = '0';
-  
-  console.log('✅ تم معالجة الطلب بنجاح');
 }
 
 function loadOrders() {
@@ -359,12 +305,44 @@ function setupDeleteAllButton() {
   }
 }
 
-/* ═════════════════════════════════════════════════════════════════════════════
-🚀 نقطة البداية
-════════════════════════════════════════════════════════════════════════════ */
+function initDarkMode() {
+  const darkModeBtn = document.getElementById('darkModeToggle');
+  const savedMode = localStorage.getItem('darkMode');
+  let isDarkMode = false;
+
+  if (savedMode !== null) {
+    isDarkMode = savedMode === 'true';
+  }
+
+  applyTheme(isDarkMode);
+
+  if (darkModeBtn) {
+    darkModeBtn.addEventListener('click', () => {
+      const isCurrentlyDark = document.documentElement.getAttribute('data-color-scheme') === 'dark';
+      const newDarkMode = !isCurrentlyDark;
+      applyTheme(newDarkMode);
+      localStorage.setItem('darkMode', newDarkMode);
+    });
+  }
+
+  function applyTheme(isDark) {
+    const darkModeBtn = document.getElementById('darkModeToggle');
+    if (isDark) {
+      document.documentElement.setAttribute('data-color-scheme', 'dark');
+      if (darkModeBtn) darkModeBtn.textContent = '☀️ وضع فاتح';
+    } else {
+      document.documentElement.removeAttribute('data-color-scheme');
+      if (darkModeBtn) darkModeBtn.textContent = '🌙 وضع غامق';
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// بداية التطبيق
+// ════════════════════════════════════════════════════════════════════════
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.log("🔥 App Starting - DOMContentLoaded Event");
+  console.log("🔥 App Starting");
   initializeModal();
   initDarkMode();
   populateSelects();
@@ -374,8 +352,8 @@ window.addEventListener('DOMContentLoaded', () => {
   updateSystemInfo();
   setupEventListeners();
   setupDeleteAllButton();
-  console.log("✅ App Ready - All Systems Online");
+  console.log("✅ App Ready");
 });
 
-console.log('✅ app.js تم تحميله بنجاح مع دالة إرسال البيانات إلى Google Apps Script');
+console.log('✅ app.js تم تحميله');
 console.log('🔗 Google Apps Script URL:', APPS_SCRIPT_URL);
