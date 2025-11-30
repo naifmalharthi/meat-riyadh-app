@@ -1,365 +1,372 @@
-// 🍖 لحوم الرياض - app.js (FINAL FIX - URL CORRECT ✅)
+// 🍖 لحوم الرياض - app.js (WITH GOOGLE APPS SCRIPT INTEGRATION) ✅
 
-// ✅ الـ URL الصحيح - مع Telegram و Google Sheet
+// ════════════════════════════════════════════════════════════════════════════
+// GOOGLE APPS SCRIPT URL
+// ════════════════════════════════════════════════════════════════════════════
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSyTUYejv-cpqzGykkbS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
 
-let allOrders = [];
-let filteredOrders = [];
-let selectedOrderId = null;
-let currentStatusFilter = 'all';
-let isEditMode = false;
-
 // ════════════════════════════════════════════════════════════════════════════
-// 🚀 إرسال البيانات إلى Google Apps Script - WORKING VERSION
+// إرسال البيانات إلى Google Apps Script
 // ════════════════════════════════════════════════════════════════════════════
 
-function sendToGoogleAppsScript(orderData) {
+async function sendOrderToGoogleAppsScript(orderData) {
   try {
     console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
-    console.log('البيانات المرسلة:', orderData);
+    console.log('البيانات:', orderData);
     
-    // إنشاء الـ payload باستخدام URLSearchParams
-    const payload = new URLSearchParams();
-    payload.append('id', orderData.id);
-    payload.append('customerName', orderData.customerName);
-    payload.append('customerPhone', orderData.customerPhone);
-    payload.append('animalType', orderData.animalType);
-    payload.append('quantity', orderData.quantity);
-    payload.append('pricePerUnit', orderData.pricePerUnit);
-    payload.append('totalPrice', orderData.totalPrice);
-    payload.append('serviceType', orderData.serviceType);
-    payload.append('orderStatus', orderData.orderStatus);
-    payload.append('timestamp', new Date().toLocaleString('ar-SA'));
-
-    // إرسال البيانات
-    fetch(APPS_SCRIPT_URL, {
+    // استخدام FormData لأفضل توافقية
+    const formData = new FormData();
+    formData.append('id', orderData.id);
+    formData.append('customerName', orderData.customer);
+    formData.append('customerPhone', orderData.phone);
+    formData.append('animalType', orderData.animal);
+    formData.append('quantity', orderData.quantity);
+    formData.append('pricePerUnit', orderData.pricePerUnit);
+    formData.append('totalPrice', orderData.total);
+    formData.append('serviceType', orderData.service);
+    formData.append('orderStatus', orderData.status);
+    formData.append('timestamp', new Date().toLocaleString('ar-SA'));
+    
+    const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: payload
-    })
-    .then(response => {
-      console.log('✅ البيانات وصلت إلى Google Apps Script - Status:', response.status);
-      return response.text();
-    })
-    .then(data => {
-      console.log('✅ الرد من Google Apps Script:', data);
-    })
-    .catch(error => {
-      console.warn('⚠️ تحذير في الإرسال (البيانات محفوظة محليًا):', error.message);
+      body: formData,
+      mode: 'no-cors' // مهم للـ Google Apps Script
     });
-
+    
+    console.log('✅ تم الإرسال بنجاح!');
     return true;
+    
   } catch (error) {
-    console.error('❌ خطأ في إرسال البيانات:', error);
+    console.warn('⚠️ تحذير في الإرسال (البيانات محفوظة محليًا):', error.message);
+    // لا نمنع المستخدم من الاستمرار حتى لو فشل الإرسال
     return false;
   }
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// البيانات والثوابت
+// المتغيرات الأساسية
 // ════════════════════════════════════════════════════════════════════════════
 
-const animalDescriptions = {
-  'غنم نعيمي': 'يتميز بجودة لحمه وطعمه الغني، يعتبر من الأنواع المطلوبة بكثرة للمناسبات',
-  'غنم نجدي': 'معروف بحجمه الكبير ولحمه المميز الغني بالعصارة',
-  'غنم حري': 'يتحمل الظروف المناخية القاسية، مناسب للبيئة الجافة',
-  'غنم سواكني': 'يتميز بلحمه الجيد وخيار اقتصادي مناسب، ألوان مختلفة',
-  'غنم بربري': 'خيار صحي وطعمه خفيف، مناسب لعمليات التسمين',
-  'ماعز': 'لحم ماعز طازج وجودة عالية',
-  'جمل': 'لحم جمل - للطلبات الكبيرة والجملة فقط'
-};
-
-const AGES = ['6 شهور', '1 سنة', 'سنة ونصف', 'سنتان'];
-
-const SERVICES = {
-  'توصيل مجاني': { name: 'توصيل مجاني', price: 0, description: 'توصيل مجاني داخل الرياض' },
-  'توصيل برسم': { name: 'توصيل برسم', price: 50, description: 'يبدأ من 50 ريال' },
-  'ذبح': { name: 'خدمة الذبح', price: 20, description: 'خدمة الذبح الحلال' },
-  'تقطيع': { name: 'خدمة التقطيع', price: 25, description: 'تقطيع اللحم' },
-  'تغليف': { name: 'خدمة التغليف', price: 15, description: 'تغليف احترافي' },
-  'استلام من المحل': { name: 'استلام من المحل', price: 0, description: 'من محل الشفا' }
-};
-
-const REGIONS = {
-  'الرياض': { name: 'الرياض', minQty: 1 },
-  'خارج الرياض (جملة فقط)': { name: 'خارج الرياض', minQty: 10 }
-};
-
-const animalPrices = {
-  'غنم نعيمي': 1800,
-  'غنم نجدي': 1900,
-  'غنم حري': 1600,
-  'غنم سواكني': 1500,
-  'غنم بربري': 1400,
-  'ماعز': 1200,
-  'جمل': 5000
-};
+let allOrders = [];
+let filteredOrders = [];
+let currentSort = { field: 'id', direction: 'desc' };
+let currentView = 'orders';
 
 // ════════════════════════════════════════════════════════════════════════════
-// معالجة إرسال النموذج - COMPLETE VERSION
+// تحميل البيانات عند بدء التطبيق
 // ════════════════════════════════════════════════════════════════════════════
 
-function handleOrderSubmit(e) {
+window.addEventListener('DOMContentLoaded', () => {
+  console.log('🔥 التطبيق يتم تحميله...');
+  loadOrders();
+  loadSettings();
+  checkDarkMode();
+  updateLastUpdate();
+  setupFormListener();
+  console.log('✅ التطبيق جاهز!');
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// إعداد مستمع النموذج
+// ════════════════════════════════════════════════════════════════════════════
+
+function setupFormListener() {
+  const addOrderBtn = document.getElementById('addOrderBtn');
+  if (addOrderBtn) {
+    addOrderBtn.addEventListener('click', showAddOrderForm);
+  }
+  
+  // في حالة وجود نموذج في الصفحة
+  const form = document.getElementById('orderForm');
+  if (form) {
+    form.addEventListener('submit', handleAddOrder);
+  }
+}
+
+function handleAddOrder(e) {
   e.preventDefault();
   
-  console.log('📝 جاري معالجة الطلب...');
+  console.log('📝 جاري معالجة الطلب الجديد...');
   
-  // جمع البيانات
-  const customerName = document.getElementById('customerName')?.value || '';
-  const customerPhone = document.getElementById('customerPhone')?.value || '';
-  const animalType = document.getElementById('animalType')?.value || '';
+  // جمع بيانات النموذج
+  const customer = document.getElementById('customerName')?.value || '';
+  const phone = document.getElementById('customerPhone')?.value || '';
+  const animal = document.getElementById('animalType')?.value || '';
   const quantity = parseInt(document.getElementById('quantity')?.value || 0);
   const pricePerUnit = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const totalPrice = parseFloat(document.getElementById('totalAmount')?.value || 0);
-  const serviceType = document.getElementById('serviceType')?.value || '';
-  const orderStatus = 'pending';
+  const total = quantity * pricePerUnit;
+  const service = document.getElementById('serviceType')?.value || '';
+  const status = 'قيد المعالجة'; // الحالة الافتراضية
   
   // التحقق من البيانات
-  if (!customerName || !customerPhone || !animalType || quantity === 0 || pricePerUnit === 0) {
+  if (!customer || !phone || !animal || quantity === 0 || pricePerUnit === 0) {
     alert('❌ الرجاء ملء جميع الحقول المطلوبة');
     return;
   }
   
   // إنشاء الطلب
-  const order = {
+  const newOrder = {
     id: Date.now(),
-    customerName,
-    customerPhone,
-    animalType,
+    customer,
+    phone,
+    animal,
     quantity,
     pricePerUnit,
-    totalPrice,
-    serviceType,
-    orderStatus,
-    createdAt: new Date().toISOString()
+    total,
+    service,
+    status,
+    location: 'الرياض',
+    date: new Date().toLocaleDateString('ar-SA'),
+    time: new Date().toLocaleTimeString('ar-SA')
   };
   
-  console.log('📊 الطلب الجديد:', order);
+  console.log('📊 الطلب الجديد:', newOrder);
   
-  // حفظ في localStorage
-  allOrders.push(order);
-  saveOrders();
+  // حفظ في localStorage أولاً
+  allOrders.push(newOrder);
+  localStorage.setItem('meatOrders', JSON.stringify(allOrders));
   console.log('💾 تم حفظ الطلب في localStorage');
   
-  // إرسال إلى Google Apps Script
-  console.log('📤 جاري إرسال الطلب إلى Google Apps Script...');
-  sendToGoogleAppsScript(order);
+  // إرسال إلى Google Apps Script (بشكل asynchronous)
+  console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
+  sendOrderToGoogleAppsScript(newOrder).then(success => {
+    if (success) {
+      console.log('✅ تم الإرسال إلى Google Apps Script و Telegram');
+    } else {
+      console.log('⚠️ تم الحفظ محليًا (لم يتم الإرسال للخادم)');
+    }
+  });
   
-  // إغلاق المودال
-  const modal = document.getElementById('orderModal');
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.remove('show');
-  }
-  
+  // تحديث الواجهة
   loadOrders();
-  alert('✅ تم إضافة الطلب بنجاح وإرساله إلى النظام');
+  alert('✅ تم إضافة الطلب بنجاح!');
   
   // إعادة تعيين النموذج
   document.getElementById('orderForm')?.reset();
-  document.getElementById('totalAmount').value = 0;
-  document.getElementById('totalAmount').textContent = '0';
+  closeAddOrderModal();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// إدارة الطلبات
+// ════════════════════════════════════════════════════════════════════════════
+
+function loadOrders() {
+  allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
+  filteredOrders = [...allOrders];
+  renderOrders();
+  updateStats();
+  renderCharts();
+}
+
+function saveOrders() {
+  localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+  console.log('💾 تم حفظ جميع الطلبات');
+}
+
+function renderOrders() {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
   
-  console.log('✅ تم معالجة الطلب بنجاح');
+  const searchText = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  const filterStatus = document.getElementById('filterStatus')?.value || '';
+  
+  // تطبيق البحث والفلترة
+  filteredOrders = allOrders.filter(order => {
+    const matchesSearch = !searchText || 
+      order.id.toString().includes(searchText) || 
+      order.phone.includes(searchText) || 
+      order.customer.toLowerCase().includes(searchText);
+    const matchesStatus = !filterStatus || order.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+  
+  // التصنيف
+  filteredOrders.sort((a, b) => {
+    let aVal = a[currentSort.field];
+    let bVal = b[currentSort.field];
+    if (typeof aVal === 'string') {
+      aVal = aVal.toLowerCase();
+      bVal = bVal.toLowerCase();
+    }
+    return currentSort.direction === 'asc' ? 
+      (aVal > bVal ? 1 : -1) : 
+      (aVal < bVal ? 1 : -1);
+  });
+  
+  // عرض الطلبات
+  tbody.innerHTML = filteredOrders.map(order => `
+    <tr>
+      <td>#${order.id}</td>
+      <td>${order.customer}</td>
+      <td>${order.phone}</td>
+      <td>${order.animal}</td>
+      <td>${order.quantity}</td>
+      <td>${order.pricePerUnit} ريال</td>
+      <td><strong>${order.total} ريال</strong></td>
+      <td>${order.service}</td>
+      <td><span style="background-color: var(--color-info); padding: 4px 8px; border-radius: 4px; color: white;">${order.status}</span></td>
+      <td>${order.date}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="10" style="text-align: center; color: #999;">لا توجد بيانات</td></tr>';
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// دوال مساعدة
+// الإحصائيات
 // ════════════════════════════════════════════════════════════════════════════
 
-function calculateTotal() {
-  const qty = parseInt(document.getElementById('quantity')?.value || 0);
-  const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const total = qty * price;
-  const totalEl = document.getElementById('totalAmount');
-  if (totalEl) {
-    totalEl.textContent = total.toLocaleString('ar-SA');
-    totalEl.value = total;
+function updateStats() {
+  const totalOrders = allOrders.length;
+  const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+  const averageOrder = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(0) : 0;
+  const pendingOrders = allOrders.filter(o => o.status === 'قيد المعالجة').length;
+  
+  // تحديث العناصر
+  const elements = {
+    'totalOrders': totalOrders,
+    'totalRevenue': totalRevenue.toLocaleString('ar-SA'),
+    'averageOrder': averageOrder.toLocaleString('ar-SA'),
+    'pendingOrders': pendingOrders
+  };
+  
+  Object.entries(elements).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// الرسوم البيانية
+// ════════════════════════════════════════════════════════════════════════════
+
+function renderCharts() {
+  if (allOrders.length === 0) return;
+  
+  // الرسم البياني 1: الإجمالي حسب الحالة
+  const statusCounts = {
+    'قيد المعالجة': 0,
+    'تم التوصيل': 0,
+    'ملغي': 0
+  };
+  
+  allOrders.forEach(o => {
+    if (statusCounts.hasOwnProperty(o.status)) {
+      statusCounts[o.status]++;
+    }
+  });
+  
+  let statusHTML = '<table style="width:100%">';
+  Object.entries(statusCounts).forEach(([status, count]) => {
+    const percentage = Math.round((count / allOrders.length) * 100) || 0;
+    statusHTML += `<tr><td>${status}</td><td>${count} (${percentage}%)</td></tr>`;
+  });
+  statusHTML += '</table>';
+  const statusEl = document.getElementById('statusDistribution');
+  if (statusEl) statusEl.innerHTML = statusHTML;
+  
+  // الرسم البياني 2: أفضل الماشيات
+  const animalCounts = {};
+  allOrders.forEach(o => {
+    animalCounts[o.animal] = (animalCounts[o.animal] || 0) + 1;
+  });
+  
+  let animalHTML = '<table style="width:100%">';
+  Object.entries(animalCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .forEach(([animal, count]) => {
+      const percentage = Math.round((count / allOrders.length) * 100) || 0;
+      animalHTML += `<tr><td style="text-align:left">${animal}</td><td style="text-align:right">${count} (${percentage}%)</td></tr>`;
+    });
+  animalHTML += '</table>';
+  const animalEl = document.getElementById('animalDistribution');
+  if (animalEl) animalEl.innerHTML = animalHTML;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// الإعدادات
+// ════════════════════════════════════════════════════════════════════════════
+
+function loadSettings() {
+  const darkMode = localStorage.getItem('darkMode') === 'true';
+  if (darkMode) enableDarkMode();
+}
+
+function checkDarkMode() {
+  const isDark = localStorage.getItem('darkMode') === 'true';
+  const btn = document.getElementById('darkModeToggle');
+  if (btn) {
+    btn.textContent = isDark ? '☀️' : '🌙';
   }
 }
 
-function onAnimalChange() {
-  const animalSelect = document.getElementById('animalType');
-  const descBox = document.getElementById('animalDescBox');
-  const selectedAnimal = animalSelect?.value;
+function enableDarkMode() {
+  document.documentElement.setAttribute('data-color-scheme', 'dark');
+  localStorage.setItem('darkMode', 'true');
+  const btn = document.getElementById('darkModeToggle');
+  if (btn) btn.textContent = '☀️';
+}
 
-  if (selectedAnimal && animalDescriptions[selectedAnimal]) {
-    descBox.textContent = animalDescriptions[selectedAnimal];
-    descBox.classList.add('show');
+function disableDarkMode() {
+  document.documentElement.removeAttribute('data-color-scheme');
+  localStorage.setItem('darkMode', 'false');
+  const btn = document.getElementById('darkModeToggle');
+  if (btn) btn.textContent = '🌙';
+}
+
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-color-scheme') === 'dark';
+  if (isDark) {
+    disableDarkMode();
   } else {
-    descBox.classList.remove('show');
-  }
-
-  const priceInput = document.getElementById('pricePerUnit');
-  if (selectedAnimal && animalPrices[selectedAnimal]) {
-    priceInput.value = animalPrices[selectedAnimal];
-    calculateTotal();
+    enableDarkMode();
   }
 }
 
-function initializeModal() {
+// ════════════════════════════════════════════════════════════════════════════
+// التحديثات
+// ════════════════════════════════════════════════════════════════════════════
+
+function updateLastUpdate() {
+  const el = document.getElementById('lastUpdate');
+  if (el) {
+    el.textContent = new Date().toLocaleString('ar-SA');
+  }
+}
+
+function deleteAllData() {
+  if (confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا!')) {
+    localStorage.removeItem('meatOrders');
+    allOrders = [];
+    filteredOrders = [];
+    loadOrders();
+    alert('✅ تم حذف جميع البيانات');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// واجهة المودالات
+// ════════════════════════════════════════════════════════════════════════════
+
+function showAddOrderForm() {
   const modal = document.getElementById('orderModal');
   if (modal) {
-    try {
-      const bsModal = bootstrap?.Modal?.getInstance(modal);
-      if (bsModal) bsModal.hide();
-    } catch (e) {
-      console.log("Modal initialization attempted");
-    }
+    modal.style.display = 'block';
+    modal.classList.add('show');
+  }
+}
+
+function closeAddOrderModal() {
+  const modal = document.getElementById('orderModal');
+  if (modal) {
     modal.style.display = 'none';
     modal.classList.remove('show');
   }
 }
 
-function populateSelects() {
-  const animalSelect = document.getElementById('animalType');
-  if (animalSelect) {
-    animalSelect.innerHTML = '';
-    Object.keys(animalDescriptions).forEach(animal => {
-      const option = document.createElement('option');
-      option.value = animal;
-      option.textContent = animal;
-      animalSelect.appendChild(option);
-    });
-  }
-
-  const ageSelect = document.getElementById('animalAge');
-  if (ageSelect) {
-    ageSelect.innerHTML = '';
-    AGES.forEach(age => {
-      const option = document.createElement('option');
-      option.value = age;
-      option.textContent = age;
-      ageSelect.appendChild(option);
-    });
-  }
-
-  const serviceSelect = document.getElementById('serviceType');
-  if (serviceSelect) {
-    serviceSelect.innerHTML = '';
-    Object.keys(SERVICES).forEach(key => {
-      const service = SERVICES[key];
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = service.name;
-      option.title = service.description;
-      serviceSelect.appendChild(option);
-    });
-  }
-
-  const regionSelect = document.getElementById('region');
-  if (regionSelect) {
-    regionSelect.innerHTML = '';
-    Object.keys(REGIONS).forEach(key => {
-      const region = REGIONS[key];
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = region.name;
-      regionSelect.appendChild(option);
-    });
-  }
-}
-
-function setupEventListeners() {
-  document.getElementById('quantity')?.addEventListener('input', calculateTotal);
-  document.getElementById('pricePerUnit')?.addEventListener('input', calculateTotal);
-  document.getElementById('animalType')?.addEventListener('change', onAnimalChange);
-
-  const orderForm = document.getElementById('orderForm');
-  if (orderForm) {
-    orderForm.addEventListener('submit', handleOrderSubmit);
-  }
-}
-
-function loadOrders() {
-  console.log('📊 Loading Orders...');
-  const savedOrders = localStorage.getItem('allOrders');
-  allOrders = savedOrders ? JSON.parse(savedOrders) : [];
-  filteredOrders = allOrders;
-  console.log(`✅ Loaded ${allOrders.length} orders`);
-}
-
-function saveOrders() {
-  localStorage.setItem('allOrders', JSON.stringify(allOrders));
-  console.log('💾 Orders Saved');
-}
-
-function updateStats() {
-  console.log('📈 Updating Statistics...');
-}
-
-function updateReports() {
-  console.log('📊 Updating Reports...');
-}
-
-function updateSystemInfo() {
-  console.log('ℹ️ System Info Updated');
-}
-
-function setupDeleteAllButton() {
-  const deleteBtn = document.getElementById('deleteAllBtn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', () => {
-      if (confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) {
-        localStorage.clear();
-        allOrders = [];
-        filteredOrders = [];
-        console.log('🗑️ All Data Deleted');
-        loadOrders();
-      }
-    });
-  }
-}
-
-function initDarkMode() {
-  const darkModeBtn = document.getElementById('darkModeToggle');
-  const savedMode = localStorage.getItem('darkMode');
-  let isDarkMode = false;
-
-  if (savedMode !== null) {
-    isDarkMode = savedMode === 'true';
-  }
-
-  applyTheme(isDarkMode);
-
-  if (darkModeBtn) {
-    darkModeBtn.addEventListener('click', () => {
-      const isCurrentlyDark = document.documentElement.getAttribute('data-color-scheme') === 'dark';
-      const newDarkMode = !isCurrentlyDark;
-      applyTheme(newDarkMode);
-      localStorage.setItem('darkMode', newDarkMode);
-    });
-  }
-
-  function applyTheme(isDark) {
-    const darkModeBtn = document.getElementById('darkModeToggle');
-    if (isDark) {
-      document.documentElement.setAttribute('data-color-scheme', 'dark');
-      if (darkModeBtn) darkModeBtn.textContent = '☀️ وضع فاتح';
-    } else {
-      document.documentElement.removeAttribute('data-color-scheme');
-      if (darkModeBtn) darkModeBtn.textContent = '🌙 وضع غامق';
-    }
-  }
-}
-
 // ════════════════════════════════════════════════════════════════════════════
-// بداية التطبيق
+// تسجيل الدخول
 // ════════════════════════════════════════════════════════════════════════════
-
-window.addEventListener('DOMContentLoaded', () => {
-  console.log("🔥 App Starting");
-  initializeModal();
-  initDarkMode();
-  populateSelects();
-  loadOrders();
-  updateStats();
-  updateReports();
-  updateSystemInfo();
-  setupEventListeners();
-  setupDeleteAllButton();
-  console.log("✅ App Ready");
-});
 
 console.log('✅ app.js تم تحميله بنجاح');
 console.log('🔗 Google Apps Script URL:', APPS_SCRIPT_URL);
-console.log('✅ مع دعم Telegram و Google Sheet');
+console.log('✅ مع دعم Telegram و Google Sheet التلقائي!');
