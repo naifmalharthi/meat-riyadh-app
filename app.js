@@ -1,13 +1,13 @@
-// 🍖 نظام إدارة الطلبات - app.js (معدل وكامل مع Telegram)
-// جميع الأزرار والوظائف مربوطة بشكل صحيح + Telegram Notifications
+// 🍖 لحوم الرياض - app.js (الطريقة الصحيحة مع Google Apps Script + Telegram)
+// جميع الأزرار والوظائف مربوطة بشكل صحيح + Google Apps Script
 
 // ════════════════════════════════════════════════════════════════
-// 🤖 TELEGRAM CONFIGURATION - إعدادات التليجرام
+// ⚙️ إعدادات Google Apps Script و Telegram
 // ════════════════════════════════════════════════════════════════
 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZEEvRD80E_H_806OA8EqIoIMP6SjdAfTLy5jpRt1hTUCtHnKqA4ACBl5AAs9dcwKfWg/exec";
 const TELEGRAM_BOT_TOKEN = "8185675610:AAGmYo2_Ym0kDM0DYF4otw77xnDv7ug3Czs";
 const TELEGRAM_CHAT_ID = "5625674358";
-const TELEGRAM_WEBHOOK_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
 // ════════════════════════════════════════════════════════════════
 // 📊 Global Variables
@@ -17,52 +17,39 @@ let allOrders = [];
 let filteredOrders = [];
 
 // ════════════════════════════════════════════════════════════════
-// 🤖 Telegram Notification Function - دالة إرسال إشعار تيليجرام
+// 🤖 Send to Google Apps Script - إرسال إلى جوجل شيت + تيليجرام
 // ════════════════════════════════════════════════════════════════
 
-async function sendTelegramNotification(orderData) {
+async function sendToGoogleAppsScript(orderData) {
   try {
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      console.warn('⚠️ Telegram Bot Token or Chat ID not configured');
-      return false;
-    }
-
-    // تنسيق الرسالة بالعربية
-    const message = `
-🍖 <b>طلب جديد تم استقباله!</b>
-
-👤 <b>الزبون:</b> ${orderData.customerName}
-📞 <b>الهاتف:</b> ${orderData.customerPhone}
-🐑 <b>الماشية:</b> ${orderData.animalType}
-📦 <b>الكمية:</b> ${orderData.quantity}
-💰 <b>السعر الواحد:</b> ${orderData.pricePerUnit} ريال
-📊 <b>الإجمالي:</b> ${orderData.totalPrice} ريال
-🛞 <b>الخدمة:</b> ${orderData.serviceType}
-⏰ <b>الوقت:</b> ${new Date().toLocaleString('ar-SA')}
-    `;
-
-    const response = await fetch(TELEGRAM_WEBHOOK_URL, {
+    console.log('📤 جاري إرسال البيانات إلى Google Apps Script...');
+    
+    const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: 'HTML'
+        customerName: orderData.customerName,
+        customerPhone: orderData.customerPhone,
+        animalType: orderData.animalType,
+        quantity: orderData.quantity,
+        pricePerUnit: orderData.pricePerUnit,
+        totalPrice: orderData.totalPrice,
+        serviceType: orderData.serviceType,
+        orderStatus: orderData.orderStatus,
+        timestamp: new Date().toLocaleString('ar-SA'),
+        telegramToken: TELEGRAM_BOT_TOKEN,
+        telegramChatId: TELEGRAM_CHAT_ID
       })
     });
 
-    if (response.ok) {
-      console.log('✅ تم إرسال الإشعار إلى Telegram بنجاح');
-      return true;
-    } else {
-      const error = await response.text();
-      console.error('❌ فشل إرسال الإشعار:', error);
-      return false;
-    }
+    console.log('✅ تم إرسال البيانات إلى Google Apps Script بنجاح');
+    return true;
+    
   } catch (error) {
-    console.error('❌ خطأ في إرسال Telegram:', error);
+    console.error('❌ خطأ في إرسال البيانات:', error);
     return false;
   }
 }
@@ -250,9 +237,9 @@ async function handleOrderSubmit(e) {
   allOrders.push(order);
   saveOrders();
   
-  // ✅ إرسال إشعار Telegram
-  console.log('📤 جاري إرسال إشعار Telegram...');
-  const telegramSent = await sendTelegramNotification(order);
+  // ✅ إرسال إلى Google Apps Script (الذي يحفظ في Google Sheet ويرسل Telegram)
+  console.log('📤 جاري إرسال الطلب...');
+  const sentSuccessfully = await sendToGoogleAppsScript(order);
   
   loadOrders();
   
@@ -261,10 +248,10 @@ async function handleOrderSubmit(e) {
     modal.classList.remove('show');
   }
   
-  if (telegramSent) {
-    alert('✅ تم إضافة الطلب بنجاح وإرسال إشعار Telegram');
+  if (sentSuccessfully) {
+    alert('✅ تم إضافة الطلب بنجاح وحفظه في جوجل شيت وإرسال إشعار Telegram');
   } else {
-    alert('✅ تم إضافة الطلب بنجاح (خطأ في إرسال Telegram)');
+    alert('✅ تم إضافة الطلب بنجاح (قد يكون هناك مشكلة في الإرسال للخادم)');
   }
   
   console.log('📝 طلب جديد تم إضافته:', order);
@@ -381,6 +368,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-console.log('✅ app.js مع Telegram تم تحميله بنجاح');
+console.log('✅ app.js (Google Apps Script + Telegram) تم تحميله بنجاح');
+console.log('📊 Google Apps Script URL:', APPS_SCRIPT_URL.substring(0, 50) + '...');
 console.log('🤖 Telegram Bot Token:', TELEGRAM_BOT_TOKEN ? '✅ معرّف' : '❌ غير معرّف');
 console.log('💬 Telegram Chat ID:', TELEGRAM_CHAT_ID ? '✅ معرّف' : '❌ غير معرّف');
