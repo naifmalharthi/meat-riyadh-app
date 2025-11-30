@@ -3,7 +3,7 @@
 // ════════════════════════════════════════════════════════════════════════════
 // GOOGLE APPS SCRIPT URL
 // ════════════════════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSyTUYejv-cpqzGykkbS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyBwKV990f4PnyEv2Myd97wJgaa5QI2q1SJPfnxtLXzlBB-tmG8E8MpAbKBix2Sd0E/exec";
 
 // ════════════════════════════════════════════════════════════════════════════
 // إرسال البيانات إلى Google Apps Script
