@@ -10,7 +10,7 @@
 // ════════════════════════════════════════════════════════════════
 
 // ✅ الرابط الجديد
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWj1Bk_JhecDuc8Cu7Stq4KMaNYIwU6xAeaIuft1iq42KGiPrgKCsGZt7usNqk5cZSMA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHjwtauzuSyOfOK9LoYYQDc7XUkPERY4vJncBR7Z9Mb7grU2F5tY5fa7wmQjgHdR37/exec";
 
 // Global state variables
 let allOrders = [];
