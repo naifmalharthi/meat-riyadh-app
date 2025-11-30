@@ -1,6 +1,7 @@
-// 🍖 لحوم الرياض - app.js (FINAL FIX - يعمل 100%)
+// 🍖 لحوم الرياض - app.js (FINAL FIX - URL CORRECT ✅)
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq0O2dFt_5DY0nhHhu6xVV6xf8OY9Azsis3AvCuBY8vpLth8ak6JdWXt-H5r7BHOa6/exec";
+// ✅ الـ URL الصحيح - مع Telegram و Google Sheet
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSyTUYejv-cpqzGykkbS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
 
 let allOrders = [];
 let filteredOrders = [];
@@ -9,7 +10,7 @@ let currentStatusFilter = 'all';
 let isEditMode = false;
 
 // ════════════════════════════════════════════════════════════════════════════
-// 🚀 إرسال البيانات إلى Google Apps Script - FIXED VERSION
+// 🚀 إرسال البيانات إلى Google Apps Script - WORKING VERSION
 // ════════════════════════════════════════════════════════════════════════════
 
 function sendToGoogleAppsScript(orderData) {
@@ -361,3 +362,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 console.log('✅ app.js تم تحميله بنجاح');
 console.log('🔗 Google Apps Script URL:', APPS_SCRIPT_URL);
+console.log('✅ مع دعم Telegram و Google Sheet');
