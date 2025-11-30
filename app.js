@@ -1,8 +1,71 @@
-// 🍖 نظام إدارة الطلبات - app.js (معدل وكامل)
-// جميع الأزرار والوظائف مربوطة بشكل صحيح
+// 🍖 نظام إدارة الطلبات - app.js (معدل وكامل مع Telegram)
+// جميع الأزرار والوظائف مربوطة بشكل صحيح + Telegram Notifications
+
+// ════════════════════════════════════════════════════════════════
+// 🤖 TELEGRAM CONFIGURATION - إعدادات التليجرام
+// ════════════════════════════════════════════════════════════════
+
+const TELEGRAM_BOT_TOKEN = "8185675610:AAGmYo2_Ym0kDM0DYF4otw77xnDv7ug3Czs";
+const TELEGRAM_CHAT_ID = "5625674358";
+const TELEGRAM_WEBHOOK_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+// ════════════════════════════════════════════════════════════════
+// 📊 Global Variables
+// ════════════════════════════════════════════════════════════════
 
 let allOrders = [];
 let filteredOrders = [];
+
+// ════════════════════════════════════════════════════════════════
+// 🤖 Telegram Notification Function - دالة إرسال إشعار تيليجرام
+// ════════════════════════════════════════════════════════════════
+
+async function sendTelegramNotification(orderData) {
+  try {
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+      console.warn('⚠️ Telegram Bot Token or Chat ID not configured');
+      return false;
+    }
+
+    // تنسيق الرسالة بالعربية
+    const message = `
+🍖 <b>طلب جديد تم استقباله!</b>
+
+👤 <b>الزبون:</b> ${orderData.customerName}
+📞 <b>الهاتف:</b> ${orderData.customerPhone}
+🐑 <b>الماشية:</b> ${orderData.animalType}
+📦 <b>الكمية:</b> ${orderData.quantity}
+💰 <b>السعر الواحد:</b> ${orderData.pricePerUnit} ريال
+📊 <b>الإجمالي:</b> ${orderData.totalPrice} ريال
+🛞 <b>الخدمة:</b> ${orderData.serviceType}
+⏰ <b>الوقت:</b> ${new Date().toLocaleString('ar-SA')}
+    `;
+
+    const response = await fetch(TELEGRAM_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+
+    if (response.ok) {
+      console.log('✅ تم إرسال الإشعار إلى Telegram بنجاح');
+      return true;
+    } else {
+      const error = await response.text();
+      console.error('❌ فشل إرسال الإشعار:', error);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ خطأ في إرسال Telegram:', error);
+    return false;
+  }
+}
 
 // تحميل البيانات عند فتح الصفحة
 window.addEventListener('DOMContentLoaded', () => {
@@ -159,7 +222,7 @@ function calculateTotal() {
 }
 
 // معالجة إرسال النموذج
-function handleOrderSubmit(e) {
+async function handleOrderSubmit(e) {
   e.preventDefault();
   
   const customerName = document.getElementById('customerName')?.value || '';
@@ -186,6 +249,11 @@ function handleOrderSubmit(e) {
   
   allOrders.push(order);
   saveOrders();
+  
+  // ✅ إرسال إشعار Telegram
+  console.log('📤 جاري إرسال إشعار Telegram...');
+  const telegramSent = await sendTelegramNotification(order);
+  
   loadOrders();
   
   const modal = document.getElementById('orderModal');
@@ -193,7 +261,12 @@ function handleOrderSubmit(e) {
     modal.classList.remove('show');
   }
   
-  alert('✅ تم إضافة الطلب بنجاح');
+  if (telegramSent) {
+    alert('✅ تم إضافة الطلب بنجاح وإرسال إشعار Telegram');
+  } else {
+    alert('✅ تم إضافة الطلب بنجاح (خطأ في إرسال Telegram)');
+  }
+  
   console.log('📝 طلب جديد تم إضافته:', order);
 }
 
@@ -308,4 +381,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-console.log('✅ app.js تم تحميله بنجاح');
+console.log('✅ app.js مع Telegram تم تحميله بنجاح');
+console.log('🤖 Telegram Bot Token:', TELEGRAM_BOT_TOKEN ? '✅ معرّف' : '❌ غير معرّف');
+console.log('💬 Telegram Chat ID:', TELEGRAM_CHAT_ID ? '✅ معرّف' : '❌ غير معرّف');
