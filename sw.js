@@ -1,11 +1,12 @@
 /* 🍖 Service Worker - لحوم الرياض */
 
-const CACHE_NAME = 'meat-riyadh-v1';
+const CACHE_NAME = 'meat-riyadh-v5';
 const URLS_TO_CACHE = [
   '/',
   '/index.html',
   '/app.js',
   '/manifest.json',
+  '/style.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
 ];
