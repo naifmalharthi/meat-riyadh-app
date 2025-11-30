@@ -1,708 +1,565 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لحوم الرياض - إدارة الطلبات</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#217F8D">
-  <style>
-    :root {
-      --color-primary: #217F8D;
-      --color-primary-light: #2DA6B2;
-      --color-primary-dark: #1A6C75;
-      --color-secondary: #A85C2F;
-      --color-bg: #FFFCF9;
-      --color-surface: #FFFDFB;
-      --color-text: #133C3B;
-      --color-text-light: #626C70;
-      --color-border: #E8DDD5;
-      --color-error: #C0152F;
-      --color-success: #217F8D;
-      --color-warning: #A85C2F;
-      
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32px;
-      
-      --radius: 8px;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍖 لحوم الرياض - نظام الطلبات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    [data-color-scheme="dark"] {
-      --color-primary: #32B8C6;
-      --color-primary-light: #2DA6B2;
-      --color-primary-dark: #217F8D;
-      --color-bg: #1F2121;
-      --color-surface: #262828;
-      --color-text: #F5F5F5;
-      --color-text-light: #A7A9A9;
-      --color-border: #404444;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
 
-    html {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--color-text);
-      background-color: var(--color-bg);
-      transition: background-color 0.3s, color 0.3s;
-    }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-    body {
-      background-color: var(--color-bg);
-      padding: var(--space-md);
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
 
-    /* ====== HEADER ====== */
-    header {
-      background: var(--color-surface);
-      border-radius: var(--radius);
-      padding: var(--space-md);
-      margin-bottom: var(--space-lg);
-      border: 1px solid var(--color-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-    }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
 
-    header h1 {
-      font-size: 24px;
-      color: var(--color-primary);
-      flex: 1;
-      min-width: 200px;
-    }
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
 
-    .header-actions {
-      display: flex;
-      gap: var(--space-sm);
-      flex-wrap: wrap;
-      align-items: center;
-    }
+        .stat-box h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
 
-    /* ====== BUTTONS ====== */
-    .btn {
-      padding: var(--space-sm) var(--space-md);
-      border: none;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
 
-    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
+        .controls {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
-    .btn--primary {
-      background: var(--color-primary);
-      color: white;
-      box-shadow: var(--shadow);
-    }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
 
-    .btn--primary:hover {
-      background: var(--color-primary-dark);
-    }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
 
-    .btn--secondary {
-      background: var(--color-surface);
-      color: var(--color-text);
-      border: 1px solid var(--color-border);
-    }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
 
-    .btn--secondary:hover {
-      background: var(--color-border);
-    }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
 
-    .btn--danger {
-      background: var(--color-error);
-      color: white;
-    }
+        .btn-danger:hover {
+            background: #c82333;
+        }
 
-    .btn--danger:hover {
-      background: #A01428;
-    }
+        input, select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 20px 30px;
+        }
 
-    input[type="file"] {
-      display: none;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    /* ====== SEARCH BOX ====== */
-    .search-box {
-      flex: 1;
-      min-width: 200px;
-      position: relative;
-    }
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
 
-    #searchInput {
-      width: 100%;
-      padding: var(--space-sm) var(--space-md);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      background: var(--color-surface);
-      color: var(--color-text);
-      font-size: 14px;
-    }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
 
-    #searchInput:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(33, 127, 141, 0.1);
-    }
+        tr:hover {
+            background: #f8f9fa;
+        }
 
-    /* ====== STATS ====== */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-    }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .stat-card {
-      background: var(--color-surface);
-      padding: var(--space-md);
-      border-radius: var(--radius);
-      border: 1px solid var(--color-border);
-      text-align: center;
-    }
+        .modal.show {
+            display: flex;
+        }
 
-    .stat-card h3 {
-      font-size: 12px;
-      color: var(--color-text-light);
-      margin-bottom: var(--space-xs);
-      text-transform: uppercase;
-      font-weight: 500;
-    }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
 
-    .stat-card .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--color-primary);
-    }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
 
-    /* ====== TABLE ====== */
-    .table-container {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
 
-    th {
-      background: var(--color-border);
-      color: var(--color-text);
-      padding: var(--space-md);
-      text-align: right;
-      font-weight: 600;
-      font-size: 12px;
-      text-transform: uppercase;
-    }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+        }
 
-    td {
-      padding: var(--space-md);
-      border-bottom: 1px solid var(--color-border);
-      text-align: right;
-    }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
 
-    tr:hover td {
-      background: rgba(33, 127, 141, 0.02);
-    }
+        .modal-actions button {
+            flex: 1;
+        }
 
-    .no-data {
-      text-align: center;
-      padding: var(--space-lg);
-      color: var(--color-text-light);
-    }
+        .status-pending {
+            background: #ffc107;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
 
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+        .status-delivered {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
 
-    .status-pending {
-      background: rgba(168, 92, 47, 0.1);
-      color: var(--color-warning);
-    }
+        .status-cancelled {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
 
-    .status-completed {
-      background: rgba(33, 127, 141, 0.1);
-      color: var(--color-success);
-    }
-
-    .status-cancelled {
-      background: rgba(192, 21, 47, 0.1);
-      color: var(--color-error);
-    }
-
-    /* ====== MODAL ====== */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--color-surface);
-      border-radius: var(--radius);
-      padding: var(--space-lg);
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      border: 1px solid var(--color-border);
-    }
-
-    .modal-header {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: var(--space-md);
-      color: var(--color-primary);
-    }
-
-    .form-group {
-      margin-bottom: var(--space-md);
-    }
-
-    .form-label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      font-size: 13px;
-      color: var(--color-text);
-    }
-
-    .form-control {
-      width: 100%;
-      padding: var(--space-sm);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      background: var(--color-bg);
-      color: var(--color-text);
-      font-size: 14px;
-      font-family: inherit;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(33, 127, 141, 0.1);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: var(--space-sm);
-      margin-top: var(--space-lg);
-      justify-content: flex-end;
-    }
-
-    /* ====== RESPONSIVE ====== */
-    @media (max-width: 768px) {
-      body { padding: var(--space-sm); }
-      header { flex-direction: column; align-items: flex-start; }
-      header h1 { margin-bottom: var(--space-sm); }
-      .header-actions { width: 100%; }
-      .search-box { width: 100%; }
-      table { font-size: 12px; }
-      th, td { padding: var(--space-sm); }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      html {
-        --color-primary: #32B8C6;
-        --color-bg: #1F2121;
-        --color-surface: #262828;
-        --color-text: #F5F5F5;
-        --color-border: #404444;
-      }
-    }
-  </style>
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
 </head>
 <body>
-  <!-- ====== HEADER ====== -->
-  <header>
-    <h1>🍖 لحوم الرياض من المراح إلى مائدتك</h1>
-    <div class="header-actions">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 ابحث عن طلب...">
-      </div>
-      <button class="btn btn--primary" id="addOrderBtn">➕ طلب جديد</button>
-      <button class="btn btn--secondary" id="exportBtn">📤 تصدير</button>
-      <button class="btn btn--secondary" id="importBtn">📥 استيراد</button>
-      <input type="file" id="importFile" accept=".json">
-      <button class="btn btn--secondary" id="darkModeToggle">🌙 وضع داكن</button>
-      <button class="btn btn--danger" id="deleteAllBtn">🗑️ حذف الكل</button>
+    <div class="container">
+        <div class="header">
+            <h1>🍖 لحوم الرياض</h1>
+            <p>نظام إدارة الطلبات والمبيعات</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <h3>إجمالي الطلبات</h3>
+                <div class="value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>إجمالي المبيعات</h3>
+                <div class="value" id="totalRevenue">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>متوسط الطلب</h3>
+                <div class="value" id="averageOrder">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>الطلبات المعلقة</h3>
+                <div class="value" id="pendingOrders">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" id="addOrderBtn">➕ طلب جديد</button>
+            <input type="text" id="searchInput" placeholder="بحث برقم الطلب أو الهاتف...">
+            <select id="filterStatus">
+                <option value="">جميع الحالات</option>
+                <option value="قيد المعالجة">قيد المعالجة</option>
+                <option value="تم التوصيل">تم التوصيل</option>
+                <option value="ملغي">ملغي</option>
+            </select>
+            <button class="btn-danger" onclick="deleteAllData()">🗑️ حذف البيانات</button>
+            <button class="btn-primary" id="darkModeToggle" onclick="toggleDarkMode()">🌙</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>الهاتف</th>
+                        <th>النوع</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                        <th>الخدمة</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr><td colspan="10" class="no-data">لا توجد بيانات</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </header>
 
-  <!-- ====== STATS ====== -->
-  <div class="stats">
-    <div class="stat-card">
-      <h3>إجمالي الطلبات</h3>
-      <div class="value">0</div>
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <h2>إضافة طلب جديد</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label>اسم العميل *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف *</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>نوع الماشية *</label>
+                    <select id="animalType" required>
+                        <option value="">اختر النوع</option>
+                        <option value="بقر">بقر</option>
+                        <option value="غنم">غنم</option>
+                        <option value="ماعز">ماعز</option>
+                        <option value="دجاج">دجاج</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الكمية (كيلو) *</label>
+                    <input type="number" id="quantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>السعر للكيلو (ريال) *</label>
+                    <input type="number" id="pricePerUnit" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>نوع الخدمة</label>
+                    <select id="serviceType">
+                        <option value="توصيل">توصيل</option>
+                        <option value="استلام">استلام</option>
+                        <option value="حجز">حجز</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">💾 حفظ الطلب</button>
+                    <button type="button" class="btn-danger" onclick="closeAddOrderModal()">❌ إلغاء</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="stat-card">
-      <h3>قيد المعالجة</h3>
-      <div class="value">0</div>
-    </div>
-    <div class="stat-card">
-      <h3>مُنجزة</h3>
-      <div class="value">0</div>
-    </div>
-    <div class="stat-card">
-      <h3>الإيرادات (ر.س)</h3>
-      <div class="value">0</div>
-    </div>
-  </div>
 
-  <!-- ====== TABLE ====== -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>رقم</th>
-          <th>الزبون</th>
-          <th>الهاتف</th>
-          <th>الماشية</th>
-          <th>الكمية</th>
-          <th>السعر</th>
-          <th>الإجمالي</th>
-          <th>الخدمة</th>
-          <th>الحالة</th>
-          <th>الإجراء</th>
-        </tr>
-      </thead>
-      <tbody id="ordersTableBody">
-        <tr>
-          <td colspan="10" class="no-data">لا توجد طلبات حالياً</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <script>
+        // ════════════════════════════════════════════════════════════════════
+        // GOOGLE APPS SCRIPT URL
+        // ════════════════════════════════════════════════════════════════════
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyj0cgSyTUYejv-cpqzGykkbS8z1IHlKfuRMvgc6FpAEt12Pp0Nq5RyCAiblnxKS8pQ/exec";
 
-  <!-- ====== ORDER MODAL ====== -->
-  <div class="modal" id="orderModal">
-    <div class="modal-content">
-      <div class="modal-header">➕ إضافة طلب جديد</div>
-      <form id="orderForm">
-        <div class="form-group">
-          <label class="form-label">اسم الزبون</label>
-          <input type="text" class="form-control" id="customerName" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">رقم الهاتف</label>
-          <input type="tel" class="form-control" id="customerPhone" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">نوع الماشية</label>
-          <select class="form-control" id="animalType" required>
-            <option value="">اختر نوع الماشية</option>
-            <option value="ضان">ضان</option>
-            <option value="ماعز">ماعز</option>
-            <option value="أبقار">أبقار</option>
-            <option value="دجاج">دجاج</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">الكمية</label>
-          <input type="number" class="form-control" id="quantity" min="1" value="1" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">السعر (ر.س)</label>
-          <input type="number" class="form-control" id="pricePerUnit" min="0" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">الإجمالي (ر.س)</label>
-          <input type="number" class="form-control" id="totalPrice" readonly>
-        </div>
-        <div class="form-group">
-          <label class="form-label">الخدمة</label>
-          <select class="form-control" id="serviceType" required>
-            <option value="">اختر نوع الخدمة</option>
-            <option value="ذبح">ذبح</option>
-            <option value="توصيل">توصيل</option>
-            <option value="ذبح وتوصيل">ذبح وتوصيل</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">الحالة</label>
-          <select class="form-control" id="orderStatus" required>
-            <option value="pending">قيد المعالجة</option>
-            <option value="completed">مُنجزة</option>
-            <option value="cancelled">ملغاة</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn--secondary" onclick="document.getElementById('orderModal').classList.remove('show')">إلغاء</button>
-          <button type="submit" class="btn btn--primary">حفظ الطلب</button>
-        </div>
-      </form>
-    </div>
-  </div>
+        let allOrders = [];
+        let filteredOrders = [];
 
-  <script>
-    let allOrders = [];
-    let filteredOrders = [];
+        // ════════════════════════════════════════════════════════════════════
+        // إرسال البيانات إلى Google Apps Script
+        // ════════════════════════════════════════════════════════════════════
+        async function sendOrderToGoogleAppsScript(orderData) {
+            try {
+                console.log('📤 جاري إرسال البيانات...');
+                const formData = new FormData();
+                formData.append('id', orderData.id);
+                formData.append('customerName', orderData.customer);
+                formData.append('customerPhone', orderData.phone);
+                formData.append('animalType', orderData.animal);
+                formData.append('quantity', orderData.quantity);
+                formData.append('pricePerUnit', orderData.pricePerUnit);
+                formData.append('totalPrice', orderData.total);
+                formData.append('serviceType', orderData.service);
+                formData.append('orderStatus', orderData.status);
+                formData.append('timestamp', new Date().toLocaleString('ar-SA'));
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                });
+                
+                console.log('✅ تم الإرسال بنجاح!');
+                return true;
+            } catch (error) {
+                console.warn('⚠️ تحذير في الإرسال:', error.message);
+                return false;
+            }
+        }
 
-    // تحميل البيانات عند فتح الصفحة
-    window.addEventListener('DOMContentLoaded', () => {
-      loadOrders();
-      setupEventListeners();
-      applyTheme(localStorage.getItem('darkMode') === 'true');
-    });
-
-    // ====== EVENT LISTENERS ====== 
-    function setupEventListeners() {
-      // 1) حساب الإجمالي عند تغيير الكمية أو السعر
-      document.getElementById('quantity')?.addEventListener('input', calculateTotal);
-      document.getElementById('pricePerUnit')?.addEventListener('input', calculateTotal);
-
-      // 2) إرسال نموذج الطلب
-      const orderForm = document.getElementById('orderForm');
-      if (orderForm) {
-        orderForm.addEventListener('submit', handleOrderSubmit);
-      }
-
-      // 3) زر "➕ طلب جديد" - فتح المودال
-      const addOrderBtn = document.getElementById('addOrderBtn');
-      if (addOrderBtn) {
-        addOrderBtn.addEventListener('click', () => {
-          const modal = document.getElementById('orderModal');
-          if (modal) {
-            modal.classList.add('show');
-            document.getElementById('orderForm').reset();
-          }
-        });
-      }
-
-      // 4) زر "📤 تصدير"
-      const exportBtn = document.getElementById('exportBtn');
-      if (exportBtn) {
-        exportBtn.addEventListener('click', () => {
-          const dataStr = JSON.stringify(allOrders, null, 2);
-          const dataBlob = new Blob([dataStr], { type: 'application/json' });
-          const url = URL.createObjectURL(dataBlob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `orders-${new Date().toISOString().split('T')[0]}.json`;
-          link.click();
-          URL.revokeObjectURL(url);
-        });
-      }
-
-      // 5) زر "📥 استيراد"
-      const importBtn = document.getElementById('importBtn');
-      const importFileInput = document.getElementById('importFile');
-      if (importBtn && importFileInput) {
-        importBtn.addEventListener('click', () => {
-          importFileInput.click();
-        });
-        importFileInput.addEventListener('change', (e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              try {
-                const data = JSON.parse(event.target?.result);
-                allOrders = data;
-                saveOrders();
-                loadOrders();
-                alert('✅ تم استيراد البيانات بنجاح');
-              } catch (error) {
-                alert('❌ خطأ في قراءة الملف');
-              }
-            };
-            reader.readAsText(file);
-          }
-        });
-      }
-
-      // 6) البحث
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase();
-          filteredOrders = allOrders.filter(order =>
-            order.customerName?.toLowerCase().includes(query) ||
-            order.customerPhone?.includes(query)
-          );
-          renderTable();
-        });
-      }
-
-      // 7) تبديل الوضع الداكن
-      const darkModeToggle = document.getElementById('darkModeToggle');
-      if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', () => {
-          const isDark = document.documentElement.getAttribute('data-color-scheme') === 'dark';
-          applyTheme(!isDark);
-          localStorage.setItem('darkMode', !isDark);
-        });
-      }
-
-      // 8) حذف جميع البيانات
-      const deleteAllBtn = document.getElementById('deleteAllBtn');
-      if (deleteAllBtn) {
-        deleteAllBtn.addEventListener('click', () => {
-          if (confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) {
-            localStorage.clear();
-            allOrders = [];
-            filteredOrders = [];
+        // ════════════════════════════════════════════════════════════════════
+        // تحميل البيانات
+        // ════════════════════════════════════════════════════════════════════
+        window.addEventListener('DOMContentLoaded', () => {
             loadOrders();
-            alert('✅ تم حذف جميع البيانات');
-          }
+            loadSettings();
+            setupFormListener();
+            console.log('✅ التطبيق جاهز!');
         });
-      }
-    }
 
-    // حساب الإجمالي
-    function calculateTotal() {
-      const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
-      const price = parseFloat(document.getElementById('pricePerUnit')?.value) || 0;
-      const total = quantity * price;
-      const totalField = document.getElementById('totalPrice');
-      if (totalField) {
-        totalField.value = total.toFixed(2);
-      }
-    }
+        function setupFormListener() {
+            const addOrderBtn = document.getElementById('addOrderBtn');
+            if (addOrderBtn) {
+                addOrderBtn.addEventListener('click', showAddOrderForm);
+            }
+            
+            const form = document.getElementById('orderForm');
+            if (form) {
+                form.addEventListener('submit', handleAddOrder);
+            }
+        }
 
-    // معالجة إرسال النموذج
-    function handleOrderSubmit(e) {
-      e.preventDefault();
-      const order = {
-        id: Date.now(),
-        customerName: document.getElementById('customerName').value,
-        customerPhone: document.getElementById('customerPhone').value,
-        animalType: document.getElementById('animalType').value,
-        quantity: parseInt(document.getElementById('quantity').value),
-        pricePerUnit: parseFloat(document.getElementById('pricePerUnit').value),
-        totalPrice: parseFloat(document.getElementById('totalPrice').value),
-        serviceType: document.getElementById('serviceType').value,
-        orderStatus: document.getElementById('orderStatus').value,
-        createdAt: new Date().toISOString()
-      };
-      allOrders.push(order);
-      saveOrders();
-      loadOrders();
-      document.getElementById('orderModal').classList.remove('show');
-      alert('✅ تم إضافة الطلب بنجاح');
-    }
+        function handleAddOrder(e) {
+            e.preventDefault();
+            
+            const customer = document.getElementById('customerName').value || '';
+            const phone = document.getElementById('customerPhone').value || '';
+            const animal = document.getElementById('animalType').value || '';
+            const quantity = parseInt(document.getElementById('quantity').value || 0);
+            const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value || 0);
+            const total = quantity * pricePerUnit;
+            const service = document.getElementById('serviceType').value || '';
+            const status = 'قيد المعالجة';
+            
+            if (!customer || !phone || !animal || quantity === 0 || pricePerUnit === 0) {
+                alert('❌ الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            const newOrder = {
+                id: Date.now(),
+                customer,
+                phone,
+                animal,
+                quantity,
+                pricePerUnit,
+                total,
+                service,
+                status,
+                location: 'الرياض',
+                date: new Date().toLocaleDateString('ar-SA'),
+                time: new Date().toLocaleTimeString('ar-SA')
+            };
+            
+            allOrders.push(newOrder);
+            localStorage.setItem('meatOrders', JSON.stringify(allOrders));
+            console.log('💾 تم حفظ الطلب');
+            
+            sendOrderToGoogleAppsScript(newOrder);
+            
+            loadOrders();
+            alert('✅ تم إضافة الطلب بنجاح!');
+            
+            document.getElementById('orderForm').reset();
+            closeAddOrderModal();
+        }
 
-    // تحميل الطلبات
-    function loadOrders() {
-      const savedOrders = localStorage.getItem('allOrders');
-      allOrders = savedOrders ? JSON.parse(savedOrders) : [];
-      filteredOrders = allOrders;
-      renderTable();
-      updateStats();
-    }
+        function loadOrders() {
+            allOrders = JSON.parse(localStorage.getItem('meatOrders')) || [];
+            filteredOrders = [...allOrders];
+            renderOrders();
+            updateStats();
+        }
 
-    // حفظ الطلبات
-    function saveOrders() {
-      localStorage.setItem('allOrders', JSON.stringify(allOrders));
-    }
+        function renderOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            if (!tbody) return;
+            
+            const searchText = document.getElementById('searchInput').value.toLowerCase() || '';
+            const filterStatus = document.getElementById('filterStatus').value || '';
+            
+            filteredOrders = allOrders.filter(order => {
+                const matchesSearch = !searchText || 
+                    order.id.toString().includes(searchText) || 
+                    order.phone.includes(searchText) || 
+                    order.customer.toLowerCase().includes(searchText);
+                const matchesStatus = !filterStatus || order.status === filterStatus;
+                return matchesSearch && matchesStatus;
+            });
+            
+            tbody.innerHTML = filteredOrders.length === 0 ?
+                '<tr><td colspan="10" class="no-data">لا توجد بيانات</td></tr>' :
+                filteredOrders.map(order => `
+                <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.customer}</td>
+                    <td>${order.phone}</td>
+                    <td>${order.animal}</td>
+                    <td>${order.quantity}</td>
+                    <td>${order.pricePerUnit}</td>
+                    <td><strong>${order.total}</strong></td>
+                    <td>${order.service}</td>
+                    <td><span class="status-${order.status === 'قيد المعالجة' ? 'pending' : order.status === 'تم التوصيل' ? 'delivered' : 'cancelled'}">${order.status}</span></td>
+                    <td>${order.date}</td>
+                </tr>
+            `).join('');
+        }
 
-    // عرض الجدول
-    function renderTable() {
-      const tbody = document.getElementById('ordersTableBody');
-      if (!tbody) return;
+        function updateStats() {
+            const totalOrders = allOrders.length;
+            const totalRevenue = allOrders.reduce((sum, o) => sum + o.total, 0);
+            const averageOrder = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(0) : 0;
+            const pendingOrders = allOrders.filter(o => o.status === 'قيد المعالجة').length;
+            
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ar-SA');
+            document.getElementById('averageOrder').textContent = averageOrder.toLocaleString('ar-SA');
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+        }
 
-      if (filteredOrders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="no-data">لا توجد طلبات حالياً</td></tr>';
-        return;
-      }
+        function loadSettings() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) enableDarkMode();
+        }
 
-      tbody.innerHTML = filteredOrders.map(order => `
-        <tr>
-          <td>${order.id}</td>
-          <td>${order.customerName}</td>
-          <td>${order.customerPhone}</td>
-          <td>${order.animalType}</td>
-          <td>${order.quantity}</td>
-          <td>${order.pricePerUnit.toFixed(2)}</td>
-          <td>${order.totalPrice.toFixed(2)}</td>
-          <td>${order.serviceType}</td>
-          <td><span class="status-badge status-${order.orderStatus}">${order.orderStatus === 'pending' ? 'قيد المعالجة' : order.orderStatus === 'completed' ? 'مُنجزة' : 'ملغاة'}</span></td>
-          <td>
-            <button class="btn btn--secondary" onclick="deleteOrder(${order.id})">حذف</button>
-          </td>
-        </tr>
-      `).join('');
-    }
+        function enableDarkMode() {
+            document.body.style.filter = 'invert(1)';
+            localStorage.setItem('darkMode', 'true');
+            document.getElementById('darkModeToggle').textContent = '☀️';
+        }
 
-    // حذف طلب
-    function deleteOrder(id) {
-      allOrders = allOrders.filter(order => order.id !== id);
-      saveOrders();
-      loadOrders();
-    }
+        function disableDarkMode() {
+            document.body.style.filter = 'none';
+            localStorage.setItem('darkMode', 'false');
+            document.getElementById('darkModeToggle').textContent = '🌙';
+        }
 
-    // تحديث الإحصائيات
-    function updateStats() {
-      const stats = document.querySelectorAll('.stat-card .value');
-      if (stats.length >= 4) {
-        stats[0].textContent = allOrders.length;
-        stats[1].textContent = allOrders.filter(o => o.orderStatus === 'pending').length;
-        stats[2].textContent = allOrders.filter(o => o.orderStatus === 'completed').length;
-        stats[3].textContent = allOrders.reduce((sum, o) => sum + o.totalPrice, 0).toFixed(2);
-      }
-    }
+        function toggleDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        }
 
-    // تطبيق الوضع الداكن
-    function applyTheme(isDark) {
-      if (isDark) {
-        document.documentElement.setAttribute('data-color-scheme', 'dark');
-      } else {
-        document.documentElement.removeAttribute('data-color-scheme');
-      }
-    }
-  </script>
+        function deleteAllData() {
+            if (confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) {
+                localStorage.removeItem('meatOrders');
+                allOrders = [];
+                filteredOrders = [];
+                loadOrders();
+                alert('✅ تم حذف البيانات');
+            }
+        }
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script>
+        function showAddOrderForm() {
+            const modal = document.getElementById('orderModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+            }
+        }
+
+        function closeAddOrderModal() {
+            const modal = document.getElementById('orderModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+            }
+        }
+
+        // ======================== البحث والفلترة ============================
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const filterStatus = document.getElementById('filterStatus');
+            
+            if (searchInput) searchInput.addEventListener('input', renderOrders);
+            if (filterStatus) filterStatus.addEventListener('change', renderOrders);
+        });
+    </script>
 </body>
 </html>
