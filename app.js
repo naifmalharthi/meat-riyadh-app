@@ -107,30 +107,36 @@ function applyTheme(isDark) {
 // ════════════════════════════════════════════════════════════════
 
 /**
- * 💰 حساب الإجمالي - حاصل ضرب الكمية × السعر
+ * 💰 حساب الإجمالي - حاصل ضرب الكمية × السعر للوحدة
  * 
  * الوظيفة:
- *   - استخراج قيم الكمية والسعر من الحقول
- *   - حساب الإجمالي (كمية × سعر)
+ *   - استخراج قيمة الكمية من الحقل
+ *   - قراءة السعر للوحدة (قراءة فقط من animalPrices)
+ *   - حساب الإجمالي = كمية × سعر الوحدة
  *   - تحديث الواجهة بالرقم المحسوب
  * 
  * التفاصيل:
- *   🔢 يقرأ من حقل quantity الكمية المطلوبة
- *   💵 يقرأ من حقل pricePerUnit السعر للوحدة
- *   📊 يضرب الكمية × السعر = الإجمالي
+ *   🔢 يقرأ من حقل quantity عدد الحيوانات المطلوبة
+ *   💵 يقرأ من حقل pricePerUnit السعر (قراءة فقط - من animalPrices)
+ *   📊 يضرب: الكمية × سعر الوحدة = الإجمالي الصحيح
  *   🖥️ يعرض الرقم بصيغة عربية منسقة
+ *   
+ * أمثلة:
+ *   - 2 ماعز (1200 ريال) = 2 × 1200 = 2400 ريال ✅
+ *   - 3 غنم نعيمي (1800 ريال) = 3 × 1800 = 5400 ريال ✅
+ *   - 1 جمل (5000 ريال) = 1 × 5000 = 5000 ريال ✅
  */
 function calculateTotal() {
   const qty = parseInt(document.getElementById('quantity')?.value || 0);
   const price = parseFloat(document.getElementById('pricePerUnit')?.value || 0);
-  const total = qty * price;
+  const total = qty * price; // ✅ الحساب الصحيح: كمية × سعر
   const totalEl = document.getElementById('totalAmount');
   
   if (totalEl) {
     totalEl.textContent = total.toLocaleString('ar-SA');
     totalEl.value = total;
   }
-  console.log(`💰 تم حساب الإجمالي: ${total} ريال`);
+  console.log(`💰 تم حساب الإجمالي: ${qty} × ${price} = ${total} ريال`);
 }
 
 /**
@@ -138,14 +144,16 @@ function calculateTotal() {
  * 
  * الوظيفة:
  *   - عند اختيار حيوان، يظهر وصفه
- *   - تحديث السعر الافتراضي لهذا النوع
+ *   - تحديث السعر للوحدة (قراءة فقط من animalPrices)
  *   - إعادة حساب الإجمالي تلقائياً
  * 
  * العمليات:
  *   1️⃣ الحصول على الحيوان المختار من القائمة
  *   2️⃣ عرض الوصف الخاص به أسفل القائمة
- *   3️⃣ تعيين السعر الافتراضي من جدول الأسعار
- *   4️⃣ إعادة حساب الإجمالي مع السعر الجديد
+ *   3️⃣ تعيين السعر للوحدة (قراءة فقط) من animalPrices
+ *   4️⃣ إعادة حساب الإجمالي = كمية × السعر الجديد
+ *   
+ * ملاحظة: السعر يُملأ تلقائياً ولا يمكن تعديله يدويًا
  */
 function onAnimalChange() {
   const animalSelect = document.getElementById('animalType');
@@ -161,9 +169,9 @@ function onAnimalChange() {
   
   const priceInput = document.getElementById('pricePerUnit');
   if (selectedAnimal && animalPrices[selectedAnimal]) {
-    priceInput.value = animalPrices[selectedAnimal];
-    calculateTotal();
-    console.log(`🐑 تم الاختيار: ${selectedAnimal} - السعر: ${animalPrices[selectedAnimal]} ريال`);
+    priceInput.value = animalPrices[selectedAnimal]; // ✅ قراءة فقط من animalPrices
+    calculateTotal(); // ✅ إعادة حساب الإجمالي = كمية × السعر الجديد
+    console.log(`🐑 تم اختيار: ${selectedAnimal} | السعر للوحدة: ${animalPrices[selectedAnimal]} ريال`);
   }
 }
 
@@ -288,9 +296,9 @@ function populateSelects() {
  *   📌 submit على orderForm - معالجة بيانات الطلب الجديد
  */
 function setupEventListeners() {
-  // 📊 حقول الكمية والسعر - تحديث الإجمالي عند كل تغيير
+  // 📊 حقول الكمية - تحديث الإجمالي عند كل تغيير
+  // ⚠️ pricePerUnit هو قراءة فقط - لا يُسمح بالتعديل عليه
   document.getElementById('quantity')?.addEventListener('input', calculateTotal);
-  document.getElementById('pricePerUnit')?.addEventListener('input', calculateTotal);
 
   // 🐑 اختيار نوع الحيوان - تحديث السعر والوصف
   document.getElementById('animalType')?.addEventListener('change', onAnimalChange);
@@ -309,7 +317,8 @@ function setupEventListeners() {
  * 
  * الوظيفة:
  *   - استخراج بيانات النموذج من الحقول
- *   - إنشاء كائن طلب جديد
+ *   - التحقق من صحة البيانات
+ *   - إنشاء كائن طلب جديد بالبيانات الصحيحة
  *   - حفظ الطلب محلياً في localStorage
  *   - إرسال الطلب إلى Google Sheets
  *   - تحديث الواجهة لعرض الطلب الجديد
@@ -317,12 +326,18 @@ function setupEventListeners() {
  * خطوات المعالجة:
  *   1️⃣ منع السلوك الافتراضي لإرسال النموذج
  *   2️⃣ قراءة جميع الحقول من الصفحة
- *   3️⃣ إنشاء كائن يحتوي على بيانات الطلب
- *   4️⃣ إضافة الطلب إلى مصفوفة allOrders
- *   5️⃣ حفظ في localStorage للاحتفاظ بالبيانات
- *   6️⃣ إرسال إلى Google Sheets للنسخ الاحتياطية
- *   7️⃣ إغلاق المودال وتحديث الجدول
- *   8️⃣ إظهار رسالة نجاح للمستخدم
+ *   3️⃣ التحقق من صحة الكمية (رقم موجب)
+ *   4️⃣ حساب الإجمالي = كمية × سعر الوحدة ✅
+ *   5️⃣ إنشاء كائن يحتوي على بيانات الطلب الصحيحة
+ *   6️⃣ حفظ في localStorage للاحتفاظ بالبيانات
+ *   7️⃣ إرسال إلى Google Sheets للنسخ الاحتياطية
+ *   8️⃣ إغلاق المودال وتحديث الجدول
+ *   9️⃣ إظهار رسالة نجاح للمستخدم
+ *   
+ * أمثلة البيانات المحفوظة:
+ *   - الكمية: 3 (عدد الحيوانات)
+ *   - السعر للوحدة: 1200 (من animalPrices)
+ *   - الإجمالي: 3600 (= 3 × 1200) ✅
  */
 function handleOrderSubmit(e) {
   e.preventDefault();
@@ -333,24 +348,24 @@ function handleOrderSubmit(e) {
   const customerPhone = document.getElementById('customerPhone').value;
   const animalType = document.getElementById('animalType').value;
   const animalAge = document.getElementById('animalAge').value;
-  const quantity = document.getElementById('quantity').value;
-  const pricePerUnit = document.getElementById('pricePerUnit').value;
-  const totalPrice = document.getElementById('totalAmount').value;
+  const quantity = parseInt(document.getElementById('quantity').value); // ✅ رقم موجب
+  const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value); // ✅ من animalPrices
+  const totalPrice = quantity * pricePerUnit; // ✅ حساب صحيح: كمية × سعر
   const serviceType = document.getElementById('serviceType').value;
   const region = document.getElementById('region').value;
   const orderStatus = 'قيد المعالجة';
   const timestamp = new Date().toLocaleString('ar-SA');
 
-  // 🗂️ إنشاء كائن الطلب الجديد بجميع البيانات
+  // 🗂️ إنشاء كائن الطلب الجديد بجميع البيانات الصحيحة
   const newOrder = {
     id: Date.now(),
     customerName,
     customerPhone,
     animalType,
     animalAge,
-    quantity,
-    pricePerUnit,
-    totalPrice,
+    quantity,              // ✅ عدد الحيوانات
+    pricePerUnit,          // ✅ سعر الوحدة (قراءة فقط)
+    totalPrice,            // ✅ الإجمالي المحسوب (كمية × سعر)
     serviceType,
     region,
     orderStatus,
@@ -376,7 +391,7 @@ function handleOrderSubmit(e) {
   displayOrders(allOrders);
 
   console.log('✅ تم إرسال الطلب بنجاح:', newOrder);
-  showNotification('✅ تم إضافة الطلب بنجاح!');
+  showNotification(`✅ تم إضافة الطلب: ${quantity} ${animalType} = ${totalPrice.toLocaleString('ar-SA')} ريال`);
 }
 
 /**
