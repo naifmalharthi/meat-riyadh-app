@@ -1,74 +1,95 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- 📄 الرأس - معلومات الصفحة الأساسية والاتصال بالموارد الخارجية -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="🍖 لحوم الرياض - نظام إدارة طلبات اللحوم والماشية الاحترافي">
-    <meta name="theme-color" content="#2c5aa0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>🍖 لحوم الرياض - نظام الطلبات v10</title>
+    <title>🍖 لحوم الرياض - نظام الطلبات</title>
     
-    <!-- PWA Manifest -->
+    <!-- 🎨 استدعاء ملف CSS الخارجي للأنماط -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- 📱 PWA Manifest للتطبيق -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- أيقونة التطبيق -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%232c5aa0' width='180' height='180'/><text x='90' y='120' font-size='100' text-anchor='middle' fill='white' font-family='Arial'>🍖</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%232c5aa0' width='180' height='180'/><text x='90' y='120' font-size='100' text-anchor='middle' fill='white' font-family='Arial'>🍖</text></svg>">
-    
-    <!-- أنماط CSS -->
-    <link rel="stylesheet" href="20251201-1800-style.css">
 </head>
 <body>
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- 🎯 الرأس (Header) - عنوان الموقع والشعار -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    
     <div class="container">
-        <!-- 📊 رأس الصفحة -->
-        <header class="header">
-            <div class="header-content">
-                <h1>🍖 لحوم الرياض</h1>
-                <p>نظام إدارة الطلبات والمبيعات - النسخة v10</p>
-            </div>
-        </header>
+        <div class="header">
+            <h1>🍖 لحوم الرياض</h1>
+            <p>نظام إدارة الطلبات والمبيعات</p>
+        </div>
 
-        <!-- 📈 الإحصائيات -->
-        <section class="stats" id="statsContainer">
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- 📊 لوحة الإحصائيات (Stats Dashboard) -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        
+        <div class="stats">
+            <!-- إجمالي الطلبات -->
             <div class="stat-box">
-                <span class="stat-label">إجمالي الطلبات</span>
-                <span class="stat-value" id="totalOrders">0</span>
+                <h3>إجمالي الطلبات</h3>
+                <div class="value" id="totalOrders">0</div>
             </div>
-            <div class="stat-box">
-                <span class="stat-label">إجمالي المبيعات</span>
-                <span class="stat-value" id="totalSales">0 ر.س</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-label">متوسط الطلب</span>
-                <span class="stat-value" id="avgOrder">0 ر.س</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-label">الطلبات المعلقة</span>
-                <span class="stat-value" id="pendingOrders">0</span>
-            </div>
-        </section>
-
-        <!-- 🎛️ أدوات التحكم -->
-        <section class="controls">
-            <button class="btn btn-primary" id="addOrderBtn" aria-label="إضافة طلب جديد">➕ طلب جديد</button>
             
-            <div class="filter-group">
-                <button class="filter-btn active" data-filter="all">جميع الحالات</button>
-                <button class="filter-btn" data-filter="قيد المعالجة">قيد المعالجة</button>
-                <button class="filter-btn" data-filter="تم التوصيل">تم التوصيل</button>
-                <button class="filter-btn" data-filter="ملغي">ملغي</button>
+            <!-- إجمالي المبيعات (الإيرادات) -->
+            <div class="stat-box">
+                <h3>إجمالي المبيعات</h3>
+                <div class="value" id="totalRevenue">0</div>
             </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-secondary" id="clearDataBtn" aria-label="حذف جميع البيانات">🗑️ حذف البيانات</button>
-                <button class="btn btn-secondary" id="darkModeBtn" aria-label="تبديل الوضع الليلي">🌙 وضع غامق</button>
+            
+            <!-- متوسط الطلب -->
+            <div class="stat-box">
+                <h3>متوسط الطلب</h3>
+                <div class="value" id="averageOrder">0</div>
             </div>
-        </section>
+            
+            <!-- الطلبات المعلقة (قيد المعالجة) -->
+            <div class="stat-box">
+                <h3>الطلبات المعلقة</h3>
+                <div class="value" id="pendingOrders">0</div>
+            </div>
+        </div>
 
-        <!-- 📋 جدول الطلبات -->
-        <section class="table-wrapper">
-            <table id="ordersTable" role="grid" aria-label="جدول الطلبات">
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- ⚙️ لوحة التحكم (Controls) - الأزرار والبحث -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        
+        <div class="controls">
+            <!-- 🔘 زر إضافة طلب جديد -->
+            <button class="btn-primary" id="addOrderBtn">➕ طلب جديد</button>
+            
+            <!-- 🔍 حقل البحث -->
+            <input type="text" id="searchInput" placeholder="بحث برقم الطلب أو الهاتف...">
+            
+            <!-- 🔽 قائمة تصفية الحالات -->
+            <select id="filterStatus">
+                <option value="">جميع الحالات</option>
+                <option value="قيد المعالجة">قيد المعالجة</option>
+                <option value="تم التوصيل">تم التوصيل</option>
+                <option value="ملغي">ملغي</option>
+            </select>
+            
+            <!-- 🗑️ زر حذف جميع البيانات -->
+            <button class="btn-danger" id="deleteAllBtn">🗑️ حذف البيانات</button>
+            
+            <!-- 🌙 زر تبديل الوضع الليلي (Dark Mode) -->
+            <button class="btn-primary" id="darkModeToggle">🌙 وضع غامق</button>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- 📋 جدول الطلبات (Orders Table) -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        
+        <div class="table-wrapper">
+            <table>
+                <!-- رأس الجدول (العناوين) -->
                 <thead>
                     <tr>
                         <th>رقم الطلب</th>
@@ -81,139 +102,124 @@
                         <th>الخدمة</th>
                         <th>الحالة</th>
                         <th>التاريخ</th>
-                        <th>إجراءات</th>
                     </tr>
                 </thead>
-                <tbody id="ordersBody">
-                    <tr>
-                        <td colspan="11" class="no-data">لا توجد بيانات</td>
-                    </tr>
+                
+                <!-- جسم الجدول (البيانات) -->
+                <tbody id="ordersTableBody">
+                    <tr><td colspan="10" class="no-data">لا توجد بيانات</td></tr>
                 </tbody>
             </table>
-        </section>
+        </div>
     </div>
 
-    <!-- 🪟 نافذة إضافة/تعديل الطلب -->
-    <div class="modal" id="orderModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- 🎯 المودال (Modal) - نافذة إضافة طلب جديد -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    
+    <div id="orderModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle">إضافة طلب جديد</h2>
+            <h2>إضافة طلب جديد</h2>
             
-            <form id="orderForm" class="order-form" novalidate>
+            <!-- 📝 نموذج إدخال بيانات الطلب -->
+            <form id="orderForm">
+                <!-- 👤 حقل اسم العميل -->
                 <div class="form-group">
-                    <label for="customerName">اسم العميل <span class="required">*</span></label>
-                    <input type="text" id="customerName" required placeholder="مثال: محمد علي" aria-required="true">
-                    <span class="error-message" id="customerNameError"></span>
+                    <label>اسم العميل *</label>
+                    <input type="text" id="customerName" required>
                 </div>
-
+                
+                <!-- 📞 حقل رقم الهاتف -->
                 <div class="form-group">
-                    <label for="customerPhone">رقم الهاتف <span class="required">*</span></label>
-                    <input type="tel" id="customerPhone" required placeholder="0501234567" pattern="[0-9]{10}" aria-required="true">
-                    <span class="error-message" id="customerPhoneError"></span>
+                    <label>رقم الهاتف *</label>
+                    <input type="tel" id="customerPhone" required>
                 </div>
-
+                
+                <!-- 🐑 حقل نوع الماشية -->
                 <div class="form-group">
-                    <label for="animalType">نوع الماشية <span class="required">*</span></label>
-                    <select id="animalType" required aria-required="true">
+                    <label>نوع الماشية *</label>
+                    <select id="animalType" required>
                         <option value="">اختر النوع</option>
-                        <option value="غنم نعيمي">غنم نعيمي</option>
-                        <option value="غنم نجدي">غنم نجدي</option>
-                        <option value="غنم حري">غنم حري</option>
-                        <option value="غنم سواكني">غنم سواكني</option>
-                        <option value="غنم بربري">غنم بربري</option>
-                        <option value="ماعز">ماعز</option>
-                        <option value="جمل">جمل (جملة فقط)</option>
                     </select>
-                    <div class="animal-desc" id="animalDesc" role="status" aria-live="polite"></div>
-                    <span class="error-message" id="animalTypeError"></span>
+                    <!-- وصف الحيوان المختار -->
+                    <div id="animalDescBox" class="animal-desc"></div>
                 </div>
-
+                
+                <!-- 📅 حقل عمر الحيوان -->
                 <div class="form-group">
-                    <label for="animalAge">العمر <span class="required">*</span></label>
-                    <select id="animalAge" required aria-required="true">
+                    <label>العمر *</label>
+                    <select id="animalAge" required>
                         <option value="">اختر العمر</option>
-                        <option value="6 شهور">6 شهور</option>
-                        <option value="1 سنة">1 سنة</option>
-                        <option value="سنة ونصف">سنة ونصف</option>
-                        <option value="سنتان">سنتان</option>
                     </select>
-                    <span class="error-message" id="animalAgeError"></span>
                 </div>
-
+                
+                <!-- 🔢 حقل الكمية -->
                 <div class="form-group">
-                    <label for="quantity">الكمية (عدد الحيوانات) <span class="required">*</span></label>
-                    <input type="number" id="quantity" required min="1" max="1000" placeholder="عدد الحيوانات" aria-required="true">
-                    <span class="error-message" id="quantityError"></span>
+                    <label>الكمية (عدد الحيوانات) *</label>
+                    <input type="number" id="quantity" min="1" required>
                 </div>
-
+                
+                <!-- 💵 حقل السعر للوحدة (قراءة فقط) -->
                 <div class="form-group">
-                    <label for="pricePerUnit">السعر للوحدة (ريال) <span class="required">*</span> (قراءة فقط)</label>
-                    <input type="number" id="pricePerUnit" readonly aria-readonly="true">
+                    <label>السعر للوحدة (ريال) * (قراءة فقط)</label>
+                    <input type="number" id="pricePerUnit" readonly>
                 </div>
-
+                
+                <!-- 💰 عرض الإجمالي -->
                 <div class="form-group">
                     <label>الإجمالي (ريال)</label>
-                    <div class="total-display" id="totalDisplay" role="status" aria-live="polite">0</div>
+                    <div id="totalAmount" class="total-display">0</div>
                 </div>
-
+                
+                <!-- 🛠️ حقل نوع الخدمة -->
                 <div class="form-group">
-                    <label for="serviceType">نوع الخدمة <span class="required">*</span></label>
-                    <select id="serviceType" required aria-required="true">
+                    <label>نوع الخدمة *</label>
+                    <select id="serviceType" required>
                         <option value="">اختر الخدمة</option>
-                        <option value="توصيل مجاني">توصيل مجاني</option>
-                        <option value="توصيل برسم">توصيل برسم</option>
-                        <option value="ذبح">خدمة الذبح</option>
-                        <option value="تقطيع">خدمة التقطيع</option>
-                        <option value="تغليف">خدمة التغليف</option>
-                        <option value="استلام من المحل">استلام من المحل</option>
                     </select>
-                    <span class="error-message" id="serviceTypeError"></span>
                 </div>
-
+                
+                <!-- 📍 حقل المنطقة -->
                 <div class="form-group">
-                    <label for="region">المنطقة <span class="required">*</span></label>
-                    <select id="region" required aria-required="true">
+                    <label>المنطقة *</label>
+                    <select id="region" required>
                         <option value="">اختر المنطقة</option>
-                        <option value="الرياض">الرياض</option>
-                        <option value="خارج الرياض">خارج الرياض (جملة فقط)</option>
-                    </select>
-                    <span class="error-message" id="regionError"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="orderStatus">حالة الطلب</label>
-                    <select id="orderStatus">
-                        <option value="قيد المعالجة">قيد المعالجة</option>
-                        <option value="تم التوصيل">تم التوصيل</option>
-                        <option value="ملغي">ملغي</option>
                     </select>
                 </div>
-
+                
+                <!-- 🔘 أزرار الإجراءات -->
                 <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">💾 حفظ الطلب</button>
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">❌ إلغاء</button>
+                    <!-- 💾 زر حفظ الطلب -->
+                    <button type="submit" class="btn-primary">💾 حفظ الطلب</button>
+                    <!-- ❌ زر إلغاء -->
+                    <button type="button" class="btn-danger" id="closeModalBtn">❌ إلغاء</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 🔔 إشعارات النظام -->
-    <div class="notification" id="notification" role="alert" aria-live="polite" style="display: none;"></div>
-
-    <!-- 📍 مؤشر الاتصال بالإنترنت -->
-    <div class="offline-indicator" id="offlineIndicator" style="display: none;">
-        📡 العمل بلا إنترنت - سيتم إرسال البيانات عند استعادة الاتصال
-    </div>
-
-    <!-- 🔗 تسجيل Service Worker -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- 🔧 Service Worker - لدعم PWA -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    
     <script>
+        // تسجيل Service Worker للتطبيق
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('20251201-1800-sw.js').catch(err => 
-                console.log('⚠️ Service Worker لم يتم تسجيله:', err)
-            );
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('✅ Service Worker مسجل بنجاح');
+            }).catch(err => {
+                console.log('⚠️ فشل تسجيل Service Worker:', err);
+            });
         }
     </script>
 
-    <!-- البرنامج الرئيسي -->
-    <script src="20251201-1800-app.js"></script>
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- 📜 استدعاء ملف JavaScript الخارجي (app.js) -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- ✅ هنا نستدعي ملف app.js الذي يحتوي على كل الوظائف الرئيسية -->
+    <!-- ✅ هذا هو الحل الصحيح - لا يوجد كود JavaScript مكتوب مباشرة هنا -->
+    
+    <script src="app.js"></script>
+
 </body>
 </html>
