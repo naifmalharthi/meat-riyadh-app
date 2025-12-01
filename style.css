@@ -739,1101 +739,828 @@ select.form-control {
 
 /* END PERPLEXITY DESIGN SYSTEM */
 
-/* 🍖 لحوم الرياض - style.css | VERSION 9
-✅ Complete Arabic Documentation
-✅ Modern CSS with Variables
-✅ Dark Mode Support
-✅ Responsive Design
+/* 🍖 لحوم الرياض - style.css | v11
+✅ تطوير: 2025-12-01 18:00
+✅ متجاوب مع جميع الأجهزة
+✅ Dark Mode محسّن (Perplexity Design System)
+✅ أداء عالي
 */
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🎨 SECTION 1: متغيرات الألوان والأنماط الأساسية (Color Variables) */
-/* ════════════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════════
+   🎨 متغيرات مخصصة إضافية
+   ════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ألوان أساسية - mapped to design system */
-  --primary-color: var(--color-primary);
-  --secondary-color: var(--color-error);
-  --success-color: var(--color-success);
-  --warning-color: var(--color-warning);
-  --error-color: var(--color-error);
-  
-  /* ألوان النصوص */
-  --text-primary: var(--color-text);
-  --text-secondary: var(--color-text-secondary);
-  --text-light: rgba(var(--color-slate-500-rgb), 0.6);
-  
-  /* ألوان الخلفيات */
-  --bg-primary: var(--color-surface);
-  --bg-secondary: var(--color-background);
-  --bg-light: var(--color-secondary);
-  
-  /* الحدود */
-  --border-color: var(--color-border);
-  --border-radius: var(--radius-base);
-  --box-shadow: var(--shadow-sm);
-  
-  /* المسافات */
-  --spacing-xs: var(--space-4);
-  --spacing-sm: var(--space-8);
-  --spacing-md: var(--space-16);
-  --spacing-lg: var(--space-24);
-  --spacing-xl: var(--space-32);
-  
-  /* الخطوط */
-  --font-main: var(--font-family-base);
-  --font-mono: var(--font-family-mono);
-  --font-size-base: var(--font-size-md);
-  --font-size-sm: var(--font-size-sm);
-  --font-size-md: var(--font-size-base);
-  --font-size-lg: var(--font-size-lg);
-  --font-size-xl: var(--font-size-3xl);
+    /* تخصيص متغيرات إضافية للتطبيق */
+    --app-primary: var(--color-primary);
+    --app-primary-hover: var(--color-primary-hover);
+    --app-primary-active: var(--color-primary-active);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🌙 الوضع الليلي (Dark Mode Variables) */
-/* ════════════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════════
+   🔤 أنماط أساسية
+   ════════════════════════════════════════════════════════════════════════════ */
 
-[data-color-scheme="dark"] {
-  --primary-color: var(--color-primary);
-  --text-primary: var(--color-text);
-  --text-secondary: var(--color-text-secondary);
-  --bg-primary: var(--color-surface);
-  --bg-secondary: var(--color-background);
-  --bg-light: var(--color-secondary);
-  --border-color: var(--color-border);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 📄 SECTION 2: الأنماط الأساسية (Base Styles) */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
-/**
- * 🌍 html - الجذر
- * 
- * التفاصيل:
- *   - حجم الخط الأساسي 14px
- *   - تعطيل التكبير/التصغير على المحمول
- *   - مضادات الأسنان للنصوص
- */
 html {
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+    font-size: 16px;
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-normal);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
 }
 
-/**
- * 📦 body - جسم الصفحة
- * 
- * التفاصيل:
- *   - إزالة الهامش الافتراضي
- *   - تطبيق الخط الأساسي
- *   - اللون الأساسي والخلفية
- */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-main);
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
-  line-height: var(--line-height-normal);
-  transition: background-color var(--duration-normal) var(--ease-standard), 
-              color var(--duration-normal) var(--ease-standard);
+    font-family: var(--font-family-base);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: var(--line-height-normal);
+    transition: background-color var(--duration-normal) var(--ease-standard), 
+                color var(--duration-normal) var(--ease-standard);
 }
 
-/**
- * 🔤 عناصر النصوص (Typography)
- */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  letter-spacing: var(--letter-spacing-tight);
-  color: var(--color-text);
-}
+/* ════════════════════════════════════════════════════════════════════════════
+   📐 الحاويات والتخطيط
+   ════════════════════════════════════════════════════════════════════════════ */
 
-h1 { 
-  font-size: var(--font-size-4xl); 
-  margin-bottom: var(--spacing-md); 
-}
-h2 { 
-  font-size: var(--font-size-2xl); 
-  margin-bottom: var(--spacing-md); 
-}
-h3 { 
-  font-size: var(--font-size-xl); 
-  margin-bottom: var(--spacing-sm); 
-}
-h4, h5, h6 { 
-  font-size: var(--font-size-lg); 
-}
-
-p {
-  margin: 0 0 var(--spacing-md) 0;
-  line-height: var(--line-height-normal);
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-a:hover {
-  color: var(--color-primary-hover);
-  text-decoration: underline;
-}
-
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🎯 SECTION 3: تخطيط الحاوية الرئيسية (Container Layout) */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
-/**
- * 📦 container - الحاوية الرئيسية
- * 
- * الوصف:
- *   - عرض أقصى 1200 بكسل
- *   - وسط في الصفحة
- *   - حشو داخلي 20 بكسل
- *   - تفاعل مع جميع أحجام الشاشات
- */
 .container {
-  max-width: var(--container-xl);
-  margin: 0 auto;
-  padding: var(--spacing-md);
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    padding: var(--space-16);
 }
 
-/**
- * 📄 header - رأس الصفحة
- * 
- * الوصف:
- *   - عرض كامل
- *   - خلفية مميزة
- *   - نصوص بيضاء
- *   - حشو داخلي
- */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--space-12);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: var(--space-8);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   📊 رأس الصفحة
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
-  color: var(--color-btn-primary-text);
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-lg);
-  text-align: center;
-  box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+    color: var(--color-btn-primary-text);
+    padding: var(--space-24) var(--space-16);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-24);
+    box-shadow: var(--shadow-md);
+    text-align: center;
 }
 
 .header h1 {
-  margin: 0 0 var(--spacing-sm) 0;
-  font-size: var(--font-size-4xl);
-  color: var(--color-btn-primary-text);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-8);
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .header p {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  opacity: 0.9;
-  color: var(--color-btn-primary-text);
+    font-size: var(--font-size-lg);
+    opacity: 0.9;
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 📊 SECTION 4: لوحة الإحصائيات (Stats Dashboard) */
-/* ════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .header {
+        padding: var(--space-20) var(--space-12);
+    }
+}
 
-/**
- * 📊 stats - صناديق الإحصائيات
- * 
- * الوصف:
- *   - شبكة من 4 أعمدة (responsive)
- *   - فجوات بين الصناديق
- *   - تتكيف مع الشاشات الصغيرة
- */
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .header p {
+        font-size: var(--font-size-md);
+    }
+    
+    .header {
+        padding: var(--space-16) var(--space-8);
+        margin-bottom: var(--space-16);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   📈 الإحصائيات
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
 }
 
-/**
- * 📦 stat-box - صندوق إحصائي واحد
- * 
- * التفاصيل:
- *   - خلفية بيضاء
- *   - حدود خفيفة
- *   - نص مركز
- *   - ظل خفيف
- *   - انتقال سلس عند الوقوف
- */
 .stat-box {
-  background: var(--bg-primary);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-card-border);
-  text-align: center;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--duration-normal) var(--ease-standard), 
-              box-shadow var(--duration-normal) var(--ease-standard);
+    background: var(--color-surface);
+    padding: var(--space-20);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-card-border);
+    transition: transform var(--duration-normal) var(--ease-standard), 
+                box-shadow var(--duration-normal) var(--ease-standard);
 }
 
 .stat-box:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
-.stat-box h3 {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: var(--font-weight-medium);
+.stat-label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
 }
 
-.stat-box .value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-color);
+.stat-value {
+    display: block;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    line-height: var(--line-height-tight);
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* ⚙️ SECTION 5: أزرار التحكم (Controls Panel) */
-/* ════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-12);
+    }
+}
 
-/**
- * ⚙️ controls - لوحة التحكم
- * 
- * الوصف:
- *   - صف أفقي من الأزرار والحقول
- *   - توزيع مرن
- *   - فجوات بين العناصر
- */
+@media (max-width: 480px) {
+    .stats {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+    
+    .stat-box {
+        padding: var(--space-16);
+    }
+    
+    .stat-value {
+        font-size: var(--font-size-2xl);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🎛️ أدوات التحكم
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-  align-items: center;
+    background: var(--color-surface);
+    padding: var(--space-16);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-24);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    align-items: center;
+    border: 1px solid var(--color-card-border);
+    box-shadow: var(--shadow-sm);
 }
 
-/**
- * 🔘 btn-primary - زر أساسي (أزرق)
- * 
- * التفاصيل:
- *   - خلفية زرقاء
- *   - نصوص بيضاء
- *   - حشو متوسط
- *   - حدود مدورة
- *   - ظل خفيف
- *   - انتقال سلس عند الوقوف
- */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        gap: var(--space-12);
+    }
+}
+
+@media (max-width: 480px) {
+    .controls {
+        padding: var(--space-12);
+    }
+}
+
+.filter-group {
+    display: flex;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+    .filter-group {
+        width: 100%;
+        gap: var(--space-6);
+    }
+}
+
+.filter-btn {
+    padding: var(--space-8) var(--space-16);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-base);
+}
+
+.filter-btn:hover {
+    background: var(--color-secondary);
+}
+
+.filter-btn:focus-visible {
+    outline: var(--focus-outline);
+    box-shadow: var(--focus-ring);
+}
+
+.filter-btn.active {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+    border-color: var(--color-primary);
+}
+
+@media (max-width: 480px) {
+    .filter-btn {
+        flex: 1;
+        padding: var(--space-6) var(--space-12);
+        font-size: var(--font-size-sm);
+    }
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--space-8);
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🔘 الأزرار
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-normal);
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+    border: none;
+    text-decoration: none;
+    position: relative;
+    gap: var(--space-6);
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
 .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-  padding: var(--space-10) var(--spacing-md);
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-base);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-normal) var(--ease-standard);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
 }
 
 .btn-primary:hover {
-  background: var(--color-primary-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+    background: var(--color-primary-hover);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
-  background: var(--color-primary-active);
-  box-shadow: var(--shadow-xs);
+    background: var(--color-primary-active);
 }
 
-.btn-primary:focus-visible {
-  outline: var(--focus-outline);
-  outline-offset: 2px;
-  box-shadow: var(--focus-ring);
+.btn-secondary {
+    background: var(--color-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
 }
 
-/**
- * 🔴 btn-danger - زر حذف (أحمر)
- * 
- * التفاصيل:
- *   - خلفية حمراء
- *   - نصوص بيضاء
- *   - سلوك مشابه للزر الأساسي
- */
-.btn-danger {
-  background: var(--error-color);
-  color: var(--color-cream-50);
-  padding: var(--space-10) var(--spacing-md);
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-base);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-normal) var(--ease-standard);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.btn-secondary:hover {
+    background: var(--color-secondary-hover);
 }
 
-.btn-danger:hover {
-  background: rgba(var(--color-error-rgb), 0.85);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+.btn-secondary:active {
+    background: var(--color-secondary-active);
 }
 
-.btn-danger:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-xs);
+.btn-edit {
+    background: var(--color-info);
+    color: var(--color-btn-primary-text);
+    padding: var(--space-4) var(--space-8);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--duration-normal) var(--ease-standard);
 }
 
-.btn-danger:focus-visible {
-  outline: 2px solid var(--color-error);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(var(--color-error-rgb), 0.3);
+.btn-edit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
 
-/**
- * 🔘 btn-delete - زر حذف صغير (في الجدول)
- * 
- * التفاصيل:
- *   - حجم صغير
- *   - يظهر في صفوف الجدول
- */
 .btn-delete {
-  background: var(--error-color);
-  color: var(--color-cream-50);
-  padding: var(--space-4) var(--space-8);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  transition: background var(--duration-fast) var(--ease-standard);
+    background: var(--color-error);
+    color: var(--color-btn-primary-text);
+    padding: var(--space-4) var(--space-8);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--duration-normal) var(--ease-standard);
 }
 
 .btn-delete:hover {
-  background: rgba(var(--color-error-rgb), 0.85);
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
 
-.btn-delete:focus-visible {
-  outline: 2px solid var(--color-error);
-  outline-offset: 1px;
-}
+/* ════════════════════════════════════════════════════════════════════════════
+   📋 الجداول
+   ════════════════════════════════════════════════════════════════════════════ */
 
-/**
- * 📝 input, select - حقول الإدخال والقوائم
- * 
- * التفاصيل:
- *   - خلفية بيضاء
- *   - حدود رمادية فاتحة
- *   - حشو صغير
- *   - حدود مدورة
- *   - انتقال سلس عند التركيز
- */
-.controls input,
-.controls select {
-  padding: var(--space-10) var(--space-12);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-base);
-  font-size: var(--font-size-base);
-  font-family: var(--font-main);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: border-color var(--duration-fast) var(--ease-standard), 
-              box-shadow var(--duration-fast) var(--ease-standard);
-}
-
-.controls select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: var(--select-caret-light);
-  background-repeat: no-repeat;
-  background-position: left var(--space-12) center;
-  background-size: 16px;
-  padding-left: var(--space-32);
-}
-
-@media (prefers-color-scheme: dark) {
-  .controls select {
-    background-image: var(--select-caret-dark);
-  }
-}
-
-[data-color-scheme="dark"] .controls select {
-  background-image: var(--select-caret-dark);
-}
-
-[data-color-scheme="light"] .controls select {
-  background-image: var(--select-caret-light);
-}
-
-.controls input:focus,
-.controls select:focus {
-  outline: var(--focus-outline);
-  outline-offset: 0;
-  border-color: var(--color-primary);
-  box-shadow: var(--focus-ring);
-}
-
-.controls input[type="text"],
-.controls input[type="search"] {
-  flex: 1;
-  min-width: 200px;
-}
-
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 📋 SECTION 6: جدول الطلبات (Orders Table) */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
-/**
- * 📦 table-wrapper - حاوية الجدول
- * 
- * الوصف:
- *   - تفاف الجدول
- *   - تمرير أفقي على الشاشات الصغيرة
- *   - حدود مدورة
- *   - ظل
- */
 .table-wrapper {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  overflow-x: auto;
-  margin-bottom: var(--spacing-lg);
-  border: 1px solid var(--color-card-border);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+    border: 1px solid var(--color-card-border);
 }
 
-/**
- * 📊 table - الجدول
- * 
- * التفاصيل:
- *   - عرض كامل
- *   - بدون حدود
- *   - خطوط بيضاء فاصلة
- */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--font-size-sm);
-  color: var(--color-text);
+    width: 100%;
+    border-collapse: collapse;
 }
 
-/**
- * 🎯 thead - رأس الجدول
- * 
- * الوصف:
- *   - خلفية زرقاء
- *   - نصوص بيضاء
- *   - ثابت عند التمرير (اختياري)
- */
-table thead {
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-  font-weight: var(--font-weight-semibold);
+thead {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+    color: var(--color-btn-primary-text);
+    position: sticky;
+    top: 0;
 }
 
-table th {
-  padding: var(--space-12) var(--spacing-md);
-  text-align: right;
-  border-bottom: 2px solid var(--color-primary-active);
-  font-size: var(--font-size-sm);
-  letter-spacing: 0.02em;
+th {
+    padding: var(--space-16);
+    text-align: right;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
 }
 
-/**
- * 📝 tbody - جسم الجدول
- * 
- * الوصف:
- *   - صفوف بديلة الألوان (للوضوح)
- *   - حشو متوسط
- */
-table tbody tr {
-  border-bottom: 1px solid var(--color-card-border-inner);
-  transition: background-color var(--duration-fast) var(--ease-standard);
+td {
+    padding: var(--space-16);
+    border-bottom: 1px solid var(--color-card-border-inner);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
 }
 
-table tbody tr:hover {
-  background-color: var(--bg-light);
+tbody tr {
+    transition: background-color var(--duration-normal) var(--ease-standard);
 }
 
-table tbody tr:nth-child(even) {
-  background-color: var(--bg-secondary);
+tbody tr:hover {
+    background-color: var(--color-secondary);
 }
 
-table td {
-  padding: var(--space-12) var(--spacing-md);
-  text-align: right;
+.no-data {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: var(--space-32) !important;
+    font-size: var(--font-size-md);
 }
 
-/**
- * 📌 no-data - رسالة عدم وجود بيانات
- */
-table td.no-data {
-  text-align: center;
-  color: var(--text-secondary);
-  font-style: italic;
-  padding: var(--spacing-lg);
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-6) var(--space-12);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
 }
 
-/**
- * 🎯 status - حالة الطلب
- * 
- * التفاصيل:
- *   - تصميم badge (شارة)
- *   - ألوان مختلفة حسب الحالة
- */
-table .status {
-  display: inline-block;
-  padding: var(--space-4) var(--space-12);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  background: rgba(var(--color-warning-rgb), var(--status-bg-opacity));
-  color: var(--warning-color);
-  border: 1px solid rgba(var(--color-warning-rgb), var(--status-border-opacity));
+.status.pending {
+    background-color: rgba(var(--color-warning-rgb), var(--status-bg-opacity));
+    color: var(--color-warning);
+    border: 1px solid rgba(var(--color-warning-rgb), var(--status-border-opacity));
 }
 
-table .status:contains("مُنجزة") {
-  background: rgba(var(--color-success-rgb), var(--status-bg-opacity));
-  color: var(--success-color);
-  border: 1px solid rgba(var(--color-success-rgb), var(--status-border-opacity));
+.status.completed {
+    background-color: rgba(var(--color-success-rgb), var(--status-bg-opacity));
+    color: var(--color-success);
+    border: 1px solid rgba(var(--color-success-rgb), var(--status-border-opacity));
 }
 
-table .status:contains("ملغي") {
-  background: rgba(var(--color-error-rgb), var(--status-bg-opacity));
-  color: var(--error-color);
-  border: 1px solid rgba(var(--color-error-rgb), var(--status-border-opacity));
+.status.cancelled {
+    background-color: rgba(var(--color-error-rgb), var(--status-bg-opacity));
+    color: var(--color-error);
+    border: 1px solid rgba(var(--color-error-rgb), var(--status-border-opacity));
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🎯 SECTION 7: نافذة الطلب الجديد (Modal) */
-/* ════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    table {
+        font-size: var(--font-size-sm);
+    }
+    
+    th, td {
+        padding: var(--space-12);
+    }
+}
 
-/**
- * 🪟 modal - نافذة منبثقة
- * 
- * الوصف:
- *   - غطاء شفاف كامل الشاشة
- *   - موضع ثابت
- *   - مركز الشاشة
- *   - مخفية افتراضياً (display: none)
- *   - تظهر عند الحاجة (display: flex)
- */
+@media (max-width: 480px) {
+    th, td {
+        padding: var(--space-8);
+        font-size: var(--font-size-xs);
+    }
+    
+    .status {
+        padding: var(--space-4) var(--space-8);
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🪟 النوافذ المنبثقة
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn var(--duration-fast) var(--ease-standard);
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal.show {
-  display: flex;
+    display: flex;
 }
 
-/**
- * 🪟 modal-content - محتوى النافذة
- * 
- * التفاصيل:
- *   - خلفية بيضاء
- *   - عرض أقصى 500 بكسل
- *   - حشو داخلي
- *   - حدود مدورة
- *   - ظل قوي
- */
 .modal-content {
-  background-color: var(--bg-primary);
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-card-border);
-  animation: slideUp var(--duration-normal) var(--ease-standard);
+    background: var(--color-surface);
+    padding: var(--space-24);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-card-border);
 }
 
 .modal-content h2 {
-  margin-top: 0;
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-24);
+    color: var(--color-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
 }
 
-/**
- * 📝 form-group - مجموعة الحقول
- * 
- * الوصف:
- *   - كل حقل بمسافة
- *   - تسميات واضحة
- */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 95vh;
+        padding: var(--space-20);
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        padding: var(--space-16);
+    }
+    
+    .modal-content h2 {
+        font-size: var(--font-size-xl);
+        margin-bottom: var(--space-16);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   📝 النماذج
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .form-group {
-  margin-bottom: var(--spacing-md);
+    margin-bottom: var(--space-20);
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: var(--space-6);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  font-size: var(--font-size-sm);
+label {
+    display: block;
+    margin-bottom: var(--space-8);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: var(--space-10) var(--space-12);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-base);
-  font-size: var(--font-size-base);
-  font-family: var(--font-main);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  box-sizing: border-box;
-  transition: border-color var(--duration-fast) var(--ease-standard),
-              box-shadow var(--duration-fast) var(--ease-standard);
+.required {
+    color: var(--color-error);
 }
 
-.form-group select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: var(--select-caret-light);
-  background-repeat: no-repeat;
-  background-position: left var(--space-12) center;
-  background-size: 16px;
-  padding-left: var(--space-32);
+input,
+select,
+textarea {
+    display: block;
+    width: 100%;
+    padding: var(--space-8) var(--space-12);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    font-family: var(--font-family-base);
+    transition: border-color var(--duration-fast) var(--ease-standard),
+                box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+textarea {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    resize: vertical;
+}
+
+select {
+    cursor: pointer;
+    padding: var(--space-8) var(--space-12);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: left var(--space-12) center;
+    background-size: 16px;
+    padding-left: var(--space-32);
+}
+
+/* Update select caret based on theme */
+select {
+    background-image: var(--select-caret-light);
 }
 
 @media (prefers-color-scheme: dark) {
-  .form-group select {
+    select {
+        background-image: var(--select-caret-dark);
+    }
+}
+
+[data-color-scheme="dark"] select {
     background-image: var(--select-caret-dark);
-  }
 }
 
-[data-color-scheme="dark"] .form-group select {
-  background-image: var(--select-caret-dark);
+[data-color-scheme="light"] select {
+    background-image: var(--select-caret-light);
 }
 
-[data-color-scheme="light"] .form-group select {
-  background-image: var(--select-caret-light);
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-primary);
+    outline: var(--focus-outline);
+    outline-offset: 0;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: var(--focus-outline);
-  outline-offset: 0;
-  border-color: var(--color-primary);
-  box-shadow: var(--focus-ring);
-}
-
-.form-group input[readonly] {
-  background: var(--bg-light);
-  color: var(--text-secondary);
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/**
- * 📝 animal-desc - وصف الحيوان المختار
- * 
- * الوصف:
- *   - نص صغير أسفل اختيار الحيوان
- *   - خلفية فاتحة
- *   - مخفي افتراضياً
- */
 .animal-desc {
-  display: none;
-  margin-top: var(--spacing-sm);
-  padding: var(--space-10) var(--space-12);
-  background: var(--bg-light);
-  border-right: 3px solid var(--primary-color);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  line-height: var(--line-height-normal);
-  border-radius: var(--radius-sm);
+    background: var(--color-secondary);
+    padding: var(--space-16);
+    border-radius: var(--radius-base);
+    margin-top: var(--space-8);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    display: none;
+    border: 1px solid var(--color-card-border-inner);
 }
 
 .animal-desc.show {
-  display: block;
-  animation: slideDown var(--duration-fast) var(--ease-standard);
+    display: block;
 }
 
-/**
- * 💰 total-display - عرض الإجمالي
- * 
- * الوصف:
- *   - عرض القيمة الإجمالية
- *   - خط سميك
- *   - لون مميز
- */
 .total-display {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--success-color);
-  padding: var(--spacing-md);
-  background: var(--bg-light);
-  border-radius: var(--radius-md);
-  text-align: center;
-  border: 2px solid var(--success-color);
-}
-
-/**
- * 🔘 modal-actions - أزرار إجراءات النافذة
- * 
- * الوصف:
- *   - صفوف من الأزرار
- *   - توزيع متوازن
- */
-.modal-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  justify-content: space-between;
-}
-
-.modal-actions button {
-  flex: 1;
-}
-
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🎬 SECTION 8: الرسوم المتحركة (Animations) */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
-/**
- * 🎬 fadeIn - تلاشي الظهور
- * 
- * الاستخدام: غطاء المودال
- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/**
- * 🎬 slideUp - انزلاق لأعلى
- * 
- * الاستخدام: محتوى المودال
- */
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/**
- * 🎬 slideDown - انزلاق لأسفل
- * 
- * الاستخدام: وصف الحيوان
- */
-@keyframes slideDown {
-  from {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-  to {
-    max-height: 100px;
-    opacity: 1;
-  }
-}
-
-/**
- * 🎬 slideIn - انزلاق من اليمين
- * 
- * الاستخدام: الإشعارات
- */
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 📱 SECTION 9: التصميم المتجاوب (Responsive Design) */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
-/**
- * 📱 الشاشات المتوسطة (التابلت)
- * 
- * التفاصيل:
- *   - تعديلات للشاشات بين 481px و 768px
- */
-@media (max-width: 768px) {
-  .container {
-    padding: var(--space-12);
-  }
-
-  .header {
-    padding: var(--spacing-md);
-  }
-
-  .header h1 {
     font-size: var(--font-size-3xl);
-  }
-
-  .header p {
-    font-size: var(--font-size-base);
-  }
-
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-12);
-  }
-
-  .controls {
-    flex-direction: column;
-  }
-
-  .controls button,
-  .controls input,
-  .controls select {
-    width: 100%;
-  }
-
-  .modal-content {
-    width: 95%;
-    max-height: 85vh;
-    padding: var(--spacing-md);
-  }
-
-  .modal-actions {
-    flex-direction: column;
-    gap: var(--space-12);
-  }
-
-  table {
-    font-size: var(--font-size-xs);
-  }
-
-  table th,
-  table td {
-    padding: var(--space-8) var(--space-10);
-  }
-
-  .stat-box {
-    padding: var(--space-12);
-  }
-
-  .stat-box .value {
-    font-size: var(--font-size-2xl);
-  }
+    font-weight: var(--font-weight-bold);
+    color: var(--color-success);
+    padding: var(--space-16);
+    background: rgba(var(--color-success-rgb), var(--status-bg-opacity));
+    border-radius: var(--radius-base);
+    text-align: center;
+    border: 1px solid rgba(var(--color-success-rgb), var(--status-border-opacity));
 }
 
-/**
- * 📱 الشاشات الصغيرة جداً (الهاتف - بورتريت)
- * 
- * التفاصيل:
- *   - عمود واحد فقط
- *   - نصوص صغيرة
- *   - تحسينات للمساحة
- */
+.error-message {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-4);
+    display: none;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--space-16);
+    justify-content: center;
+    margin-top: var(--space-24);
+}
+
 @media (max-width: 480px) {
-  html {
-    font-size: var(--font-size-sm);
-  }
-
-  .container {
-    padding: var(--space-8);
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-    gap: var(--space-10);
-  }
-
-  .header {
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-    border-radius: var(--radius-md);
-  }
-
-  .header h1 {
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-6);
-  }
-
-  .header p {
-    font-size: var(--font-size-sm);
-  }
-
-  .stat-box {
-    padding: var(--space-10);
-  }
-
-  .stat-box h3 {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--space-6);
-  }
-
-  .stat-box .value {
-    font-size: var(--font-size-xl);
-  }
-
-  .controls {
-    gap: var(--space-6);
-  }
-
-  table {
-    font-size: var(--font-size-xs);
-  }
-
-  table th,
-  table td {
-    padding: var(--space-6) var(--space-8);
-    font-size: var(--font-size-xs);
-  }
-
-  .btn-primary,
-  .btn-danger {
-    padding: var(--space-8) var(--space-12);
-    font-size: var(--font-size-sm);
-  }
-
-  .modal-content {
-    width: 95%;
-    padding: var(--spacing-md);
-    max-height: 90vh;
-  }
-
-  .modal-content h2 {
-    font-size: var(--font-size-xl);
-  }
-
-  .form-group {
-    margin-bottom: var(--space-12);
-  }
-
-  .form-group label {
-    font-size: var(--font-size-xs);
-    margin-bottom: var(--space-4);
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    padding: var(--space-8) var(--space-10);
-    font-size: var(--font-size-sm);
-  }
-
-  .total-display {
-    font-size: var(--font-size-lg);
-    padding: var(--space-12);
-  }
-
-  .modal-actions {
-    gap: var(--space-8);
-    margin-top: var(--spacing-md);
-  }
-
-  .table-wrapper {
-    border-radius: var(--radius-md);
-  }
-
-  .animal-desc {
-    padding: var(--space-8) var(--space-10);
-    font-size: var(--font-size-xs);
-  }
+    .modal-actions {
+        flex-direction: column;
+        gap: var(--space-12);
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+    }
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* 🌙 SECTION 10: الأنماط الإضافية للوضع الليلي */
-/* ════════════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════════
+   🔔 الإشعارات
+   ════════════════════════════════════════════════════════════════════════════ */
 
-/**
- * 🌙 تعديلات الوضع الليلي
- */
-[data-color-scheme="dark"] .controls input,
-[data-color-scheme="dark"] .controls select {
-  background: var(--bg-primary);
-  border-color: var(--border-color);
+.notification {
+    position: fixed;
+    top: var(--space-20);
+    right: var(--space-20);
+    padding: var(--space-16) var(--space-20);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-lg);
+    z-index: 2000;
+    animation: slideIn var(--duration-normal) var(--ease-standard);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    min-width: 300px;
 }
 
-[data-color-scheme="dark"] .form-group input:focus,
-[data-color-scheme="dark"] .form-group select:focus,
-[data-color-scheme="dark"] .form-group textarea:focus {
-  box-shadow: var(--focus-ring);
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
-[data-color-scheme="dark"] .header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+.notification.success {
+    background: var(--color-success);
+    color: var(--color-btn-primary-text);
 }
 
-[data-color-scheme="dark"] table {
-  color: var(--color-text);
+.notification.error {
+    background: var(--color-error);
+    color: var(--color-btn-primary-text);
 }
 
-[data-color-scheme="dark"] table thead {
-  background: var(--color-primary);
+.notification.warning {
+    background: var(--color-warning);
+    color: var(--color-btn-primary-text);
 }
 
-[data-color-scheme="dark"] table tbody tr:hover {
-  background-color: var(--color-secondary-hover);
+.notification.info {
+    background: var(--color-info);
+    color: var(--color-btn-primary-text);
 }
 
-[data-color-scheme="dark"] .modal {
-  background-color: rgba(0, 0, 0, 0.75);
+@media (max-width: 768px) {
+    .notification {
+        right: var(--space-10);
+        left: var(--space-10);
+        min-width: auto;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  .controls input,
-  .controls select {
-    background: var(--bg-primary);
-    border-color: var(--border-color);
-  }
-
-  .header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
-  }
-
-  table tbody tr:hover {
-    background-color: var(--color-secondary-hover);
-  }
-
-  .modal {
-    background-color: rgba(0, 0, 0, 0.75);
-  }
+@media (max-width: 480px) {
+    .notification {
+        top: var(--space-10);
+        right: var(--space-8);
+        left: var(--space-8);
+        padding: var(--space-12) var(--space-16);
+        font-size: var(--font-size-sm);
+    }
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* ✅ نهاية الملف - CSS متكامل وموثق بالعربية */
-/* ════════════════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════════════════
+   📡 مؤشر الاتصال
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.offline-indicator {
+    background: var(--color-warning);
+    color: var(--color-btn-primary-text);
+    padding: var(--space-16);
+    text-align: center;
+    border-radius: var(--radius-base);
+    margin-bottom: var(--space-16);
+    animation: pulse 1s infinite;
+    font-weight: var(--font-weight-medium);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@media (max-width: 480px) {
+    .offline-indicator {
+        padding: var(--space-12);
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ♿ إمكانية الوصول
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: var(--space-2);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   📱 استجابة الجوال - نقطة توقف 480px
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+    
+    body {
+        font-size: var(--font-size-sm);
+    }
+    
+    /* تحسينات إضافية للأجهزة الصغيرة جداً */
+    .btn {
+        padding: var(--space-6) var(--space-12);
+        font-size: var(--font-size-sm);
+    }
+    
+    input,
+    select,
+    textarea {
+        font-size: var(--font-size-base);
+        padding: var(--space-6) var(--space-10);
+    }
+    
+    .total-display {
+        font-size: var(--font-size-2xl);
+        padding: var(--space-12);
+    }
+}

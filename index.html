@@ -3,695 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تطبيق طلبات لحوم الرياض - نظام متقدم لإدارة الطلبات مع دعم البريد الإلكتروني والحفظ المحلي">
+    <meta name="description" content="🍖 لحوم الرياض - نظام إدارة طلبات اللحوم والماشية الاحترافي">
     <meta name="theme-color" content="#2c5aa0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🍖 لحوم الرياض - نظام الطلبات v10</title>
     
-    <title>🍖 لحوم الرياض - نظام الطلبات</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
     
-    <!-- Bootstrap CSS - للتصميم والاستجابة -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- أيقونة التطبيق -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%232c5aa0' width='180' height='180'/><text x='90' y='120' font-size='100' text-anchor='middle' fill='white' font-family='Arial'>🍖</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%232c5aa0' width='180' height='180'/><text x='90' y='120' font-size='100' text-anchor='middle' fill='white' font-family='Arial'>🍖</text></svg>">
     
-    <!-- Font Awesome - للأيقونات -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* ════════════════════════════════════════════════════════════════════════════
-           📋 SECTION 1: المتغيرات والألوان (CSS Variables)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        :root {
-            /* الألوان الأساسية */
-            --primary-color: #2c5aa0;      /* أزرق داكن */
-            --success-color: #28a745;      /* أخضر */
-            --danger-color: #dc3545;       /* أحمر */
-            --warning-color: #ffc107;      /* أصفر */
-            --info-color: #17a2b8;         /* أزرق فاتح */
-            
-            /* الخطوط والمسافات */
-            --font-family-ar: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --transition-speed: 0.3s;
-            
-            /* الظلال */
-            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           🎨 SECTION 2: التصميم العام (Global Styles)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        * {
-            font-family: var(--font-family-ar);
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px 0;
-            direction: rtl;
-            text-align: right;
-        }
-        
-        .container-main {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           🏷️ SECTION 3: رأس الصفحة (Header)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1e3f5a 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-radius: 10px 10px 0 0;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 0;
-        }
-        
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .header p {
-            font-size: 1.1rem;
-            margin: 0;
-            opacity: 0.9;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           📦 SECTION 4: بطاقة النموذج (Card Styles)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .form-card {
-            background: white;
-            border-radius: 0 0 10px 10px;
-            box-shadow: var(--shadow-md);
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           🌐 SECTION 5: حالة الاتصال (Connection Status)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        #connectionStatus {
-            margin-bottom: 20px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-weight: 500;
-            text-align: center;
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           📝 SECTION 6: حقول النموذج (Form Fields)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-            display: block;
-            font-size: 1rem;
-        }
-        
-        .form-control {
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 10px 15px;
-            font-size: 1rem;
-            transition: all var(--transition-speed);
-            background-color: #f9f9f9;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-            outline: none;
-        }
-        
-        /* حقل البريد الإلكتروني الخاص */
-        #customerEmail {
-            direction: ltr;
-            text-align: left;
-        }
-        
-        .form-control.is-invalid {
-            border-color: var(--danger-color);
-            background-color: #fff5f5;
-        }
-        
-        .form-control.is-invalid:focus {
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-        }
-        
-        /* رسائل الخطأ */
-        .form-text.text-danger {
-            font-size: 0.85rem;
-            color: var(--danger-color) !important;
-            margin-top: 5px;
-            display: block;
-        }
-        
-        /* اختيار (Select) */
-        .form-select {
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 10px 15px;
-            background-color: #f9f9f9;
-            transition: all var(--transition-speed);
-        }
-        
-        .form-select:focus {
-            border-color: var(--primary-color);
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           💰 SECTION 7: حساب الإجمالي (Total Calculation)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .total-box {
-            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .total-box label {
-            font-size: 0.95rem;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-            display: block;
-            font-weight: 500;
-        }
-        
-        #totalDisplay {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 0;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           🔘 SECTION 8: الأزرار (Buttons)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .btn-submit {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1e3f5a 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: all var(--transition-speed);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-submit:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1.5rem rgba(44, 90, 160, 0.4);
-        }
-        
-        .btn-submit:active:not(:disabled) {
-            transform: translateY(0);
-        }
-        
-        .btn-submit:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           📢 SECTION 9: الرسائل (Messages)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .alert {
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
-            border: 2px solid;
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            border-color: var(--success-color);
-            color: #155724;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            border-color: var(--danger-color);
-            color: #721c24;
-        }
-        
-        .alert-warning {
-            background-color: #fff3cd;
-            border-color: var(--warning-color);
-            color: #856404;
-        }
-        
-        .alert-info {
-            background-color: #d1ecf1;
-            border-color: var(--info-color);
-            color: #0c5460;
-        }
-        
-        .alert strong {
-            font-weight: 700;
-        }
-        
-        .alert p {
-            margin-bottom: 8px;
-        }
-        
-        .alert p:last-child {
-            margin-bottom: 0;
-        }
-        
-        .alert small {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           📋 SECTION 10: تقسيمات الأقسام (Sections)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .form-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .form-section:last-child {
-            border-bottom: none;
-        }
-        
-        .form-section h3 {
-            color: var(--primary-color);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid var(--primary-color);
-            display: inline-block;
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           🔧 SECTION 11: التجاوب (Responsive Design)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .form-card {
-                padding: 20px;
-            }
-            
-            .form-group {
-                margin-bottom: 15px;
-            }
-            
-            #totalDisplay {
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* ════════════════════════════════════════════════════════════════════════════
-           ✨ SECTION 12: تأثيرات خاصة (Special Effects)
-           ════════════════════════════════════════════════════════════════════════════ */
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* توهج الأيقونات */
-        .icon-glow {
-            display: inline-block;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-    </style>
+    <!-- أنماط CSS -->
+    <link rel="stylesheet" href="20251201-1800-style.css">
 </head>
 <body>
-    <!-- ════════════════════════════════════════════════════════════════════════════
-         📦 رأس الصفحة (Header)
-         ════════════════════════════════════════════════════════════════════════════ -->
-    
-    <div class="header">
-        <h1>🍖 لحوم الرياض</h1>
-        <p>نظام طلبات متقدم مع دعم البريد الإلكتروني والحفظ المحلي</p>
-    </div>
-
-    <!-- ════════════════════════════════════════════════════════════════════════════
-         🌐 حالة الاتصال بالإنترنت (Connection Status)
-         ════════════════════════════════════════════════════════════════════════════ -->
-    
-    <div class="container container-main">
-        <div id="connectionStatus" class="alert alert-info" style="display: none;">
-            <i class="fas fa-wifi"></i> جاري فحص الاتصال...
-        </div>
-
-        <!-- ════════════════════════════════════════════════════════════════════════════
-             📝 نموذج الطلب (Order Form)
-             ════════════════════════════════════════════════════════════════════════════ -->
-        
-        <div class="form-card">
-            <form id="orderForm" method="POST">
-                
-                <!-- ═══════════════════════════════════════════════════════════════════════
-                     📋 القسم 1: بيانات العميل (Customer Information)
-                     ═══════════════════════════════════════════════════════════════════════ -->
-                
-                <div class="form-section">
-                    <h3>👤 بيانات العميل</h3>
-                    
-                    <!-- الاسم -->
-                    <div class="form-group">
-                        <label for="customerName">
-                            <i class="fas fa-user"></i> اسم العميل: <span style="color: red;">*</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="customerName" 
-                            placeholder="أدخل اسمك الكامل"
-                            required
-                        >
-                    </div>
-                    
-                    <!-- رقم الهاتف -->
-                    <div class="form-group">
-                        <label for="customerPhone">
-                            <i class="fas fa-phone"></i> رقم الهاتف: <span style="color: red;">*</span>
-                        </label>
-                        <input 
-                            type="tel" 
-                            class="form-control" 
-                            id="customerPhone" 
-                            placeholder="05xxxxxxxxx"
-                            pattern="[0-9\-\+\(\) ]+"
-                            required
-                        >
-                    </div>
-                    
-                    <!-- البريد الإلكتروني (جديد!) -->
-                    <div class="form-group">
-                        <label for="customerEmail">
-                            <i class="fas fa-envelope"></i> البريد الإلكتروني: <span style="color: red;">*</span>
-                        </label>
-                        <input 
-                            type="email" 
-                            class="form-control" 
-                            id="customerEmail" 
-                            placeholder="your.email@example.com"
-                            required
-                        >
-                        <small id="emailError" class="form-text text-danger" style="display: none;"></small>
-                        <small class="form-text text-muted">
-                            📧 سيتم إرسال تأكيد الطلب على هذا البريد
-                        </small>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════════════════════════
-                     🐑 القسم 2: تفاصيل الماشية (Animal Details)
-                     ═══════════════════════════════════════════════════════════════════════ -->
-                
-                <div class="form-section">
-                    <h3>🐑 تفاصيل الماشية</h3>
-                    
-                    <!-- نوع الماشية -->
-                    <div class="form-group">
-                        <label for="animalType">
-                            <i class="fas fa-list"></i> نوع الماشية: <span style="color: red;">*</span>
-                        </label>
-                        <select class="form-select" id="animalType" required>
-                            <option value="" selected disabled>اختر نوع الماشية</option>
-                            <option value="غنم نعيمي">🐑 غنم نعيمي</option>
-                            <option value="غنم برقي">🐑 غنم برقي</option>
-                            <option value="ماعز">🐐 ماعز</option>
-                            <option value="إبل">🐪 إبل</option>
-                            <option value="أبقار">🐄 أبقار</option>
-                            <option value="دجاج">🐔 دجاج</option>
-                        </select>
-                    </div>
-                    
-                    <!-- العمر -->
-                    <div class="form-group">
-                        <label for="animalAge">
-                            <i class="fas fa-calendar"></i> العمر (سنة/شهر):
-                        </label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="animalAge" 
-                            placeholder="مثال: 1 سنة"
-                        >
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════════════════════════
-                     💰 القسم 3: الكمية والسعر (Quantity & Price)
-                     ═══════════════════════════════════════════════════════════════════════ -->
-                
-                <div class="form-section">
-                    <h3>💰 الكمية والسعر</h3>
-                    
-                    <!-- الكمية -->
-                    <div class="form-group">
-                        <label for="quantity">
-                            <i class="fas fa-boxes"></i> الكمية (وحدة): <span style="color: red;">*</span>
-                        </label>
-                        <input 
-                            type="number" 
-                            class="form-control" 
-                            id="quantity" 
-                            placeholder="أدخل الكمية"
-                            min="1"
-                            step="1"
-                            required
-                        >
-                    </div>
-                    
-                    <!-- السعر للوحدة -->
-                    <div class="form-group">
-                        <label for="pricePerUnit">
-                            <i class="fas fa-tag"></i> السعر للوحدة (ر.س): <span style="color: red;">*</span>
-                        </label>
-                        <input 
-                            type="number" 
-                            class="form-control" 
-                            id="pricePerUnit" 
-                            placeholder="أدخل السعر"
-                            min="0"
-                            step="10"
-                            required
-                        >
-                    </div>
-                    
-                    <!-- الإجمالي (عرض فقط) -->
-                    <div class="total-box">
-                        <label>المجموع النهائي:</label>
-                        <p id="totalDisplay">0 ر.س</p>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════════════════════════
-                     📦 القسم 4: الخدمات والمنطقة (Services & Region)
-                     ═══════════════════════════════════════════════════════════════════════ -->
-                
-                <div class="form-section">
-                    <h3>📦 الخدمات والمنطقة</h3>
-                    
-                    <!-- نوع الخدمة -->
-                    <div class="form-group">
-                        <label for="serviceType">
-                            <i class="fas fa-concierge-bell"></i> نوع الخدمة:
-                        </label>
-                        <select class="form-select" id="serviceType">
-                            <option value="توصيل مجاني">🚚 توصيل مجاني</option>
-                            <option value="توصيل برسوم">🚕 توصيل برسوم</option>
-                            <option value="استلام من المتجر">🏪 استلام من المتجر</option>
-                            <option value="خدمة الذبح">🔪 خدمة الذبح</option>
-                            <option value="خدمة التنظيف">🧹 خدمة التنظيف</option>
-                        </select>
-                    </div>
-                    
-                    <!-- المنطقة -->
-                    <div class="form-group">
-                        <label for="region">
-                            <i class="fas fa-map-marker-alt"></i> المنطقة:
-                        </label>
-                        <select class="form-select" id="region">
-                            <option value="الرياض">🏙️ الرياض</option>
-                            <option value="الدرعية">🏘️ الدرعية</option>
-                            <option value="الخرج">🌾 الخرج</option>
-                            <option value="حريملاء">📍 حريملاء</option>
-                            <option value="المزاحمية">📍 المزاحمية</option>
-                            <option value="أخرى">📍 أخرى</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════════════════════════
-                     🔘 زر الإرسال (Submit Button)
-                     ═══════════════════════════════════════════════════════════════════════ -->
-                
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <i class="fas fa-save"></i> ✅ حفظ الطلب
-                </button>
-            </form>
-
-            <!-- ═══════════════════════════════════════════════════════════════════════
-                 📢 رسائل النجاح والخطأ (Messages)
-                 ═══════════════════════════════════════════════════════════════════════ -->
-            
-            <div id="successMessage" style="display: none;"></div>
-            <div id="errorMessage" style="display: none;"></div>
-        </div>
-
-        <!-- ════════════════════════════════════════════════════════════════════════════
-             📋 تعليمات الاستخدام (Instructions)
-             ════════════════════════════════════════════════════════════════════════════ -->
-        
-        <div class="form-card" style="background-color: #f0f8ff; margin-top: 20px;">
-            <h3 style="color: var(--info-color); margin-bottom: 15px;">
-                <i class="fas fa-info-circle"></i> معلومات مهمة
-            </h3>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                <div>
-                    <h5 style="color: var(--primary-color);">📧 البريد الإلكتروني</h5>
-                    <p style="font-size: 0.9rem;">سيتم إرسال تأكيد الطلب وتفاصيله على البريد الإلكتروني المدخل فوراً</p>
-                </div>
-                
-                <div>
-                    <h5 style="color: var(--primary-color);">💾 الحفظ المحلي</h5>
-                    <p style="font-size: 0.9rem;">يتم حفظ الطلبات محلياً حتى في حالة انقطاع الإنترنت</p>
-                </div>
-                
-                <div>
-                    <h5 style="color: var(--primary-color);">🔄 إعادة المحاولة</h5>
-                    <p style="font-size: 0.9rem;">سيتم إعادة محاولة الإرسال تلقائياً عند عودة الاتصال</p>
-                </div>
-                
-                <div>
-                    <h5 style="color: var(--primary-color);">📞 التواصل</h5>
-                    <p style="font-size: 0.9rem;">سيتم التواصل معك على الرقم المدخل في أسرع وقت</p>
-                </div>
+    <div class="container">
+        <!-- 📊 رأس الصفحة -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🍖 لحوم الرياض</h1>
+                <p>نظام إدارة الطلبات والمبيعات - النسخة v10</p>
             </div>
-        </div>
+        </header>
 
-        <!-- ════════════════════════════════════════════════════════════════════════════
-             🔗 المسافة السفلية (Footer)
-             ════════════════════════════════════════════════════════════════════════════ -->
-        
-        <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.9rem;">
-            <p>
-                🍖 <strong>لحوم الرياض</strong> - جودة عالية وأسعار منافسة
-            </p>
-            <p style="margin-top: 10px;">
-                <small>VERSION 11 - QUEUE SYSTEM + EMAIL NOTIFICATIONS</small>
-                <br>
-                <small>© 2025 جميع الحقوق محفوظة</small>
-            </p>
-        </footer>
+        <!-- 📈 الإحصائيات -->
+        <section class="stats" id="statsContainer">
+            <div class="stat-box">
+                <span class="stat-label">إجمالي الطلبات</span>
+                <span class="stat-value" id="totalOrders">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">إجمالي المبيعات</span>
+                <span class="stat-value" id="totalSales">0 ر.س</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">متوسط الطلب</span>
+                <span class="stat-value" id="avgOrder">0 ر.س</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">الطلبات المعلقة</span>
+                <span class="stat-value" id="pendingOrders">0</span>
+            </div>
+        </section>
+
+        <!-- 🎛️ أدوات التحكم -->
+        <section class="controls">
+            <button class="btn btn-primary" id="addOrderBtn" aria-label="إضافة طلب جديد">➕ طلب جديد</button>
+            
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">جميع الحالات</button>
+                <button class="filter-btn" data-filter="قيد المعالجة">قيد المعالجة</button>
+                <button class="filter-btn" data-filter="تم التوصيل">تم التوصيل</button>
+                <button class="filter-btn" data-filter="ملغي">ملغي</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="clearDataBtn" aria-label="حذف جميع البيانات">🗑️ حذف البيانات</button>
+                <button class="btn btn-secondary" id="darkModeBtn" aria-label="تبديل الوضع الليلي">🌙 وضع غامق</button>
+            </div>
+        </section>
+
+        <!-- 📋 جدول الطلبات -->
+        <section class="table-wrapper">
+            <table id="ordersTable" role="grid" aria-label="جدول الطلبات">
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>الهاتف</th>
+                        <th>النوع</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                        <th>الخدمة</th>
+                        <th>الحالة</th>
+                        <th>التاريخ</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersBody">
+                    <tr>
+                        <td colspan="11" class="no-data">لا توجد بيانات</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </div>
 
-    <!-- ════════════════════════════════════════════════════════════════════════════
-         📜 تحميل الملفات الخارجية (External Files)
-         ════════════════════════════════════════════════════════════════════════════ -->
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- تطبيقنا JavaScript -->
-    <script src="app.js"></script>
+    <!-- 🪟 نافذة إضافة/تعديل الطلب -->
+    <div class="modal" id="orderModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <h2 id="modalTitle">إضافة طلب جديد</h2>
+            
+            <form id="orderForm" class="order-form" novalidate>
+                <div class="form-group">
+                    <label for="customerName">اسم العميل <span class="required">*</span></label>
+                    <input type="text" id="customerName" required placeholder="مثال: محمد علي" aria-required="true">
+                    <span class="error-message" id="customerNameError"></span>
+                </div>
 
-    <!-- ════════════════════════════════════════════════════════════════════════════
-         📝 ملاحظات التطوير (Development Notes)
-         ════════════════════════════════════════════════════════════════════════════
-         
-         المتطلبات:
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         
-         1. تأكد من تحميل app.js بنفس المجلد:
-            <script src="app.js"></script>
-         
-         2. تحديث رابط Google Apps Script في app.js:
-            const APPS_SCRIPT_URL = 'YOUR_ACTUAL_URL';
-         
-         3. تأكد من تفعيل البريد الإلكتروني في gs.js:
-            - dالتحقق من إعدادات Gmail
-            - التحقق من صلاحيات Apps Script
-         
-         4. اختبار في متصفح:
-            - فتح Console (F12)
-            - التحقق من رسائل السجل
-            - اختبار الإرسال
-         
-         5. التحقق من الحفظ المحلي:
-            - فتح DevTools
-            - Application → LocalStorage
-            - تحقق من مفاتيح order_*
-         
-         الميزات الجديدة:
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         
-         ✅ حقل البريد الإلكتروني مع التحقق
-         ✅ رسائل خطأ واضحة للبريد
-         ✅ عرض حالة الاتصال بالإنترنت
-         ✅ حساب الإجمالي الفوري
-         ✅ تصميم متجاوب (Responsive)
-         ✅ تأثيرات بصرية احترافية
-         ✅ توثيق كامل بالعربية
-         
-         ════════════════════════════════════════════════════════════════════════ -->
+                <div class="form-group">
+                    <label for="customerPhone">رقم الهاتف <span class="required">*</span></label>
+                    <input type="tel" id="customerPhone" required placeholder="0501234567" pattern="[0-9]{10}" aria-required="true">
+                    <span class="error-message" id="customerPhoneError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="animalType">نوع الماشية <span class="required">*</span></label>
+                    <select id="animalType" required aria-required="true">
+                        <option value="">اختر النوع</option>
+                        <option value="غنم نعيمي">غنم نعيمي</option>
+                        <option value="غنم نجدي">غنم نجدي</option>
+                        <option value="غنم حري">غنم حري</option>
+                        <option value="غنم سواكني">غنم سواكني</option>
+                        <option value="غنم بربري">غنم بربري</option>
+                        <option value="ماعز">ماعز</option>
+                        <option value="جمل">جمل (جملة فقط)</option>
+                    </select>
+                    <div class="animal-desc" id="animalDesc" role="status" aria-live="polite"></div>
+                    <span class="error-message" id="animalTypeError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="animalAge">العمر <span class="required">*</span></label>
+                    <select id="animalAge" required aria-required="true">
+                        <option value="">اختر العمر</option>
+                        <option value="6 شهور">6 شهور</option>
+                        <option value="1 سنة">1 سنة</option>
+                        <option value="سنة ونصف">سنة ونصف</option>
+                        <option value="سنتان">سنتان</option>
+                    </select>
+                    <span class="error-message" id="animalAgeError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">الكمية (عدد الحيوانات) <span class="required">*</span></label>
+                    <input type="number" id="quantity" required min="1" max="1000" placeholder="عدد الحيوانات" aria-required="true">
+                    <span class="error-message" id="quantityError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="pricePerUnit">السعر للوحدة (ريال) <span class="required">*</span> (قراءة فقط)</label>
+                    <input type="number" id="pricePerUnit" readonly aria-readonly="true">
+                </div>
+
+                <div class="form-group">
+                    <label>الإجمالي (ريال)</label>
+                    <div class="total-display" id="totalDisplay" role="status" aria-live="polite">0</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceType">نوع الخدمة <span class="required">*</span></label>
+                    <select id="serviceType" required aria-required="true">
+                        <option value="">اختر الخدمة</option>
+                        <option value="توصيل مجاني">توصيل مجاني</option>
+                        <option value="توصيل برسم">توصيل برسم</option>
+                        <option value="ذبح">خدمة الذبح</option>
+                        <option value="تقطيع">خدمة التقطيع</option>
+                        <option value="تغليف">خدمة التغليف</option>
+                        <option value="استلام من المحل">استلام من المحل</option>
+                    </select>
+                    <span class="error-message" id="serviceTypeError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="region">المنطقة <span class="required">*</span></label>
+                    <select id="region" required aria-required="true">
+                        <option value="">اختر المنطقة</option>
+                        <option value="الرياض">الرياض</option>
+                        <option value="خارج الرياض">خارج الرياض (جملة فقط)</option>
+                    </select>
+                    <span class="error-message" id="regionError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderStatus">حالة الطلب</label>
+                    <select id="orderStatus">
+                        <option value="قيد المعالجة">قيد المعالجة</option>
+                        <option value="تم التوصيل">تم التوصيل</option>
+                        <option value="ملغي">ملغي</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">💾 حفظ الطلب</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">❌ إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔔 إشعارات النظام -->
+    <div class="notification" id="notification" role="alert" aria-live="polite" style="display: none;"></div>
+
+    <!-- 📍 مؤشر الاتصال بالإنترنت -->
+    <div class="offline-indicator" id="offlineIndicator" style="display: none;">
+        📡 العمل بلا إنترنت - سيتم إرسال البيانات عند استعادة الاتصال
+    </div>
+
+    <!-- 🔗 تسجيل Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('20251201-1800-sw.js').catch(err => 
+                console.log('⚠️ Service Worker لم يتم تسجيله:', err)
+            );
+        }
+    </script>
+
+    <!-- البرنامج الرئيسي -->
+    <script src="20251201-1800-app.js"></script>
 </body>
 </html>
